@@ -10,3 +10,4 @@ export { default as SettingsPanel } from "./SettingsPanel";
 export { default as RuleSetSelector } from "./RuleSetSelector";
 export { default as CardColorPicker } from "./CardColorPicker";
 export { default as CardPatternPicker } from "./CardPatternPicker";
+export { default as HelpButton } from "./HelpButton";

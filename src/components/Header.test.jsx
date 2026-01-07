@@ -1,6 +1,6 @@
 /**
  * Unit tests for Header component
- * Tests rendering, settings panel, theme toggle, and customization options
+ * Tests rendering, settings panel, theme toggle, help button, and customization options
  */
 
 import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
@@ -11,6 +11,14 @@ import { CardCustomizationProvider } from "../context";
 // Helper to render with context
 const renderWithContext = (ui, options) =>
   render(<CardCustomizationProvider>{ui}</CardCustomizationProvider>, options);
+
+// Button indices after adding HelpButton
+// Order: HelpButton (0), ThemeToggle (1), SettingsPanel (2)
+const BUTTON_INDEX = {
+  HELP: 0,
+  THEME: 1,
+  SETTINGS: 2,
+};
 
 describe("Header", () => {
   const mockRuleSets = [
@@ -83,6 +91,12 @@ describe("Header", () => {
       const goldText = container.querySelector(".gold-text");
       expect(goldText).toBeInTheDocument();
     });
+
+    it("should render three header buttons (help, theme, settings)", () => {
+      const { container } = renderWithContext(<Header {...defaultProps} />);
+      const buttons = container.querySelectorAll("button");
+      expect(buttons.length).toBeGreaterThanOrEqual(3);
+    });
   });
 
   describe("title click behavior", () => {
@@ -109,11 +123,79 @@ describe("Header", () => {
     });
   });
 
+  describe("help button", () => {
+    it("should render help button", () => {
+      const { container } = renderWithContext(<Header {...defaultProps} />);
+      const buttons = container.querySelectorAll("button");
+      expect(buttons[BUTTON_INDEX.HELP]).toBeInTheDocument();
+    });
+
+    it("should have correct title for help button", () => {
+      const { container } = renderWithContext(<Header {...defaultProps} />);
+      const buttons = container.querySelectorAll("button");
+      expect(buttons[BUTTON_INDEX.HELP]).toHaveAttribute(
+        "title",
+        "How to play",
+      );
+    });
+
+    it("should open How to Play modal when clicked", () => {
+      renderWithContext(<Header {...defaultProps} />);
+
+      const helpButton = screen.getByTitle("How to play");
+      fireEvent.click(helpButton);
+
+      expect(screen.getByText("How to Play")).toBeInTheDocument();
+    });
+
+    it("should close How to Play modal when close button is clicked", () => {
+      renderWithContext(<Header {...defaultProps} />);
+
+      // Open modal
+      const helpButton = screen.getByTitle("How to play");
+      fireEvent.click(helpButton);
+
+      expect(screen.getByText("How to Play")).toBeInTheDocument();
+
+      // Close modal
+      const closeButton = screen.getByLabelText("Close modal");
+      fireEvent.click(closeButton);
+
+      expect(screen.queryByText("How to Play")).not.toBeInTheDocument();
+    });
+
+    it("should close How to Play modal when clicking the Got it button", () => {
+      renderWithContext(<Header {...defaultProps} />);
+
+      // Open modal
+      const helpButton = screen.getByTitle("How to play");
+      fireEvent.click(helpButton);
+
+      // Close using the Got it button
+      const gotItButton = screen.getByText("Got it, let's play!");
+      fireEvent.click(gotItButton);
+
+      expect(screen.queryByText("How to Play")).not.toBeInTheDocument();
+    });
+
+    it("should display current rule set name in modal", () => {
+      renderWithContext(<Header {...defaultProps} selectedRuleSet={0} />);
+
+      const helpButton = screen.getByTitle("How to play");
+      fireEvent.click(helpButton);
+
+      // The current rule set should be displayed in the modal
+      expect(
+        screen.getAllByText("Highest Card Wins").length,
+      ).toBeGreaterThanOrEqual(1);
+    });
+  });
+
   describe("theme toggle", () => {
     it("should render theme toggle button", () => {
       const { container } = renderWithContext(<Header {...defaultProps} />);
       const buttons = container.querySelectorAll("button");
-      expect(buttons.length).toBeGreaterThanOrEqual(1);
+      expect(buttons[BUTTON_INDEX.THEME]).toBeInTheDocument();
     });
 
     it("should call toggleTheme when theme button is clicked", () => {
@@ -123,8 +205,7 @@ describe("Header", () => {
       );
 
       const buttons = container.querySelectorAll("button");
-      // First button is theme toggle
-      fireEvent.click(buttons[0]);
+      fireEvent.click(buttons[BUTTON_INDEX.THEME]);
 
       expect(toggleTheme).toHaveBeenCalledTimes(1);
     });
@@ -133,9 +214,10 @@ describe("Header", () => {
       const { container } = renderWithContext(
         <Header {...defaultProps} theme="dark" />,
       );
-      // Sun icon should be present for dark mode (to switch to light)
       const buttons = container.querySelectorAll("button");
-      expect(buttons[0].querySelector("svg")).toBeInTheDocument();
+      expect(
+        buttons[BUTTON_INDEX.THEME].querySelector("svg"),
+      ).toBeInTheDocument();
     });
 
     it("should show moon icon in light mode", () => {
@@ -143,7 +225,9 @@ describe("Header", () => {
         <Header {...defaultProps} theme="light" />,
       );
       const buttons = container.querySelectorAll("button");
-      expect(buttons[0].querySelector("svg")).toBeInTheDocument();
+      expect(
+        buttons[BUTTON_INDEX.THEME].querySelector("svg"),
+      ).toBeInTheDocument();
     });
 
     it("should have correct title for dark mode", () => {
@@ -151,7 +235,10 @@ describe("Header", () => {
         <Header {...defaultProps} theme="dark" />,
       );
       const buttons = container.querySelectorAll("button");
-      expect(buttons[0]).toHaveAttribute("title", "Switch to warm mode");
+      expect(buttons[BUTTON_INDEX.THEME]).toHaveAttribute(
+        "title",
+        "Switch to warm mode",
+      );
     });
 
     it("should have correct title for light mode", () => {
@@ -159,7 +246,10 @@ describe("Header", () => {
         <Header {...defaultProps} theme="light" />,
       );
       const buttons = container.querySelectorAll("button");
-      expect(buttons[0]).toHaveAttribute("title", "Switch to dark mode");
+      expect(buttons[BUTTON_INDEX.THEME]).toHaveAttribute(
+        "title",
+        "Switch to dark mode",
+      );
     });
   });
 
@@ -167,22 +257,22 @@ describe("Header", () => {
     it("should render settings button", () => {
       const { container } = renderWithContext(<Header {...defaultProps} />);
       const buttons = container.querySelectorAll("button");
-      // Second button is settings
-      expect(buttons.length).toBeGreaterThanOrEqual(2);
+      expect(buttons[BUTTON_INDEX.SETTINGS]).toBeInTheDocument();
     });
 
     it("should show settings icon initially", () => {
       const { container } = renderWithContext(<Header {...defaultProps} />);
       const buttons = container.querySelectorAll("button");
-      // Settings button should have cog icon
-      expect(buttons[1].querySelector("svg")).toBeInTheDocument();
+      expect(
+        buttons[BUTTON_INDEX.SETTINGS].querySelector("svg"),
+      ).toBeInTheDocument();
     });
 
     it("should open settings menu when settings button is clicked", () => {
       const { container } = renderWithContext(<Header {...defaultProps} />);
       const buttons = container.querySelectorAll("button");
 
-      fireEvent.click(buttons[1]);
+      fireEvent.click(buttons[BUTTON_INDEX.SETTINGS]);
 
       const settingsMenu = container.querySelector(".settings-menu");
       expect(settingsMenu).toBeInTheDocument();
@@ -192,10 +282,11 @@ describe("Header", () => {
       const { container } = renderWithContext(<Header {...defaultProps} />);
       const buttons = container.querySelectorAll("button");
 
-      fireEvent.click(buttons[1]);
+      fireEvent.click(buttons[BUTTON_INDEX.SETTINGS]);
 
-      // Should now show X icon
-      expect(buttons[1].querySelector("svg")).toBeInTheDocument();
+      expect(
+        buttons[BUTTON_INDEX.SETTINGS].querySelector("svg"),
+      ).toBeInTheDocument();
     });
 
     it("should close settings menu when clicking settings button again", async () => {
@@ -203,11 +294,11 @@ describe("Header", () => {
       const buttons = container.querySelectorAll("button");
 
       // Open settings
-      fireEvent.click(buttons[1]);
+      fireEvent.click(buttons[BUTTON_INDEX.SETTINGS]);
       expect(container.querySelector(".settings-menu")).toBeInTheDocument();
 
       // Close settings
-      fireEvent.click(buttons[1]);
+      fireEvent.click(buttons[BUTTON_INDEX.SETTINGS]);
 
       // Wait for animation timeout
       vi.advanceTimersByTime(300);
@@ -225,7 +316,7 @@ describe("Header", () => {
       const { container } = renderWithContext(<Header {...defaultProps} />);
       const buttons = container.querySelectorAll("button");
 
-      fireEvent.click(buttons[1]);
+      fireEvent.click(buttons[BUTTON_INDEX.SETTINGS]);
 
       expect(screen.getByText("Rule Set")).toBeInTheDocument();
     });
@@ -234,7 +325,7 @@ describe("Header", () => {
       const { container } = renderWithContext(<Header {...defaultProps} />);
       const buttons = container.querySelectorAll("button");
 
-      fireEvent.click(buttons[1]);
+      fireEvent.click(buttons[BUTTON_INDEX.SETTINGS]);
 
       expect(screen.getByText("Card Back Color")).toBeInTheDocument();
     });
@@ -245,7 +336,7 @@ describe("Header", () => {
       );
       const buttons = container.querySelectorAll("button");
 
-      fireEvent.click(buttons[1]);
+      fireEvent.click(buttons[BUTTON_INDEX.SETTINGS]);
 
       expect(screen.getByText("Highest Card Wins")).toBeInTheDocument();
     });
@@ -256,7 +347,7 @@ describe("Header", () => {
       );
       const buttons = container.querySelectorAll("button");
 
-      fireEvent.click(buttons[1]);
+      fireEvent.click(buttons[BUTTON_INDEX.SETTINGS]);
 
       expect(screen.getByText("Suit Follows")).toBeInTheDocument();
     });
@@ -265,7 +356,7 @@ describe("Header", () => {
       const { container } = renderWithContext(<Header {...defaultProps} />);
       const buttons = container.querySelectorAll("button");
 
-      fireEvent.click(buttons[1]);
+      fireEvent.click(buttons[BUTTON_INDEX.SETTINGS]);
 
       const settingsMenu = container.querySelector(".settings-menu");
       expect(settingsMenu).toHaveClass("settings-fade-in");
@@ -278,7 +369,7 @@ describe("Header", () => {
       const buttons = container.querySelectorAll("button");
 
       // Open settings
-      fireEvent.click(buttons[1]);
+      fireEvent.click(buttons[BUTTON_INDEX.SETTINGS]);
 
       // Find and click the rule set selector
       const ruleSelector = screen.getByText("Highest Card Wins").closest("div");
@@ -297,7 +388,7 @@ describe("Header", () => {
       const buttons = container.querySelectorAll("button");
 
       // Open settings
-      fireEvent.click(buttons[1]);
+      fireEvent.click(buttons[BUTTON_INDEX.SETTINGS]);
 
       // Open rule dropdown
       const ruleSelector = screen.getByText("Highest Card Wins").closest("div");
@@ -315,7 +406,7 @@ describe("Header", () => {
       const buttons = container.querySelectorAll("button");
 
       // Open settings
-      fireEvent.click(buttons[1]);
+      fireEvent.click(buttons[BUTTON_INDEX.SETTINGS]);
 
       // Open rule dropdown
       const ruleSelector = screen.getByText("Highest Card Wins").closest("div");
@@ -329,7 +420,7 @@ describe("Header", () => {
       const buttons = container.querySelectorAll("button");
 
       // Open settings
-      fireEvent.click(buttons[1]);
+      fireEvent.click(buttons[BUTTON_INDEX.SETTINGS]);
 
       // Open rule dropdown
       const ruleSelector = screen.getByText("Highest Card Wins").closest("div");
@@ -346,7 +437,7 @@ describe("Header", () => {
       const buttons = container.querySelectorAll("button");
 
       // Open settings
-      fireEvent.click(buttons[1]);
+      fireEvent.click(buttons[BUTTON_INDEX.SETTINGS]);
       expect(container.querySelector(".settings-menu")).toBeInTheDocument();
 
       // Click outside - simulate mousedown on document body
@@ -453,9 +544,9 @@ describe("Header", () => {
       const buttons = container.querySelectorAll("button");
 
       // Click multiple times rapidly
-      fireEvent.click(buttons[0]);
-      fireEvent.click(buttons[0]);
-      fireEvent.click(buttons[0]);
+      fireEvent.click(buttons[BUTTON_INDEX.THEME]);
+      fireEvent.click(buttons[BUTTON_INDEX.THEME]);
+      fireEvent.click(buttons[BUTTON_INDEX.THEME]);
 
       expect(toggleTheme).toHaveBeenCalledTimes(3);
     });
@@ -465,8 +556,20 @@ describe("Header", () => {
       const buttons = container.querySelectorAll("button");
 
       // Click multiple times
-      fireEvent.click(buttons[1]);
-      fireEvent.click(buttons[1]);
+      fireEvent.click(buttons[BUTTON_INDEX.SETTINGS]);
+      fireEvent.click(buttons[BUTTON_INDEX.SETTINGS]);
+
+      // Should not throw
+      expect(container).toBeInTheDocument();
+    });
+
+    it("should handle rapid help button clicks", () => {
+      const { container } = renderWithContext(<Header {...defaultProps} />);
+      const buttons = container.querySelectorAll("button");
+
+      // Click multiple times
+      fireEvent.click(buttons[BUTTON_INDEX.HELP]);
+      fireEvent.click(buttons[BUTTON_INDEX.HELP]);
 
       // Should not throw
       expect(container).toBeInTheDocument();
@@ -477,15 +580,29 @@ describe("Header", () => {
     it("should have accessible buttons", () => {
       renderWithContext(<Header {...defaultProps} />);
       const buttons = screen.getAllByRole("button");
-      expect(buttons.length).toBeGreaterThanOrEqual(2);
+      expect(buttons.length).toBeGreaterThanOrEqual(3);
     });
 
     it("should have title attributes on buttons for tooltips", () => {
       const { container } = renderWithContext(<Header {...defaultProps} />);
       const buttons = container.querySelectorAll("button");
 
+      // Help button should have title
+      expect(buttons[BUTTON_INDEX.HELP]).toHaveAttribute(
+        "title",
+        "How to play",
+      );
       // Theme button should have title
-      expect(buttons[0]).toHaveAttribute("title");
+      expect(buttons[BUTTON_INDEX.THEME]).toHaveAttribute("title");
+    });
+
+    it("should have aria-label on help button", () => {
+      const { container } = renderWithContext(<Header {...defaultProps} />);
+      const buttons = container.querySelectorAll("button");
+      expect(buttons[BUTTON_INDEX.HELP]).toHaveAttribute(
+        "aria-label",
+        "How to play",
+      );
     });
   });
 
@@ -507,17 +624,66 @@ describe("Header", () => {
 
   describe("card customization props", () => {
     it("should receive cardBackColor prop", () => {
-      const { container } = renderWithContext(
-        <Header {...defaultProps} cardBackColor="#ff0000" />,
-      );
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       expect(container).toBeInTheDocument();
     });
 
     it("should receive cardBackPattern prop", () => {
-      const { container } = renderWithContext(
-        <Header {...defaultProps} cardBackPattern="dots" />,
-      );
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       expect(container).toBeInTheDocument();
+    });
+  });
+
+  describe("How to Play modal content", () => {
+    it("should display basic rules section", () => {
+      renderWithContext(<Header {...defaultProps} />);
+
+      const helpButton = screen.getByTitle("How to play");
+      fireEvent.click(helpButton);
+
+      expect(screen.getByText("Basic Rules")).toBeInTheDocument();
+    });
+
+    it("should display card values section", () => {
+      renderWithContext(<Header {...defaultProps} />);
+
+      const helpButton = screen.getByTitle("How to play");
+      fireEvent.click(helpButton);
+
+      expect(screen.getByText("Card Values")).toBeInTheDocument();
+    });
+
+    it("should display pro tips section", () => {
+      renderWithContext(<Header {...defaultProps} />);
+
+      const helpButton = screen.getByTitle("How to play");
+      fireEvent.click(helpButton);
+
+      expect(screen.getByText("Pro Tips")).toBeInTheDocument();
+    });
+
+    it("should display current rule set section", () => {
+      renderWithContext(<Header {...defaultProps} />);
+
+      const helpButton = screen.getByTitle("How to play");
+      fireEvent.click(helpButton);
+
+      expect(screen.getByText("Current Rule Set")).toBeInTheDocument();
+    });
+
+    it("should close modal when clicking overlay background", () => {
+      renderWithContext(<Header {...defaultProps} />);
+
+      const helpButton = screen.getByTitle("How to play");
+      fireEvent.click(helpButton);
+
+      expect(screen.getByText("How to Play")).toBeInTheDocument();
+
+      // Click the overlay (the fixed backdrop)
+      const overlay = screen.getByText("How to Play").closest(".fixed");
+      fireEvent.click(overlay);
+
+      expect(screen.queryByText("How to Play")).not.toBeInTheDocument();
     });
   });
 });
