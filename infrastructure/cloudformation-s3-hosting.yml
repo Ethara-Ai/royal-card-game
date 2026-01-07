@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Description: >
   CloudFormation template for hosting a static website on S3 with CloudFront distribution.
   Includes HTTPS support, origin access control, and proper caching configuration.
@@ -15,29 +15,29 @@ Parameters:
   DomainName:
     Type: String
     Description: Primary domain name for the website (e.g., example.com)
-    Default: ''
+    Default: ""
 
   CertificateArn:
     Type: String
     Description: ARN of the ACM certificate for HTTPS (must be in us-east-1)
-    Default: ''
+    Default: ""
 
   GitHubOrg:
     Type: String
     Description: GitHub organization or username
-    Default: ''
+    Default: ""
 
   GitHubRepo:
     Type: String
     Description: GitHub repository name
-    Default: ''
+    Default: ""
 
 Conditions:
-  HasCustomDomain: !Not [!Equals [!Ref DomainName, '']]
-  HasCertificate: !Not [!Equals [!Ref CertificateArn, '']]
+  HasCustomDomain: !Not [!Equals [!Ref DomainName, ""]]
+  HasCertificate: !Not [!Equals [!Ref CertificateArn, ""]]
   ConfigureGitHubOIDC: !And
-    - !Not [!Equals [!Ref GitHubOrg, '']]
-    - !Not [!Equals [!Ref GitHubRepo, '']]
+    - !Not [!Equals [!Ref GitHubOrg, ""]]
+    - !Not [!Equals [!Ref GitHubRepo, ""]]
 
 Resources:
   # S3 Bucket for hosting static files
@@ -46,7 +46,7 @@ Resources:
     DeletionPolicy: Retain
     UpdateReplacePolicy: Retain
     Properties:
-      BucketName: !Sub '${AWS::StackName}-${Environment}-website'
+      BucketName: !Sub "${AWS::StackName}-${Environment}-website"
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
@@ -80,24 +80,24 @@ Resources:
     Properties:
       Bucket: !Ref WebsiteBucket
       PolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Sid: AllowCloudFrontServicePrincipal
             Effect: Allow
             Principal:
               Service: cloudfront.amazonaws.com
             Action: s3:GetObject
-            Resource: !Sub '${WebsiteBucket.Arn}/*'
+            Resource: !Sub "${WebsiteBucket.Arn}/*"
             Condition:
               StringEquals:
-                AWS:SourceArn: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}'
+                AWS:SourceArn: !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}"
 
   # CloudFront Origin Access Control
   CloudFrontOAC:
     Type: AWS::CloudFront::OriginAccessControl
     Properties:
       OriginAccessControlConfig:
-        Name: !Sub '${AWS::StackName}-${Environment}-oac'
+        Name: !Sub "${AWS::StackName}-${Environment}-oac"
         Description: Origin Access Control for S3 bucket
         OriginAccessControlOriginType: s3
         SigningBehavior: always
@@ -109,7 +109,7 @@ Resources:
     Properties:
       DistributionConfig:
         Enabled: true
-        Comment: !Sub 'CloudFront distribution for ${Environment} environment'
+        Comment: !Sub "CloudFront distribution for ${Environment} environment"
         DefaultRootObject: index.html
         HttpVersion: http2and3
         IPV6Enabled: true
@@ -132,7 +132,7 @@ Resources:
             DomainName: !GetAtt WebsiteBucket.RegionalDomainName
             OriginAccessControlId: !Ref CloudFrontOAC
             S3OriginConfig:
-              OriginAccessIdentity: ''
+              OriginAccessIdentity: ""
 
         DefaultCacheBehavior:
           TargetOriginId: S3Origin
@@ -150,7 +150,7 @@ Resources:
 
         CacheBehaviors:
           # HTML files - minimal caching
-          - PathPattern: '*.html'
+          - PathPattern: "*.html"
             TargetOriginId: S3Origin
             ViewerProtocolPolicy: redirect-to-https
             AllowedMethods:
@@ -164,7 +164,7 @@ Resources:
             ResponseHeadersPolicyId: !Ref SecurityHeadersPolicy
 
           # Static assets - aggressive caching
-          - PathPattern: '/assets/*'
+          - PathPattern: "/assets/*"
             TargetOriginId: S3Origin
             ViewerProtocolPolicy: redirect-to-https
             AllowedMethods:
@@ -189,7 +189,7 @@ Resources:
 
         Logging:
           Bucket: !GetAtt LoggingBucket.DomainName
-          Prefix: !Sub 'cloudfront/${Environment}/'
+          Prefix: !Sub "cloudfront/${Environment}/"
           IncludeCookies: false
 
       Tags:
@@ -201,7 +201,7 @@ Resources:
     Type: AWS::CloudFront::CachePolicy
     Properties:
       CachePolicyConfig:
-        Name: !Sub '${AWS::StackName}-${Environment}-default-cache'
+        Name: !Sub "${AWS::StackName}-${Environment}-default-cache"
         DefaultTTL: 86400
         MaxTTL: 31536000
         MinTTL: 0
@@ -219,7 +219,7 @@ Resources:
     Type: AWS::CloudFront::CachePolicy
     Properties:
       CachePolicyConfig:
-        Name: !Sub '${AWS::StackName}-${Environment}-no-cache'
+        Name: !Sub "${AWS::StackName}-${Environment}-no-cache"
         DefaultTTL: 0
         MaxTTL: 1
         MinTTL: 0
@@ -237,7 +237,7 @@ Resources:
     Type: AWS::CloudFront::CachePolicy
     Properties:
       CachePolicyConfig:
-        Name: !Sub '${AWS::StackName}-${Environment}-assets-cache'
+        Name: !Sub "${AWS::StackName}-${Environment}-assets-cache"
         DefaultTTL: 31536000
         MaxTTL: 31536000
         MinTTL: 31536000
@@ -256,7 +256,7 @@ Resources:
     Type: AWS::CloudFront::ResponseHeadersPolicy
     Properties:
       ResponseHeadersPolicyConfig:
-        Name: !Sub '${AWS::StackName}-${Environment}-security-headers'
+        Name: !Sub "${AWS::StackName}-${Environment}-security-headers"
         SecurityHeadersConfig:
           ContentSecurityPolicy:
             ContentSecurityPolicy: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:;"
@@ -285,7 +285,7 @@ Resources:
     DeletionPolicy: Retain
     UpdateReplacePolicy: Retain
     Properties:
-      BucketName: !Sub '${AWS::StackName}-${Environment}-logs'
+      BucketName: !Sub "${AWS::StackName}-${Environment}-logs"
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
@@ -331,10 +331,10 @@ Resources:
     Type: AWS::IAM::Role
     Condition: ConfigureGitHubOIDC
     Properties:
-      RoleName: !Sub '${AWS::StackName}-${Environment}-github-actions'
+      RoleName: !Sub "${AWS::StackName}-${Environment}-github-actions"
       Description: IAM role for GitHub Actions to deploy to S3 and invalidate CloudFront
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
@@ -344,11 +344,11 @@ Resources:
               StringEquals:
                 token.actions.githubusercontent.com:aud: sts.amazonaws.com
               StringLike:
-                token.actions.githubusercontent.com:sub: !Sub 'repo:${GitHubOrg}/${GitHubRepo}:*'
+                token.actions.githubusercontent.com:sub: !Sub "repo:${GitHubOrg}/${GitHubRepo}:*"
       Policies:
         - PolicyName: S3DeploymentPolicy
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Sid: S3BucketAccess
                 Effect: Allow
@@ -360,14 +360,14 @@ Resources:
                   - s3:GetBucketLocation
                 Resource:
                   - !GetAtt WebsiteBucket.Arn
-                  - !Sub '${WebsiteBucket.Arn}/*'
+                  - !Sub "${WebsiteBucket.Arn}/*"
               - Sid: CloudFrontInvalidation
                 Effect: Allow
                 Action:
                   - cloudfront:CreateInvalidation
                   - cloudfront:GetInvalidation
                   - cloudfront:ListInvalidations
-                Resource: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}'
+                Resource: !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}"
       Tags:
         - Key: Environment
           Value: !Ref Environment
@@ -379,41 +379,41 @@ Outputs:
     Description: Name of the S3 bucket for website hosting
     Value: !Ref WebsiteBucket
     Export:
-      Name: !Sub '${AWS::StackName}-BucketName'
+      Name: !Sub "${AWS::StackName}-BucketName"
 
   WebsiteBucketArn:
     Description: ARN of the S3 bucket
     Value: !GetAtt WebsiteBucket.Arn
     Export:
-      Name: !Sub '${AWS::StackName}-BucketArn'
+      Name: !Sub "${AWS::StackName}-BucketArn"
 
   CloudFrontDistributionId:
     Description: CloudFront distribution ID
     Value: !Ref CloudFrontDistribution
     Export:
-      Name: !Sub '${AWS::StackName}-DistributionId'
+      Name: !Sub "${AWS::StackName}-DistributionId"
 
   CloudFrontDomainName:
     Description: CloudFront distribution domain name
     Value: !GetAtt CloudFrontDistribution.DomainName
     Export:
-      Name: !Sub '${AWS::StackName}-DomainName'
+      Name: !Sub "${AWS::StackName}-DomainName"
 
   CloudFrontURL:
     Description: URL of the CloudFront distribution
-    Value: !Sub 'https://${CloudFrontDistribution.DomainName}'
+    Value: !Sub "https://${CloudFrontDistribution.DomainName}"
     Export:
-      Name: !Sub '${AWS::StackName}-URL'
+      Name: !Sub "${AWS::StackName}-URL"
 
   GitHubActionsRoleArn:
     Description: ARN of the IAM role for GitHub Actions
     Condition: ConfigureGitHubOIDC
     Value: !GetAtt GitHubActionsRole.Arn
     Export:
-      Name: !Sub '${AWS::StackName}-GitHubActionsRoleArn'
+      Name: !Sub "${AWS::StackName}-GitHubActionsRoleArn"
 
   LoggingBucketName:
     Description: Name of the S3 bucket for access logs
     Value: !Ref LoggingBucket
     Export:
-      Name: !Sub '${AWS::StackName}-LogsBucketName'
+      Name: !Sub "${AWS::StackName}-LogsBucketName"

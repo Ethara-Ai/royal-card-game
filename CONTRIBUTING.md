@@ -46,11 +46,13 @@ By participating in this project, you agree to maintain a respectful and inclusi
 ### Installation
 
 1. Install dependencies:
+
    ```bash
    npm install
    ```
 
 2. Start the development server:
+
    ```bash
    npm run dev
    ```
@@ -59,12 +61,12 @@ By participating in this project, you agree to maintain a respectful and inclusi
 
 ### Available Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm run preview` | Preview production build |
-| `npm run lint` | Run ESLint |
+| Command            | Description                     |
+| ------------------ | ------------------------------- |
+| `npm run dev`      | Start development server        |
+| `npm run build`    | Build for production            |
+| `npm run preview`  | Preview production build        |
+| `npm run lint`     | Run ESLint                      |
 | `npm run lint:fix` | Fix ESLint issues automatically |
 
 ## How to Contribute
@@ -84,6 +86,7 @@ We welcome many types of contributions:
 ### Workflow
 
 1. Create a branch for your work:
+
    ```bash
    git checkout -b feature/your-feature-name
    # or
@@ -95,6 +98,7 @@ We welcome many types of contributions:
 3. Test your changes thoroughly
 
 4. Commit your changes with clear messages:
+
    ```bash
    git commit -m "feat: add new card animation"
    # or
@@ -102,6 +106,7 @@ We welcome many types of contributions:
    ```
 
 5. Push to your fork:
+
    ```bash
    git push origin feature/your-feature-name
    ```
@@ -120,16 +125,16 @@ We welcome many types of contributions:
 
 Use conventional commit format for PR titles:
 
-| Prefix | Description |
-|--------|-------------|
-| `feat:` | Add new feature |
-| `fix:` | Resolve bug |
-| `docs:` | Update documentation |
-| `style:` | Formatting changes |
-| `refactor:` | Code restructuring |
-| `perf:` | Performance improvements |
-| `test:` | Add tests |
-| `chore:` | Maintenance tasks |
+| Prefix      | Description              |
+| ----------- | ------------------------ |
+| `feat:`     | Add new feature          |
+| `fix:`      | Resolve bug              |
+| `docs:`     | Update documentation     |
+| `style:`    | Formatting changes       |
+| `refactor:` | Code restructuring       |
+| `perf:`     | Performance improvements |
+| `test:`     | Add tests                |
+| `chore:`    | Maintenance tasks        |
 
 ## Coding Standards
 
@@ -174,11 +179,7 @@ const ComponentName = ({ prop1, prop2 }) => {
   };
 
   // Render
-  return (
-    <div>
-      {/* JSX */}
-    </div>
-  );
+  return <div>{/* JSX */}</div>;
 };
 
 ComponentName.propTypes = {
@@ -214,6 +215,7 @@ When reporting bugs, please include:
 A clear description of the bug.
 
 **To Reproduce**
+
 1. Go to '...'
 2. Click on '...'
 3. See error
@@ -225,6 +227,7 @@ What you expected to happen.
 If applicable, add screenshots.
 
 **Environment:**
+
 - Browser: [e.g., Chrome 120]
 - OS: [e.g., macOS 14]
 - Device: [e.g., iPhone 15]

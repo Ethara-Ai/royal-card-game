@@ -352,16 +352,36 @@ describe("gameConstants", () => {
     it("should have increasing zIndex values", () => {
       for (let i = 1; i < CARD_POSITIONS.length; i++) {
         expect(CARD_POSITIONS[i].zIndex).toBeGreaterThan(
-          CARD_POSITIONS[i - 1].zIndex
+          CARD_POSITIONS[i - 1].zIndex,
         );
       }
     });
 
     it("should have correct position values", () => {
-      expect(CARD_POSITIONS[0]).toEqual({ x: -50, y: 10, rotation: -8, zIndex: 1 });
-      expect(CARD_POSITIONS[1]).toEqual({ x: -18, y: -5, rotation: -3, zIndex: 2 });
-      expect(CARD_POSITIONS[2]).toEqual({ x: 18, y: -5, rotation: 3, zIndex: 3 });
-      expect(CARD_POSITIONS[3]).toEqual({ x: 50, y: 10, rotation: 8, zIndex: 4 });
+      expect(CARD_POSITIONS[0]).toEqual({
+        x: -50,
+        y: 10,
+        rotation: -8,
+        zIndex: 1,
+      });
+      expect(CARD_POSITIONS[1]).toEqual({
+        x: -18,
+        y: -5,
+        rotation: -3,
+        zIndex: 2,
+      });
+      expect(CARD_POSITIONS[2]).toEqual({
+        x: 18,
+        y: -5,
+        rotation: 3,
+        zIndex: 3,
+      });
+      expect(CARD_POSITIONS[3]).toEqual({
+        x: 50,
+        y: 10,
+        rotation: 8,
+        zIndex: 4,
+      });
     });
 
     it("should have symmetric x positions", () => {
@@ -531,7 +551,14 @@ describe("gameConstants", () => {
 
     it("should have default card back pattern matching available patterns", () => {
       // Default pattern should be a known pattern
-      const knownPatterns = ["solid", "checker", "diagonal", "diamond", "dots", "cross"];
+      const knownPatterns = [
+        "solid",
+        "checker",
+        "diagonal",
+        "diamond",
+        "dots",
+        "cross",
+      ];
       expect(knownPatterns).toContain(DEFAULT_CARD_BACK_PATTERN);
     });
   });

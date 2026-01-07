@@ -75,7 +75,7 @@ describe("ruleSets", () => {
 
     it("should have correct description", () => {
       expect(highestCardRuleSet.description).toBe(
-        "The highest card value wins the trick"
+        "The highest card value wins the trick",
       );
     });
 
@@ -186,7 +186,7 @@ describe("ruleSets", () => {
 
     it("should have correct description", () => {
       expect(suitFollowsRuleSet.description).toBe(
-        "Must follow lead suit, highest of lead suit wins"
+        "Must follow lead suit, highest of lead suit wins",
       );
     });
 
@@ -311,7 +311,7 @@ describe("ruleSets", () => {
 
     it("should have correct description", () => {
       expect(spadesTrumpRuleSet.description).toBe(
-        "Spades are trump cards and beat all other suits"
+        "Spades are trump cards and beat all other suits",
       );
     });
 

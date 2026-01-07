@@ -83,10 +83,7 @@ const RuleSetSelector = ({ selectedRuleSet, setSelectedRuleSet, ruleSets }) => {
         </div>
         {showDropdown && (
           <>
-            <div
-              className="fixed inset-0 z-40"
-              onClick={closeDropdown}
-            />
+            <div className="fixed inset-0 z-40" onClick={closeDropdown} />
             <div className="absolute z-50 w-full mt-1">
               <div
                 className={`w-full rounded-lg overflow-hidden ${getDropdownAnimationClass(dropdownAnimation)}`}
@@ -135,7 +132,7 @@ RuleSetSelector.propTypes = {
     PropTypes.shape({
       name: PropTypes.string.isRequired,
       description: PropTypes.string.isRequired,
-    })
+    }),
   ).isRequired,
 };
 

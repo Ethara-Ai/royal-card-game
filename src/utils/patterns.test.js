@@ -380,7 +380,7 @@ describe("patterns", () => {
 
       it("should produce different styles for different patterns", () => {
         const styles = cardPatterns.map((pattern) =>
-          getPatternStyle(pattern.id, testColor)
+          getPatternStyle(pattern.id, testColor),
         );
 
         // Compare each style with others

@@ -3,4 +3,4 @@
  * Import this file to include all game-specific styles
  */
 
-import './gameStyles.css';
+import "./gameStyles.css";

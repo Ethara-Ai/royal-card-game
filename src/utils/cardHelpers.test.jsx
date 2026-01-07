@@ -5,11 +5,7 @@
 
 import { describe, it, expect } from "vitest";
 import { render } from "@testing-library/react";
-import {
-  getSuitIcon,
-  getRankDisplay,
-  getCardColor,
-} from "./cardHelpers";
+import { getSuitIcon, getRankDisplay, getCardColor } from "./cardHelpers";
 
 describe("cardHelpers", () => {
   describe("getSuitIcon", () => {

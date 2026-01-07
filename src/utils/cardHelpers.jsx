@@ -34,6 +34,7 @@ export const getRankDisplay = (rank) => {
  * @param {string} suit - The card suit
  * @returns {string} The CSS variable for the card color
  */
-export const getCardColor = (suit) => suit === "hearts" || suit === "diamonds"
+export const getCardColor = (suit) =>
+  suit === "hearts" || suit === "diamonds"
     ? "var(--color-card-red)"
     : "var(--color-card-black)";

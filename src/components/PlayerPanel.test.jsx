@@ -67,7 +67,9 @@ describe("PlayerPanel", () => {
     });
 
     it("should have alt text for avatar matching player name", () => {
-      const { container } = renderWithContext(<PlayerPanel {...defaultProps} />);
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} />,
+      );
       const avatar = container.querySelector("img");
       expect(avatar.alt).toBe("Alex");
     });
@@ -85,7 +87,9 @@ describe("PlayerPanel", () => {
 
   describe("card backs", () => {
     it("should render card backs for cards in hand", () => {
-      const { container } = renderWithContext(<PlayerPanel {...defaultProps} />);
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} />,
+      );
       const cardBacks = container.querySelectorAll(".card-backs > div");
       // Should show up to 5 card backs (minimum of hand size and 5)
       expect(cardBacks.length).toBe(3);

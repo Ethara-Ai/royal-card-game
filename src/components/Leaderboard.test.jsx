@@ -116,25 +116,37 @@ describe("Leaderboard", () => {
 
   describe("current player highlighting", () => {
     it("should highlight current player", () => {
-      const { container } = render(<Leaderboard {...defaultProps} currentPlayer={0} />);
-      const turnIndicators = container.querySelectorAll(".player-turn-indicator");
+      const { container } = render(
+        <Leaderboard {...defaultProps} currentPlayer={0} />,
+      );
+      const turnIndicators = container.querySelectorAll(
+        ".player-turn-indicator",
+      );
       expect(turnIndicators.length).toBeGreaterThanOrEqual(1);
     });
 
     it("should show pulse indicator for current player", () => {
-      const { container } = render(<Leaderboard {...defaultProps} currentPlayer={0} />);
+      const { container } = render(
+        <Leaderboard {...defaultProps} currentPlayer={0} />,
+      );
       const pulseIndicator = container.querySelector(".animate-pulse");
       expect(pulseIndicator).toBeInTheDocument();
     });
 
     it("should highlight different current player", () => {
-      const { container } = render(<Leaderboard {...defaultProps} currentPlayer={2} />);
-      const turnIndicators = container.querySelectorAll(".player-turn-indicator");
+      const { container } = render(
+        <Leaderboard {...defaultProps} currentPlayer={2} />,
+      );
+      const turnIndicators = container.querySelectorAll(
+        ".player-turn-indicator",
+      );
       expect(turnIndicators.length).toBeGreaterThanOrEqual(1);
     });
 
     it("should only show one pulse indicator", () => {
-      const { container } = render(<Leaderboard {...defaultProps} currentPlayer={1} />);
+      const { container } = render(
+        <Leaderboard {...defaultProps} currentPlayer={1} />,
+      );
       const pulseIndicators = container.querySelectorAll(".animate-pulse");
       expect(pulseIndicators).toHaveLength(1);
     });
@@ -152,7 +164,9 @@ describe("Leaderboard", () => {
     });
 
     it("should not apply score-update class when trickWinner is null", () => {
-      const { container } = render(<Leaderboard {...defaultProps} trickWinner={null} />);
+      const { container } = render(
+        <Leaderboard {...defaultProps} trickWinner={null} />,
+      );
       const scoreUpdate = container.querySelector(".score-update");
       expect(scoreUpdate).toBeNull();
     });
@@ -252,7 +266,9 @@ describe("Leaderboard", () => {
   describe("layout", () => {
     it("should have space between player items", () => {
       const { container } = render(<Leaderboard {...defaultProps} />);
-      const spacedContainer = container.querySelector(".space-y-1\\.5, .space-y-2");
+      const spacedContainer = container.querySelector(
+        ".space-y-1\\.5, .space-y-2",
+      );
       expect(spacedContainer).toBeInTheDocument();
     });
 
@@ -290,10 +306,34 @@ describe("Leaderboard", () => {
       const specialNameProps = {
         ...defaultProps,
         players: [
-          { id: "player1", name: "Player #1", hand: [], score: 0, isActive: true },
-          { id: "player2", name: "Alex & Bob", hand: [], score: 0, isActive: false },
-          { id: "player3", name: "Sam's Game", hand: [], score: 0, isActive: false },
-          { id: "player4", name: "Jordan_123", hand: [], score: 0, isActive: false },
+          {
+            id: "player1",
+            name: "Player #1",
+            hand: [],
+            score: 0,
+            isActive: true,
+          },
+          {
+            id: "player2",
+            name: "Alex & Bob",
+            hand: [],
+            score: 0,
+            isActive: false,
+          },
+          {
+            id: "player3",
+            name: "Sam's Game",
+            hand: [],
+            score: 0,
+            isActive: false,
+          },
+          {
+            id: "player4",
+            name: "Jordan_123",
+            hand: [],
+            score: 0,
+            isActive: false,
+          },
         ],
       };
       render(<Leaderboard {...specialNameProps} />);
@@ -307,10 +347,22 @@ describe("Leaderboard", () => {
       const longNameProps = {
         ...defaultProps,
         players: [
-          { id: "player1", name: "VeryLongPlayerNameThatMightOverflow", hand: [], score: 0, isActive: true },
+          {
+            id: "player1",
+            name: "VeryLongPlayerNameThatMightOverflow",
+            hand: [],
+            score: 0,
+            isActive: true,
+          },
           { id: "player2", name: "Alex", hand: [], score: 0, isActive: false },
           { id: "player3", name: "Sam", hand: [], score: 0, isActive: false },
-          { id: "player4", name: "Jordan", hand: [], score: 0, isActive: false },
+          {
+            id: "player4",
+            name: "Jordan",
+            hand: [],
+            score: 0,
+            isActive: false,
+          },
         ],
       };
       const { container } = render(<Leaderboard {...longNameProps} />);

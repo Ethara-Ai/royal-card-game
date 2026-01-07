@@ -6,7 +6,11 @@ import { cardPatterns, getPatternStyle } from "../../utils/patterns";
  * Card pattern picker component for selecting card back patterns
  * Displays available patterns in a dropdown grid
  */
-const CardPatternPicker = ({ cardBackColor, cardBackPattern, setCardBackPattern }) => {
+const CardPatternPicker = ({
+  cardBackColor,
+  cardBackPattern,
+  setCardBackPattern,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const currentPattern = cardPatterns.find((p) => p.id === cardBackPattern);
@@ -32,8 +36,10 @@ const CardPatternPicker = ({ cardBackColor, cardBackPattern, setCardBackPattern 
           style={{
             backgroundColor: cardBackColor,
             border: "1px solid var(--color-border-strong)",
-            backgroundImage: getPatternStyle(cardBackPattern, cardBackColor).backgroundImage,
-            backgroundSize: getPatternStyle(cardBackPattern, cardBackColor).backgroundSize,
+            backgroundImage: getPatternStyle(cardBackPattern, cardBackColor)
+              .backgroundImage,
+            backgroundSize: getPatternStyle(cardBackPattern, cardBackColor)
+              .backgroundSize,
           }}
         />
         <span
@@ -82,8 +88,10 @@ const CardPatternPicker = ({ cardBackColor, cardBackPattern, setCardBackPattern 
                 style={{
                   backgroundColor: cardBackColor,
                   border: "1px solid var(--color-border-default)",
-                  backgroundImage: getPatternStyle(pattern.id, cardBackColor).backgroundImage,
-                  backgroundSize: getPatternStyle(pattern.id, cardBackColor).backgroundSize,
+                  backgroundImage: getPatternStyle(pattern.id, cardBackColor)
+                    .backgroundImage,
+                  backgroundSize: getPatternStyle(pattern.id, cardBackColor)
+                    .backgroundSize,
                 }}
               />
               <span

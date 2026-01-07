@@ -93,7 +93,7 @@ WaitingRoom.propTypes = {
     PropTypes.shape({
       id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
-    })
+    }),
   ).isRequired,
   startGame: PropTypes.func.isRequired,
 };

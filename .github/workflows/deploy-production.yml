@@ -11,9 +11,9 @@ on:
   workflow_dispatch:
     inputs:
       skip_tests:
-        description: 'Skip test execution (use with caution)'
+        description: "Skip test execution (use with caution)"
         required: false
-        default: 'false'
+        default: "false"
         type: boolean
 
 # Ensure only one deployment runs at a time for the same branch
@@ -22,7 +22,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: "20"
   AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
   S3_BUCKET: ${{ vars.S3_BUCKET_PRODUCTION }}
   CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID_PRODUCTION }}
@@ -46,7 +46,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install Dependencies
         run: npm ci --prefer-offline --no-audit
@@ -72,7 +72,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install Dependencies
         run: npm ci --prefer-offline --no-audit
@@ -108,7 +108,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install Dependencies
         run: npm ci --prefer-offline --no-audit

@@ -175,24 +175,24 @@ Attach the permissions policy from `.github/aws-iam-policy.json`.
 
 Navigate to **Settings > Secrets and variables > Actions** and add the following secrets:
 
-| Secret Name | Description | Example |
-|-------------|-------------|---------|
-| `AWS_ROLE_ARN` | IAM role ARN for production deployments | `arn:aws:iam::123456789:role/github-actions-prod` |
-| `AWS_STAGING_ROLE_ARN` | IAM role ARN for staging deployments | `arn:aws:iam::123456789:role/github-actions-staging` |
-| `AWS_STAGING_S3_BUCKET` | S3 bucket name for staging | `my-app-staging` |
+| Secret Name             | Description                             | Example                                              |
+| ----------------------- | --------------------------------------- | ---------------------------------------------------- |
+| `AWS_ROLE_ARN`          | IAM role ARN for production deployments | `arn:aws:iam::123456789:role/github-actions-prod`    |
+| `AWS_STAGING_ROLE_ARN`  | IAM role ARN for staging deployments    | `arn:aws:iam::123456789:role/github-actions-staging` |
+| `AWS_STAGING_S3_BUCKET` | S3 bucket name for staging              | `my-app-staging`                                     |
 
 ### Repository Variables
 
 Navigate to **Settings > Secrets and variables > Actions > Variables** and add:
 
-| Variable Name | Description | Example |
-|---------------|-------------|---------|
-| `AWS_REGION` | AWS region for deployment | `us-east-1` |
-| `S3_BUCKET_PRODUCTION` | S3 bucket name for production | `my-app-production` |
-| `CLOUDFRONT_DISTRIBUTION_ID_PRODUCTION` | CloudFront distribution ID | `E1234567890ABC` |
-| `PRODUCTION_URL` | Production website URL | `https://example.com` |
-| `STAGING_URL` | Staging website URL | `https://staging.example.com` |
-| `STAGING_CLOUDFRONT_DISTRIBUTION_ID` | Staging CloudFront distribution ID | `E0987654321XYZ` |
+| Variable Name                           | Description                        | Example                       |
+| --------------------------------------- | ---------------------------------- | ----------------------------- |
+| `AWS_REGION`                            | AWS region for deployment          | `us-east-1`                   |
+| `S3_BUCKET_PRODUCTION`                  | S3 bucket name for production      | `my-app-production`           |
+| `CLOUDFRONT_DISTRIBUTION_ID_PRODUCTION` | CloudFront distribution ID         | `E1234567890ABC`              |
+| `PRODUCTION_URL`                        | Production website URL             | `https://example.com`         |
+| `STAGING_URL`                           | Staging website URL                | `https://staging.example.com` |
+| `STAGING_CLOUDFRONT_DISTRIBUTION_ID`    | Staging CloudFront distribution ID | `E0987654321XYZ`              |
 
 ### Environment Protection Rules
 
@@ -212,10 +212,12 @@ The pipeline consists of three workflow files:
 ### 1. Production Deployment (`.github/workflows/deploy-production.yml`)
 
 Triggers on:
+
 - Push to `main` branch
 - Manual workflow dispatch
 
 Jobs:
+
 - **lint**: Code quality checks (ESLint, Prettier)
 - **test**: Unit tests with coverage
 - **build**: Production build with artifact generation
@@ -225,11 +227,13 @@ Jobs:
 ### 2. Staging Deployment (`.github/workflows/deploy-staging.yml`)
 
 Triggers on:
+
 - Push to `develop` branch
 - Push to `feature/**` branches
 - Pull requests to `main` or `develop`
 
 Jobs:
+
 - **quality-check**: Linting and tests
 - **build**: Staging build
 - **deploy**: Deploy to staging S3 bucket
@@ -237,9 +241,11 @@ Jobs:
 ### 3. Pull Request Validation (`.github/workflows/pull-request.yml`)
 
 Triggers on:
+
 - Pull requests to `main` or `develop`
 
 Jobs:
+
 - **quality**: Linting and formatting checks
 - **test**: Full test suite with coverage
 - **build**: Build verification
@@ -253,12 +259,12 @@ Jobs:
 
 The following variables are available during build:
 
-| Variable | Description |
-|----------|-------------|
-| `NODE_ENV` | Build environment (`production`, `staging`) |
-| `VITE_APP_ENV` | Application environment identifier |
-| `VITE_BUILD_ID` | Unique build identifier (commit SHA) |
-| `VITE_API_URL` | API endpoint URL (if applicable) |
+| Variable        | Description                                 |
+| --------------- | ------------------------------------------- |
+| `NODE_ENV`      | Build environment (`production`, `staging`) |
+| `VITE_APP_ENV`  | Application environment identifier          |
+| `VITE_BUILD_ID` | Unique build identifier (commit SHA)        |
+| `VITE_API_URL`  | API endpoint URL (if applicable)            |
 
 ### Adding Custom Environment Variables
 
@@ -292,12 +298,12 @@ To add custom variables:
 
 ### Cache Strategy
 
-| File Type | Cache Duration | Rationale |
-|-----------|---------------|-----------|
-| `/assets/*` | 1 year (immutable) | Hashed filenames enable aggressive caching |
-| `index.html` | No cache | Ensures users always get the latest version |
-| `*.json` | No cache | Configuration files should update immediately |
-| Other files | 24 hours | Balance between freshness and performance |
+| File Type    | Cache Duration     | Rationale                                     |
+| ------------ | ------------------ | --------------------------------------------- |
+| `/assets/*`  | 1 year (immutable) | Hashed filenames enable aggressive caching    |
+| `index.html` | No cache           | Ensures users always get the latest version   |
+| `*.json`     | No cache           | Configuration files should update immediately |
+| Other files  | 24 hours           | Balance between freshness and performance     |
 
 ### Rollback Procedure
 
@@ -311,6 +317,7 @@ gh workflow run deploy-production.yml --ref <commit-sha>
 ```
 
 Or use the GitHub UI:
+
 1. Go to **Actions > Production Deployment**
 2. Click **Run workflow**
 3. Select the branch/tag to deploy
@@ -326,6 +333,7 @@ Or use the GitHub UI:
 **Symptom**: `Error: Credentials could not be loaded`
 
 **Solutions**:
+
 - Verify the IAM role ARN is correct
 - Check the trust policy includes the correct repository
 - Ensure the OIDC provider thumbprint is current
@@ -335,6 +343,7 @@ Or use the GitHub UI:
 **Symptom**: `AccessDenied: Access Denied` during sync
 
 **Solutions**:
+
 - Verify the IAM role has `s3:PutObject`, `s3:GetObject`, `s3:DeleteObject`, `s3:ListBucket` permissions
 - Check the bucket policy allows the role
 - Verify the bucket name is correct
@@ -344,6 +353,7 @@ Or use the GitHub UI:
 **Symptom**: `AccessDenied` when creating invalidation
 
 **Solutions**:
+
 - Verify the IAM role has `cloudfront:CreateInvalidation` permission
 - Check the distribution ID is correct
 - Ensure the resource ARN in the policy matches the distribution
@@ -353,6 +363,7 @@ Or use the GitHub UI:
 **Symptom**: `npm run build` fails in CI
 
 **Solutions**:
+
 - Check Node.js version matches local development
 - Verify all dependencies are in `package.json`
 - Review build logs for specific errors

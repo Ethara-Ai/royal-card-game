@@ -44,17 +44,20 @@ A beautiful, responsive multiplayer card game built with React and Vite. Play cl
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/yourusername/royal-card-game.git
 cd royal-card-game
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Start the development server:
+
 ```bash
 npm run dev
 ```
@@ -63,12 +66,12 @@ npm run dev
 
 ## Available Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server with hot reload |
-| `npm run build` | Build for production |
-| `npm run preview` | Preview production build locally |
-| `npm run lint` | Run ESLint to check code quality |
+| Command           | Description                              |
+| ----------------- | ---------------------------------------- |
+| `npm run dev`     | Start development server with hot reload |
+| `npm run build`   | Build for production                     |
+| `npm run preview` | Preview production build locally         |
+| `npm run lint`    | Run ESLint to check code quality         |
 
 ## Project Structure
 
@@ -98,33 +101,43 @@ src/
 ## Component Descriptions
 
 ### Card
+
 Renders an individual playing card in the user's hand with suit icon, rank display, and appropriate coloring. Supports drag-and-drop interactions for desktop and touch events for mobile. Features a fan-out layout with rotation and vertical offset based on card position, plus dealing animation support.
 
 ### GameTable
+
 The main game area featuring an oval poker table with felt texture gradient. Contains the central play area where cards are dropped, positioned opponent panels around the table edges, and the user's hand at the bottom. Includes a drag hint overlay that guides new players on their first turn.
 
 ### Header
+
 Application header with game title and settings panel. The collapsible settings menu allows users to toggle themes, select rule sets from a dropdown, customize card back colors via a color picker, and choose card back patterns. Includes a reset game button.
 
 ### Leaderboard
+
 Sidebar component displaying player rankings sorted by score. Shows player avatars, names, current scores, and a visual indicator for whose turn it is. Updates dynamically as tricks are won throughout the game.
 
 ### LoadingScreen
+
 Initial loading screen with animated Ace of Spades card, progress bar, and themed background effects. Displays while game assets load with smooth fade-out transition upon completion.
 
 ### PlayedCard
+
 Renders a card that has been played to the center play area. Features entrance animation from the player's position to the target location with rotation. Includes a winner glow effect when the card wins the current trick.
 
 ### PlayerPanel
+
 Compact panel displaying an AI opponent's information including avatar, name, turn status, card count, and a visual representation of their remaining cards (shown face-down with customizable back color and pattern).
 
 ### UserHand
+
 The human player's hand display panel showing avatar, name, turn indicator, and all cards fanned out. Cards are rendered using the Card component and become interactive (draggable) when it's the player's turn during the playing phase.
 
 ### WaitingRoom
+
 Pre-game lobby screen showing all four players (one human, three AI) in a grid layout with avatars and ready status. Contains the prominent "Start Game" button to begin play.
 
 ### WinnerModal
+
 End-of-game modal overlay displaying final scores in ranked order. Highlights the winner with a crown icon and gold styling. Includes a "Play Again" button to reset and start a new game.
 
 ## How to Play

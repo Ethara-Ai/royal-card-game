@@ -116,7 +116,7 @@ console.error = (...args) => {
   ];
 
   const shouldSuppress = suppressedWarnings.some((warning) =>
-    args[0]?.toString().includes(warning)
+    args[0]?.toString().includes(warning),
   );
 
   if (!shouldSuppress) {
@@ -136,7 +136,7 @@ export const createMockCard = (suit = "hearts", rank = 1) => ({
 export const createMockPlayer = (
   id = "player1",
   name = "Test Player",
-  hand = []
+  hand = [],
 ) => ({
   id,
   name,
@@ -158,7 +158,8 @@ export const createMockGameState = (overrides = {}) => ({
 });
 
 // Helper function to wait for async operations
-export const waitFor = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+export const waitFor = (ms) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
 
 // Helper to simulate window resize
 export const simulateResize = (width, height) => {

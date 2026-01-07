@@ -10,7 +10,12 @@ import CardPatternPicker from "./CardPatternPicker";
  * SettingsPanel - Collapsible settings menu with game options
  * Manages card customization, rule selection, and game reset
  */
-const SettingsPanel = ({ selectedRuleSet, setSelectedRuleSet, ruleSets, resetGame }) => {
+const SettingsPanel = ({
+  selectedRuleSet,
+  setSelectedRuleSet,
+  ruleSets,
+  resetGame,
+}) => {
   const settingsRef = useRef(null);
   const [showSettings, setShowSettings] = useState(false);
   const [settingsFadeState, setSettingsFadeState] = useState("in");
@@ -127,7 +132,7 @@ SettingsPanel.propTypes = {
     PropTypes.shape({
       name: PropTypes.string.isRequired,
       description: PropTypes.string.isRequired,
-    })
+    }),
   ).isRequired,
   resetGame: PropTypes.func.isRequired,
 };
