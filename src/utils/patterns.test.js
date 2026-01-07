@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { cardPatterns, getPatternStyle } from "../patterns";
+import { cardPatterns, getPatternStyle } from "./patterns";
 
 describe("patterns", () => {
   describe("cardPatterns", () => {

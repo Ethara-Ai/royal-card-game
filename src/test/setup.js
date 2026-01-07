@@ -72,9 +72,7 @@ Object.defineProperty(document, "fonts", {
 });
 
 // Mock requestAnimationFrame and cancelAnimationFrame
-window.requestAnimationFrame = vi.fn((callback) => {
-  return setTimeout(callback, 0);
-});
+window.requestAnimationFrame = vi.fn((callback) => setTimeout(callback, 0));
 window.cancelAnimationFrame = vi.fn((id) => {
   clearTimeout(id);
 });

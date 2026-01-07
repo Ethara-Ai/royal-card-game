@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import ruleSets from "../ruleSets";
+import ruleSets from "./ruleSets";
 
 describe("ruleSets", () => {
   describe("structure", () => {

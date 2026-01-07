@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import {
   INITIAL_GAME_STATE,
@@ -23,6 +23,7 @@ const useGameLogic = (selectedRuleSet = 0) => {
   const [gameState, setGameState] = useState(INITIAL_GAME_STATE);
   const [players, setPlayers] = useState(INITIAL_PLAYERS);
   const [playArea, setPlayArea] = useState({});
+  const [leadPlayerId, setLeadPlayerId] = useState(null);
 
   // UI state
   const [draggedCard, setDraggedCard] = useState(null);
@@ -34,6 +35,38 @@ const useGameLogic = (selectedRuleSet = 0) => {
   // Touch interaction state
   const [touchStartPos, setTouchStartPos] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
+
+  // Refs for handling circular dependencies and cleanup
+  const playAICardRef = useRef(null);
+  const timeoutIdsRef = useRef([]);
+  const isMountedRef = useRef(true);
+
+  // Cleanup timeouts on unmount
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      // Clear all pending timeouts
+      timeoutIdsRef.current.forEach((id) => clearTimeout(id));
+      timeoutIdsRef.current = [];
+    };
+  }, []);
+
+  /**
+   * Safe setTimeout that tracks IDs for cleanup and checks mount status
+   */
+  const safeSetTimeout = useCallback((callback, delay) => {
+    const id = setTimeout(() => {
+      // Remove this timeout from tracking
+      timeoutIdsRef.current = timeoutIdsRef.current.filter((tid) => tid !== id);
+      // Only execute if still mounted
+      if (isMountedRef.current) {
+        callback();
+      }
+    }, delay);
+    timeoutIdsRef.current.push(id);
+    return id;
+  }, []);
 
   /**
    * Shuffles an array of cards using Fisher-Yates algorithm
@@ -66,18 +99,19 @@ const useGameLogic = (selectedRuleSet = 0) => {
   }, []);
 
   /**
-   * Deals cards to all players
+   * Deals cards to all players (immutable update)
    */
   const dealCards = useCallback(() => {
     const newDeck = createDeck();
-    const newPlayers = [...players];
-    newPlayers.forEach((player, index) => {
-      player.hand = newDeck.slice(
+    // Create new player objects instead of mutating existing ones
+    const newPlayers = players.map((player, index) => ({
+      ...player,
+      hand: newDeck.slice(
         index * CARDS_PER_PLAYER,
-        (index + 1) * CARDS_PER_PLAYER
-      );
-      player.score = 0;
-    });
+        (index + 1) * CARDS_PER_PLAYER,
+      ),
+      score: 0,
+    }));
     setPlayers(newPlayers);
     setPlayArea({});
   }, [createDeck, players]);
@@ -87,7 +121,7 @@ const useGameLogic = (selectedRuleSet = 0) => {
    */
   const getCardPositions = useCallback(
     (cardCount) => CARD_POSITIONS.slice(0, cardCount),
-    []
+    [],
   );
 
   /**
@@ -107,7 +141,7 @@ const useGameLogic = (selectedRuleSet = 0) => {
       const winnerIndex = scores.findIndex((score) => score === maxScore);
       return { player: players[winnerIndex], score: maxScore };
     },
-    [gameState.scores, players]
+    [gameState.scores, players],
   );
 
   /**
@@ -117,8 +151,10 @@ const useGameLogic = (selectedRuleSet = 0) => {
     (trickCards) => {
       setGameState((prev) => ({ ...prev, phase: GAME_PHASES.EVALUATING }));
 
-      const winnerPlayerId =
-        ruleSets[selectedRuleSet].evaluateWinner(trickCards);
+      const winnerPlayerId = ruleSets[selectedRuleSet].evaluateWinner(
+        trickCards,
+        leadPlayerId,
+      );
       const winnerIndex = players.findIndex((p) => p.id === winnerPlayerId);
       const winnerName = players[winnerIndex].name;
 
@@ -128,7 +164,7 @@ const useGameLogic = (selectedRuleSet = 0) => {
       const newScores = [...gameState.scores];
       newScores[winnerIndex] += 1;
 
-      setTimeout(() => {
+      safeSetTimeout(() => {
         setGameState((prev) => ({
           ...prev,
           scores: newScores,
@@ -139,6 +175,7 @@ const useGameLogic = (selectedRuleSet = 0) => {
               : GAME_PHASES.PLAYING,
         }));
         setPlayArea({});
+        setLeadPlayerId(null);
         setTrickWinner(null);
 
         if (players[0].hand.length === 0) {
@@ -147,21 +184,31 @@ const useGameLogic = (selectedRuleSet = 0) => {
           if (winner.player.id === "player1") {
             setShowConfetti(true);
             toast.success("Congratulations! You won the game!");
-            setTimeout(
+            safeSetTimeout(
               () => setShowConfetti(false),
-              ANIMATION_TIMINGS.confettiDuration
+              ANIMATION_TIMINGS.confettiDuration,
             );
           } else {
             toast.info(`${winner.player.name} wins the game!`);
           }
         } else if (winnerIndex !== 0) {
-          setTimeout(() => {
-            playAICard(winnerIndex, {});
+          safeSetTimeout(() => {
+            // Use ref to get the latest playAICard function
+            if (playAICardRef.current) {
+              playAICardRef.current(winnerIndex, {});
+            }
           }, ANIMATION_TIMINGS.dealingAnimation);
         }
       }, ANIMATION_TIMINGS.trickEvaluationDelay);
     },
-    [selectedRuleSet, players, gameState.scores, getGameWinner]
+    [
+      selectedRuleSet,
+      players,
+      gameState.scores,
+      getGameWinner,
+      safeSetTimeout,
+      leadPlayerId,
+    ],
   );
 
   /**
@@ -175,31 +222,46 @@ const useGameLogic = (selectedRuleSet = 0) => {
       }
 
       const randomCard = getRandomCard(player.hand);
-      const newPlayers = [...players];
-      newPlayers[playerIndex].hand = newPlayers[playerIndex].hand.filter(
-        (c) => c.id !== randomCard.id
+      // Immutable update for players
+      const newPlayers = players.map((p, idx) =>
+        idx === playerIndex
+          ? { ...p, hand: p.hand.filter((c) => c.id !== randomCard.id) }
+          : p,
       );
       setPlayers(newPlayers);
 
       const newPlayArea = { ...currentPlayArea, [player.id]: randomCard };
       setPlayArea(newPlayArea);
 
+      // Track who led the trick (first card played)
+      if (Object.keys(currentPlayArea).length === 0) {
+        setLeadPlayerId(player.id);
+      }
+
       if (Object.keys(newPlayArea).length === 4) {
-        setTimeout(() => {
+        safeSetTimeout(() => {
           evaluateTrick(newPlayArea);
         }, ANIMATION_TIMINGS.cardPlayDelay);
       } else {
         const nextPlayer = (playerIndex + 1) % 4;
         setGameState((prev) => ({ ...prev, currentPlayer: nextPlayer }));
         if (nextPlayer !== 0) {
-          setTimeout(() => {
-            playAICard(nextPlayer, newPlayArea);
+          safeSetTimeout(() => {
+            // Use ref to get the latest playAICard function for recursive calls
+            if (playAICardRef.current) {
+              playAICardRef.current(nextPlayer, newPlayArea);
+            }
           }, ANIMATION_TIMINGS.aiPlayDelay);
         }
       }
     },
-    [players, gameState.phase, evaluateTrick]
+    [players, gameState.phase, evaluateTrick, safeSetTimeout],
   );
+
+  // Keep the ref updated with the latest playAICard function
+  useEffect(() => {
+    playAICardRef.current = playAICard;
+  }, [playAICard]);
 
   /**
    * Plays a card for the human player
@@ -211,34 +273,43 @@ const useGameLogic = (selectedRuleSet = 0) => {
       const playerIndex = players.findIndex((p) => p.id === playerId);
       if (playerIndex !== gameState.currentPlayer) return;
 
-      const newPlayers = [...players];
-      newPlayers[playerIndex].hand = newPlayers[playerIndex].hand.filter(
-        (c) => c.id !== card.id
+      // Immutable update for players
+      const newPlayers = players.map((p, idx) =>
+        idx === playerIndex
+          ? { ...p, hand: p.hand.filter((c) => c.id !== card.id) }
+          : p,
       );
       setPlayers(newPlayers);
 
       const newPlayArea = { ...playArea, [playerId]: card };
       setPlayArea(newPlayArea);
 
+      // Track who led the trick (first card played)
+      if (Object.keys(playArea).length === 0) {
+        setLeadPlayerId(playerId);
+      }
+
       if (playerIndex === 0) {
         toast.success("Card played!");
       }
 
       if (Object.keys(newPlayArea).length === 4) {
-        setTimeout(() => {
+        safeSetTimeout(() => {
           evaluateTrick(newPlayArea);
         }, ANIMATION_TIMINGS.cardPlayDelay);
       } else {
         const nextPlayer = (gameState.currentPlayer + 1) % 4;
         setGameState((prev) => ({ ...prev, currentPlayer: nextPlayer }));
         if (nextPlayer !== 0) {
-          setTimeout(() => {
-            playAICard(nextPlayer, newPlayArea);
+          safeSetTimeout(() => {
+            if (playAICardRef.current) {
+              playAICardRef.current(nextPlayer, newPlayArea);
+            }
           }, ANIMATION_TIMINGS.aiPlayDelay);
         }
       }
     },
-    [gameState, players, playArea, evaluateTrick, playAICard]
+    [gameState, players, playArea, evaluateTrick, safeSetTimeout],
   );
 
   /**
@@ -251,25 +322,31 @@ const useGameLogic = (selectedRuleSet = 0) => {
     setGameState((prev) => ({ ...prev, phase: GAME_PHASES.DEALING }));
     toast.success("Game starting! Cards are being dealt...");
 
-    setTimeout(() => {
+    safeSetTimeout(() => {
       dealCards();
-      setTimeout(() => {
+      safeSetTimeout(() => {
         setDealingAnimation(false);
         setGameState((prev) => ({ ...prev, phase: GAME_PHASES.PLAYING }));
         toast.info("Your turn! Drag a card to the center");
       }, ANIMATION_TIMINGS.dealingAnimation);
     }, ANIMATION_TIMINGS.dealingDelay);
-  }, [gameState.phase, dealCards]);
+  }, [gameState.phase, dealCards, safeSetTimeout]);
 
   /**
    * Resets the game to initial state
    */
   const resetGame = useCallback(() => {
+    // Clear all pending timeouts
+    timeoutIdsRef.current.forEach((id) => clearTimeout(id));
+    timeoutIdsRef.current = [];
+
     setGameState(INITIAL_GAME_STATE);
     setPlayArea({});
+    setLeadPlayerId(null);
     setShowWinnerModal(false);
     setTrickWinner(null);
     setShowConfetti(false);
+    // Immutable update for players
     const resetPlayers = players.map((p) => ({ ...p, hand: [], score: 0 }));
     setPlayers(resetPlayers);
     toast.info("Game reset! Ready for a new game?");
@@ -289,7 +366,7 @@ const useGameLogic = (selectedRuleSet = 0) => {
       setDraggedCard(card);
       setIsDragging(true);
     },
-    [gameState]
+    [gameState],
   );
 
   const handleTouchMove = useCallback(
@@ -297,7 +374,7 @@ const useGameLogic = (selectedRuleSet = 0) => {
       if (!isDragging || !touchStartPos) return;
       e.preventDefault();
     },
-    [isDragging, touchStartPos]
+    [isDragging, touchStartPos],
   );
 
   const handleTouchEnd = useCallback(
@@ -315,7 +392,7 @@ const useGameLogic = (selectedRuleSet = 0) => {
       setDraggedCard(null);
       setIsDragging(false);
     },
-    [isDragging, draggedCard, touchStartPos, playCard]
+    [isDragging, draggedCard, touchStartPos, playCard],
   );
 
   // Drag event handlers
@@ -330,7 +407,7 @@ const useGameLogic = (selectedRuleSet = 0) => {
       }
       setDraggedCard(card);
     },
-    [gameState]
+    [gameState],
   );
 
   const handleDragOver = useCallback((e) => {
@@ -344,7 +421,7 @@ const useGameLogic = (selectedRuleSet = 0) => {
       playCard(draggedCard, "player1");
       setDraggedCard(null);
     },
-    [draggedCard, gameState.currentPlayer, playCard]
+    [draggedCard, gameState.currentPlayer, playCard],
   );
 
   const handleDragEnd = useCallback(() => {

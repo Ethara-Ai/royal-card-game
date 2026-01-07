@@ -4,8 +4,13 @@
  */
 
 import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import Header from "../Header";
+import { render, screen, fireEvent } from "@testing-library/react";
+import { Header } from "./Header";
+import { CardCustomizationProvider } from "../context";
+
+// Helper to render with context
+const renderWithContext = (ui, options) =>
+  render(<CardCustomizationProvider>{ui}</CardCustomizationProvider>, options);
 
 describe("Header", () => {
   const mockRuleSets = [
@@ -29,10 +34,6 @@ describe("Header", () => {
   const defaultProps = {
     theme: "dark",
     toggleTheme: vi.fn(),
-    cardBackColor: "#145a4a",
-    setCardBackColor: vi.fn(),
-    cardBackPattern: "checker",
-    setCardBackPattern: vi.fn(),
     selectedRuleSet: 0,
     setSelectedRuleSet: vi.fn(),
     ruleSets: mockRuleSets,
@@ -50,35 +51,35 @@ describe("Header", () => {
 
   describe("rendering", () => {
     it("should render without crashing", () => {
-      render(<Header {...defaultProps} />);
+      renderWithContext(<Header {...defaultProps} />);
       expect(screen.getByText("Royal Card Game")).toBeInTheDocument();
     });
 
     it("should display the game title", () => {
-      render(<Header {...defaultProps} />);
+      renderWithContext(<Header {...defaultProps} />);
       expect(screen.getByText("Royal Card Game")).toBeInTheDocument();
     });
 
     it("should have crown icon", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const svg = container.querySelector("svg");
       expect(svg).toBeInTheDocument();
     });
 
     it("should have header-container class", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const headerContainer = container.querySelector(".header-container");
       expect(headerContainer).toBeInTheDocument();
     });
 
     it("should have game-title class on heading", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const gameTitle = container.querySelector(".game-title");
       expect(gameTitle).toBeInTheDocument();
     });
 
     it("should have gold-text class on title text", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const goldText = container.querySelector(".gold-text");
       expect(goldText).toBeInTheDocument();
     });
@@ -87,7 +88,7 @@ describe("Header", () => {
   describe("title click behavior", () => {
     it("should call resetGame when title is clicked", () => {
       const resetGame = vi.fn();
-      render(<Header {...defaultProps} resetGame={resetGame} />);
+      renderWithContext(<Header {...defaultProps} resetGame={resetGame} />);
 
       const title = screen.getByText("Royal Card Game");
       fireEvent.click(title);
@@ -96,13 +97,13 @@ describe("Header", () => {
     });
 
     it("should have cursor-pointer class on title", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const title = container.querySelector(".game-title");
       expect(title).toHaveClass("cursor-pointer");
     });
 
     it("should have title attribute for tooltip", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const title = container.querySelector(".game-title");
       expect(title).toHaveAttribute("title", "Return to home");
     });
@@ -110,14 +111,14 @@ describe("Header", () => {
 
   describe("theme toggle", () => {
     it("should render theme toggle button", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const buttons = container.querySelectorAll("button");
       expect(buttons.length).toBeGreaterThanOrEqual(1);
     });
 
     it("should call toggleTheme when theme button is clicked", () => {
       const toggleTheme = vi.fn();
-      const { container } = render(
+      const { container } = renderWithContext(
         <Header {...defaultProps} toggleTheme={toggleTheme} />,
       );
 
@@ -129,26 +130,34 @@ describe("Header", () => {
     });
 
     it("should show sun icon in dark mode", () => {
-      const { container } = render(<Header {...defaultProps} theme="dark" />);
+      const { container } = renderWithContext(
+        <Header {...defaultProps} theme="dark" />,
+      );
       // Sun icon should be present for dark mode (to switch to light)
       const buttons = container.querySelectorAll("button");
       expect(buttons[0].querySelector("svg")).toBeInTheDocument();
     });
 
     it("should show moon icon in light mode", () => {
-      const { container } = render(<Header {...defaultProps} theme="light" />);
+      const { container } = renderWithContext(
+        <Header {...defaultProps} theme="light" />,
+      );
       const buttons = container.querySelectorAll("button");
       expect(buttons[0].querySelector("svg")).toBeInTheDocument();
     });
 
     it("should have correct title for dark mode", () => {
-      const { container } = render(<Header {...defaultProps} theme="dark" />);
+      const { container } = renderWithContext(
+        <Header {...defaultProps} theme="dark" />,
+      );
       const buttons = container.querySelectorAll("button");
       expect(buttons[0]).toHaveAttribute("title", "Switch to warm mode");
     });
 
     it("should have correct title for light mode", () => {
-      const { container } = render(<Header {...defaultProps} theme="light" />);
+      const { container } = renderWithContext(
+        <Header {...defaultProps} theme="light" />,
+      );
       const buttons = container.querySelectorAll("button");
       expect(buttons[0]).toHaveAttribute("title", "Switch to dark mode");
     });
@@ -156,21 +165,21 @@ describe("Header", () => {
 
   describe("settings button", () => {
     it("should render settings button", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const buttons = container.querySelectorAll("button");
       // Second button is settings
       expect(buttons.length).toBeGreaterThanOrEqual(2);
     });
 
     it("should show settings icon initially", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const buttons = container.querySelectorAll("button");
       // Settings button should have cog icon
       expect(buttons[1].querySelector("svg")).toBeInTheDocument();
     });
 
     it("should open settings menu when settings button is clicked", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const buttons = container.querySelectorAll("button");
 
       fireEvent.click(buttons[1]);
@@ -180,7 +189,7 @@ describe("Header", () => {
     });
 
     it("should show close icon when settings are open", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const buttons = container.querySelectorAll("button");
 
       fireEvent.click(buttons[1]);
@@ -190,7 +199,7 @@ describe("Header", () => {
     });
 
     it("should close settings menu when clicking settings button again", async () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const buttons = container.querySelectorAll("button");
 
       // Open settings
@@ -213,7 +222,7 @@ describe("Header", () => {
 
   describe("settings menu content", () => {
     it("should display Rule Set label", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const buttons = container.querySelectorAll("button");
 
       fireEvent.click(buttons[1]);
@@ -222,7 +231,7 @@ describe("Header", () => {
     });
 
     it("should display Card Back Color label", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const buttons = container.querySelectorAll("button");
 
       fireEvent.click(buttons[1]);
@@ -231,7 +240,7 @@ describe("Header", () => {
     });
 
     it("should display current rule set name", () => {
-      const { container } = render(
+      const { container } = renderWithContext(
         <Header {...defaultProps} selectedRuleSet={0} />,
       );
       const buttons = container.querySelectorAll("button");
@@ -242,7 +251,7 @@ describe("Header", () => {
     });
 
     it("should display different rule set when selectedRuleSet changes", () => {
-      const { container } = render(
+      const { container } = renderWithContext(
         <Header {...defaultProps} selectedRuleSet={1} />,
       );
       const buttons = container.querySelectorAll("button");
@@ -253,7 +262,7 @@ describe("Header", () => {
     });
 
     it("should have settings-fade-in class when opening", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const buttons = container.querySelectorAll("button");
 
       fireEvent.click(buttons[1]);
@@ -265,7 +274,7 @@ describe("Header", () => {
 
   describe("rule set dropdown", () => {
     it("should open rule dropdown when clicked", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const buttons = container.querySelectorAll("button");
 
       // Open settings
@@ -282,7 +291,7 @@ describe("Header", () => {
 
     it("should call setSelectedRuleSet when a rule is selected", () => {
       const setSelectedRuleSet = vi.fn();
-      const { container } = render(
+      const { container } = renderWithContext(
         <Header {...defaultProps} setSelectedRuleSet={setSelectedRuleSet} />,
       );
       const buttons = container.querySelectorAll("button");
@@ -302,7 +311,7 @@ describe("Header", () => {
     });
 
     it("should display rule descriptions in dropdown", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const buttons = container.querySelectorAll("button");
 
       // Open settings
@@ -316,7 +325,7 @@ describe("Header", () => {
     });
 
     it("should have rotate class on dropdown arrow when open", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const buttons = container.querySelectorAll("button");
 
       // Open settings
@@ -333,7 +342,7 @@ describe("Header", () => {
 
   describe("click outside behavior", () => {
     it("should close settings when clicking outside", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const buttons = container.querySelectorAll("button");
 
       // Open settings
@@ -351,37 +360,37 @@ describe("Header", () => {
 
   describe("styling", () => {
     it("should have responsive padding classes", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const headerContainer = container.querySelector(".header-container");
       expect(headerContainer).toHaveClass("p-3");
     });
 
     it("should have z-50 class for z-index", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const headerContainer = container.querySelector(".header-container");
       expect(headerContainer).toHaveClass("z-50");
     });
 
     it("should have flex layout", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const flexContainer = container.querySelector(".flex");
       expect(flexContainer).toBeInTheDocument();
     });
 
     it("should have items-center for vertical alignment", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const alignedContainer = container.querySelector(".items-center");
       expect(alignedContainer).toBeInTheDocument();
     });
 
     it("should have justify-between for horizontal spacing", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const spacedContainer = container.querySelector(".justify-between");
       expect(spacedContainer).toBeInTheDocument();
     });
 
     it("should have max-w-7xl for content width", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const maxWidthContainer = container.querySelector(".max-w-7xl");
       expect(maxWidthContainer).toBeInTheDocument();
     });
@@ -389,7 +398,7 @@ describe("Header", () => {
 
   describe("button styling", () => {
     it("should have rounded-lg class on buttons", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const buttons = container.querySelectorAll("button");
       buttons.forEach((button) => {
         expect(button).toHaveClass("rounded-lg");
@@ -397,7 +406,7 @@ describe("Header", () => {
     });
 
     it("should have transition classes on buttons", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const buttons = container.querySelectorAll("button");
       buttons.forEach((button) => {
         expect(button).toHaveClass("transition-all");
@@ -405,7 +414,7 @@ describe("Header", () => {
     });
 
     it("should have duration-300 for transitions", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const buttons = container.querySelectorAll("button");
       buttons.forEach((button) => {
         expect(button).toHaveClass("duration-300");
@@ -413,7 +422,7 @@ describe("Header", () => {
     });
 
     it("should have hover:scale-105 for hover effect", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const buttons = container.querySelectorAll("button");
       buttons.forEach((button) => {
         expect(button).toHaveClass("hover:scale-105");
@@ -430,12 +439,14 @@ describe("Header", () => {
       };
 
       // Should not throw
-      expect(() => render(<Header {...emptyRuleSetsProps} />)).not.toThrow();
+      expect(() =>
+        renderWithContext(<Header {...emptyRuleSetsProps} />),
+      ).not.toThrow();
     });
 
     it("should handle rapid theme toggle clicks", () => {
       const toggleTheme = vi.fn();
-      const { container } = render(
+      const { container } = renderWithContext(
         <Header {...defaultProps} toggleTheme={toggleTheme} />,
       );
 
@@ -450,7 +461,7 @@ describe("Header", () => {
     });
 
     it("should handle rapid settings button clicks", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const buttons = container.querySelectorAll("button");
 
       // Click multiple times
@@ -464,13 +475,13 @@ describe("Header", () => {
 
   describe("accessibility", () => {
     it("should have accessible buttons", () => {
-      render(<Header {...defaultProps} />);
+      renderWithContext(<Header {...defaultProps} />);
       const buttons = screen.getAllByRole("button");
       expect(buttons.length).toBeGreaterThanOrEqual(2);
     });
 
     it("should have title attributes on buttons for tooltips", () => {
-      const { container } = render(<Header {...defaultProps} />);
+      const { container } = renderWithContext(<Header {...defaultProps} />);
       const buttons = container.querySelectorAll("button");
 
       // Theme button should have title
@@ -480,26 +491,30 @@ describe("Header", () => {
 
   describe("different themes", () => {
     it("should render correctly in dark theme", () => {
-      const { container } = render(<Header {...defaultProps} theme="dark" />);
+      const { container } = renderWithContext(
+        <Header {...defaultProps} theme="dark" />,
+      );
       expect(container.querySelector(".header-container")).toBeInTheDocument();
     });
 
     it("should render correctly in light theme", () => {
-      const { container } = render(<Header {...defaultProps} theme="light" />);
+      const { container } = renderWithContext(
+        <Header {...defaultProps} theme="light" />,
+      );
       expect(container.querySelector(".header-container")).toBeInTheDocument();
     });
   });
 
   describe("card customization props", () => {
     it("should receive cardBackColor prop", () => {
-      const { container } = render(
+      const { container } = renderWithContext(
         <Header {...defaultProps} cardBackColor="#ff0000" />,
       );
       expect(container).toBeInTheDocument();
     });
 
     it("should receive cardBackPattern prop", () => {
-      const { container } = render(
+      const { container } = renderWithContext(
         <Header {...defaultProps} cardBackPattern="dots" />,
       );
       expect(container).toBeInTheDocument();

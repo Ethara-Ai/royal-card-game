@@ -9,7 +9,7 @@ import {
   getSuitIcon,
   getRankDisplay,
   getCardColor,
-} from "../cardHelpers";
+} from "./cardHelpers";
 
 describe("cardHelpers", () => {
   describe("getSuitIcon", () => {

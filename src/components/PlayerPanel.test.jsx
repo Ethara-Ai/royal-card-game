@@ -5,7 +5,12 @@
 
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import PlayerPanel from "../PlayerPanel";
+import PlayerPanel from "./PlayerPanel";
+import { CardCustomizationProvider } from "../context";
+
+// Helper to render with context
+const renderWithContext = (ui, options) =>
+  render(<CardCustomizationProvider>{ui}</CardCustomizationProvider>, options);
 
 describe("PlayerPanel", () => {
   const defaultProps = {
@@ -22,8 +27,6 @@ describe("PlayerPanel", () => {
     },
     index: 1,
     currentPlayer: 0,
-    cardBackColor: "#145a4a",
-    cardBackPattern: "checker",
     isDealing: false,
   };
 
@@ -33,52 +36,56 @@ describe("PlayerPanel", () => {
 
   describe("rendering", () => {
     it("should render without crashing", () => {
-      render(<PlayerPanel {...defaultProps} />);
+      renderWithContext(<PlayerPanel {...defaultProps} />);
       expect(screen.getByText("Alex")).toBeInTheDocument();
     });
 
     it("should display the player name", () => {
-      render(<PlayerPanel {...defaultProps} />);
+      renderWithContext(<PlayerPanel {...defaultProps} />);
       expect(screen.getByText("Alex")).toBeInTheDocument();
     });
 
     it("should display the number of cards in hand", () => {
-      render(<PlayerPanel {...defaultProps} />);
+      renderWithContext(<PlayerPanel {...defaultProps} />);
       expect(screen.getByText("3")).toBeInTheDocument();
     });
 
     it("should render player avatar", () => {
-      const { container } = render(<PlayerPanel {...defaultProps} />);
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} />,
+      );
       const avatar = container.querySelector("img");
       expect(avatar).toBeInTheDocument();
     });
 
     it("should have correct avatar URL using robohash", () => {
-      const { container } = render(<PlayerPanel {...defaultProps} />);
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} />,
+      );
       const avatar = container.querySelector("img");
       expect(avatar.src).toContain("robohash.org/Alex");
     });
 
     it("should have alt text for avatar matching player name", () => {
-      const { container } = render(<PlayerPanel {...defaultProps} />);
+      const { container } = renderWithContext(<PlayerPanel {...defaultProps} />);
       const avatar = container.querySelector("img");
       expect(avatar.alt).toBe("Alex");
     });
 
     it("should display 'Waiting' status when not current player", () => {
-      render(<PlayerPanel {...defaultProps} currentPlayer={0} />);
+      renderWithContext(<PlayerPanel {...defaultProps} currentPlayer={0} />);
       expect(screen.getByText("Waiting")).toBeInTheDocument();
     });
 
     it("should display 'Playing...' status when current player", () => {
-      render(<PlayerPanel {...defaultProps} currentPlayer={1} />);
+      renderWithContext(<PlayerPanel {...defaultProps} currentPlayer={1} />);
       expect(screen.getByText("Playing...")).toBeInTheDocument();
     });
   });
 
   describe("card backs", () => {
     it("should render card backs for cards in hand", () => {
-      const { container } = render(<PlayerPanel {...defaultProps} />);
+      const { container } = renderWithContext(<PlayerPanel {...defaultProps} />);
       const cardBacks = container.querySelectorAll(".card-backs > div");
       // Should show up to 5 card backs (minimum of hand size and 5)
       expect(cardBacks.length).toBe(3);
@@ -100,28 +107,21 @@ describe("PlayerPanel", () => {
           ],
         },
       };
-      const { container } = render(<PlayerPanel {...manyCardsProps} />);
+      const { container } = renderWithContext(
+        <PlayerPanel {...manyCardsProps} />,
+      );
       const cardBacks = container.querySelectorAll(".card-backs > div");
       expect(cardBacks.length).toBe(5);
     });
 
-    it("should apply card back color", () => {
-      const { container } = render(<PlayerPanel {...defaultProps} />);
+    it("should apply card back color from context", () => {
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} />,
+      );
       const cardBacks = container.querySelectorAll(".card-backs > div");
+      // Default color from context is #145a4a = rgb(20, 90, 74)
       cardBacks.forEach((cardBack) => {
         expect(cardBack.style.backgroundColor).toBe("rgb(20, 90, 74)");
-      });
-    });
-
-    it("should apply different card back color", () => {
-      const redBackProps = {
-        ...defaultProps,
-        cardBackColor: "#ff0000",
-      };
-      const { container } = render(<PlayerPanel {...redBackProps} />);
-      const cardBacks = container.querySelectorAll(".card-backs > div");
-      cardBacks.forEach((cardBack) => {
-        expect(cardBack.style.backgroundColor).toBe("rgb(255, 0, 0)");
       });
     });
 
@@ -133,13 +133,17 @@ describe("PlayerPanel", () => {
           hand: [],
         },
       };
-      const { container } = render(<PlayerPanel {...emptyHandProps} />);
+      const { container } = renderWithContext(
+        <PlayerPanel {...emptyHandProps} />,
+      );
       const cardBacks = container.querySelectorAll(".card-backs > div");
       expect(cardBacks.length).toBe(0);
     });
 
     it("should have animation delay for each card", () => {
-      const { container } = render(<PlayerPanel {...defaultProps} />);
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} />,
+      );
       const cardBacks = container.querySelectorAll(".card-backs > div");
       cardBacks.forEach((cardBack, index) => {
         expect(cardBack.style.animationDelay).toBe(`${index * 0.1}s`);
@@ -149,19 +153,25 @@ describe("PlayerPanel", () => {
 
   describe("current player highlighting", () => {
     it("should have player-turn-indicator class when current player", () => {
-      const { container } = render(<PlayerPanel {...defaultProps} currentPlayer={1} />);
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} currentPlayer={1} />,
+      );
       const panel = container.querySelector(".opponent-panel");
       expect(panel).toHaveClass("player-turn-indicator");
     });
 
     it("should not have player-turn-indicator class when not current player", () => {
-      const { container } = render(<PlayerPanel {...defaultProps} currentPlayer={0} />);
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} currentPlayer={0} />,
+      );
       const panel = container.querySelector(".opponent-panel");
       expect(panel).not.toHaveClass("player-turn-indicator");
     });
 
     it("should highlight player 2 when currentPlayer is 2", () => {
-      const { container } = render(<PlayerPanel {...defaultProps} index={2} currentPlayer={2} />);
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} index={2} currentPlayer={2} />,
+      );
       const panel = container.querySelector(".opponent-panel");
       expect(panel).toHaveClass("player-turn-indicator");
     });
@@ -169,7 +179,9 @@ describe("PlayerPanel", () => {
 
   describe("dealing animation", () => {
     it("should have card-deal-in class on card backs when isDealing is true", () => {
-      const { container } = render(<PlayerPanel {...defaultProps} isDealing={true} />);
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} isDealing={true} />,
+      );
       const cardBacks = container.querySelectorAll(".card-backs > div");
       cardBacks.forEach((cardBack) => {
         expect(cardBack).toHaveClass("card-deal-in");
@@ -177,7 +189,9 @@ describe("PlayerPanel", () => {
     });
 
     it("should not have card-deal-in class when isDealing is false", () => {
-      const { container } = render(<PlayerPanel {...defaultProps} isDealing={false} />);
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} isDealing={false} />,
+      );
       const cardBacks = container.querySelectorAll(".card-backs > div");
       cardBacks.forEach((cardBack) => {
         expect(cardBack).not.toHaveClass("card-deal-in");
@@ -187,31 +201,41 @@ describe("PlayerPanel", () => {
 
   describe("styling", () => {
     it("should have opponent-panel class", () => {
-      const { container } = render(<PlayerPanel {...defaultProps} />);
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} />,
+      );
       const panel = container.querySelector(".opponent-panel");
       expect(panel).toBeInTheDocument();
     });
 
     it("should have transition-all class for animations", () => {
-      const { container } = render(<PlayerPanel {...defaultProps} />);
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} />,
+      );
       const panel = container.querySelector(".transition-all");
       expect(panel).toBeInTheDocument();
     });
 
     it("should have duration-300 class for transition timing", () => {
-      const { container } = render(<PlayerPanel {...defaultProps} />);
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} />,
+      );
       const panel = container.querySelector(".duration-300");
       expect(panel).toBeInTheDocument();
     });
 
     it("should have pixel-art class on avatar", () => {
-      const { container } = render(<PlayerPanel {...defaultProps} />);
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} />,
+      );
       const avatar = container.querySelector(".pixel-art");
       expect(avatar).toBeInTheDocument();
     });
 
     it("should have card-backs container", () => {
-      const { container } = render(<PlayerPanel {...defaultProps} />);
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} />,
+      );
       const cardBacksContainer = container.querySelector(".card-backs");
       expect(cardBacksContainer).toBeInTheDocument();
     });
@@ -230,7 +254,7 @@ describe("PlayerPanel", () => {
         },
         index: 0,
       };
-      render(<PlayerPanel {...player1Props} />);
+      renderWithContext(<PlayerPanel {...player1Props} />);
       expect(screen.getByText("You")).toBeInTheDocument();
     });
 
@@ -249,7 +273,7 @@ describe("PlayerPanel", () => {
         },
         index: 2,
       };
-      render(<PlayerPanel {...player3Props} />);
+      renderWithContext(<PlayerPanel {...player3Props} />);
       expect(screen.getByText("Sam")).toBeInTheDocument();
       expect(screen.getByText("2")).toBeInTheDocument();
     });
@@ -271,45 +295,17 @@ describe("PlayerPanel", () => {
         },
         index: 3,
       };
-      render(<PlayerPanel {...player4Props} />);
+      renderWithContext(<PlayerPanel {...player4Props} />);
       expect(screen.getByText("Jordan")).toBeInTheDocument();
       expect(screen.getByText("4")).toBeInTheDocument();
     });
   });
 
   describe("card back patterns", () => {
-    it("should apply checker pattern style", () => {
-      const { container } = render(<PlayerPanel {...defaultProps} cardBackPattern="checker" />);
-      const cardBacks = container.querySelectorAll(".card-backs > div");
-      expect(cardBacks.length).toBeGreaterThan(0);
-    });
-
-    it("should apply solid pattern style", () => {
-      const solidProps = {
-        ...defaultProps,
-        cardBackPattern: "solid",
-      };
-      const { container } = render(<PlayerPanel {...solidProps} />);
-      const cardBacks = container.querySelectorAll(".card-backs > div");
-      expect(cardBacks.length).toBeGreaterThan(0);
-    });
-
-    it("should apply diagonal pattern style", () => {
-      const diagonalProps = {
-        ...defaultProps,
-        cardBackPattern: "diagonal",
-      };
-      const { container } = render(<PlayerPanel {...diagonalProps} />);
-      const cardBacks = container.querySelectorAll(".card-backs > div");
-      expect(cardBacks.length).toBeGreaterThan(0);
-    });
-
-    it("should apply dots pattern style", () => {
-      const dotsProps = {
-        ...defaultProps,
-        cardBackPattern: "dots",
-      };
-      const { container } = render(<PlayerPanel {...dotsProps} />);
+    it("should render card backs with pattern from context", () => {
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} />,
+      );
       const cardBacks = container.querySelectorAll(".card-backs > div");
       expect(cardBacks.length).toBeGreaterThan(0);
     });
@@ -324,7 +320,7 @@ describe("PlayerPanel", () => {
           name: "Player #2",
         },
       };
-      render(<PlayerPanel {...specialNameProps} />);
+      renderWithContext(<PlayerPanel {...specialNameProps} />);
       expect(screen.getByText("Player #2")).toBeInTheDocument();
     });
 
@@ -336,7 +332,9 @@ describe("PlayerPanel", () => {
           name: "VeryLongPlayerNameThatMightOverflow",
         },
       };
-      const { container } = render(<PlayerPanel {...longNameProps} />);
+      const { container } = renderWithContext(
+        <PlayerPanel {...longNameProps} />,
+      );
       const nameElement = container.querySelector(".truncate");
       expect(nameElement).toBeInTheDocument();
     });
@@ -349,7 +347,9 @@ describe("PlayerPanel", () => {
           hand: [{ id: "h1", suit: "hearts", rank: 5, value: 5 }],
         },
       };
-      const { container } = render(<PlayerPanel {...singleCardProps} />);
+      const { container } = renderWithContext(
+        <PlayerPanel {...singleCardProps} />,
+      );
       const cardBacks = container.querySelectorAll(".card-backs > div");
       expect(cardBacks.length).toBe(1);
     });
@@ -370,7 +370,7 @@ describe("PlayerPanel", () => {
           ],
         },
       };
-      render(<PlayerPanel {...manyCardsProps} />);
+      renderWithContext(<PlayerPanel {...manyCardsProps} />);
       // Should display 7 as the card count
       expect(screen.getByText("7")).toBeInTheDocument();
     });
@@ -378,7 +378,7 @@ describe("PlayerPanel", () => {
 
   describe("accessibility", () => {
     it("should have accessible image with alt text", () => {
-      render(<PlayerPanel {...defaultProps} />);
+      renderWithContext(<PlayerPanel {...defaultProps} />);
       const image = screen.getByRole("img");
       expect(image).toHaveAttribute("alt", "Alex");
     });
@@ -386,19 +386,25 @@ describe("PlayerPanel", () => {
 
   describe("responsive styling", () => {
     it("should have flex layout", () => {
-      const { container } = render(<PlayerPanel {...defaultProps} />);
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} />,
+      );
       const flexElement = container.querySelector(".flex");
       expect(flexElement).toBeInTheDocument();
     });
 
     it("should have gap between elements", () => {
-      const { container } = render(<PlayerPanel {...defaultProps} />);
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} />,
+      );
       const gapElement = container.querySelector('[class*="gap"]');
       expect(gapElement).toBeInTheDocument();
     });
 
     it("should have min-w-0 for name truncation", () => {
-      const { container } = render(<PlayerPanel {...defaultProps} />);
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} />,
+      );
       const minWidthElement = container.querySelector(".min-w-0");
       expect(minWidthElement).toBeInTheDocument();
     });

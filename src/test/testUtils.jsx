@@ -4,7 +4,7 @@
  */
 
 import { render } from "@testing-library/react";
-import { vi } from "vitest";
+import { vi, expect } from "vitest";
 
 /**
  * Custom render wrapper that can include providers if needed
@@ -13,9 +13,7 @@ import { vi } from "vitest";
 const customRender = (ui, options = {}) => {
   const { ...renderOptions } = options;
 
-  const Wrapper = ({ children }) => {
-    return <>{children}</>;
-  };
+  const Wrapper = ({ children }) => <>{children}</>;
 
   return render(ui, { wrapper: Wrapper, ...renderOptions });
 };
@@ -51,7 +49,7 @@ export const createMockPlayer = (
   id = "player1",
   name = "Test Player",
   hand = [],
-  score = 0
+  score = 0,
 ) => ({
   id,
   name,
@@ -165,7 +163,8 @@ export const createMockTouchEvent = (type, touchData = {}) => {
  * @param {number} ms - Milliseconds to wait
  * @returns {Promise} Promise that resolves after the specified time
  */
-export const waitFor = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+export const waitFor = (ms) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
  * Simulates a window resize event
@@ -216,7 +215,8 @@ export const createMockLocalStorage = () => {
  * Useful for testing async state updates
  * @returns {Promise} Promise that resolves after all pending promises
  */
-export const flushPromises = () => new Promise((resolve) => setImmediate(resolve));
+export const flushPromises = () =>
+  new Promise((resolve) => setTimeout(resolve, 0));
 
 /**
  * Creates a mock function that tracks calls and can be configured to return values

@@ -11,9 +11,10 @@ const ruleSets = [
     /**
      * Evaluates trick winner based on highest card value
      * @param {Object} cards - Object mapping playerId to card
+     * @param {string} leadPlayerId - The ID of the player who led the trick (optional for this rule)
      * @returns {string} The winning player's ID
      */
-    evaluateWinner: (cards) => {
+    evaluateWinner: (cards, _leadPlayerId) => {
       let maxValue = 0;
       let winner = "";
       Object.entries(cards).forEach(([playerId, card]) => {
@@ -32,14 +33,28 @@ const ruleSets = [
     /**
      * Evaluates trick winner - must follow lead suit
      * @param {Object} cards - Object mapping playerId to card
+     * @param {string} leadPlayerId - The ID of the player who led the trick
      * @returns {string} The winning player's ID
      */
-    evaluateWinner: (cards) => {
+    evaluateWinner: (cards, leadPlayerId) => {
       const cardEntries = Object.entries(cards);
-      const leadCard = cardEntries[0][1];
-      const leadSuit = leadCard.suit;
+
+      // Determine lead card - use explicit leadPlayerId if provided, otherwise fall back to first entry
+      let leadCard;
+      let leadSuit;
+
+      if (leadPlayerId && cards[leadPlayerId]) {
+        leadCard = cards[leadPlayerId];
+        leadSuit = leadCard.suit;
+      } else {
+        // Fallback for backward compatibility
+        leadCard = cardEntries[0][1];
+        leadSuit = leadCard.suit;
+      }
+
       let maxValue = 0;
-      let winner = cardEntries[0][0];
+      let winner = leadPlayerId || cardEntries[0][0];
+
       cardEntries.forEach(([playerId, card]) => {
         if (card.suit === leadSuit && card.value > maxValue) {
           maxValue = card.value;
@@ -56,16 +71,28 @@ const ruleSets = [
     /**
      * Evaluates trick winner with spades as trump
      * @param {Object} cards - Object mapping playerId to card
+     * @param {string} leadPlayerId - The ID of the player who led the trick
      * @returns {string} The winning player's ID
      */
-    evaluateWinner: (cards) => {
+    evaluateWinner: (cards, leadPlayerId) => {
       const cardEntries = Object.entries(cards);
-      const leadCard = cardEntries[0][1];
-      const leadSuit = leadCard.suit;
+
+      // Determine lead card - use explicit leadPlayerId if provided, otherwise fall back to first entry
+      let leadCard;
+      let leadSuit;
+
+      if (leadPlayerId && cards[leadPlayerId]) {
+        leadCard = cards[leadPlayerId];
+        leadSuit = leadCard.suit;
+      } else {
+        // Fallback for backward compatibility
+        leadCard = cardEntries[0][1];
+        leadSuit = leadCard.suit;
+      }
 
       // Check for spades (trump)
       const spadesCards = cardEntries.filter(
-        ([, card]) => card.suit === "spades"
+        ([, card]) => card.suit === "spades",
       );
 
       if (spadesCards.length > 0) {
@@ -82,7 +109,7 @@ const ruleSets = [
 
       // No spades, highest of lead suit wins
       let maxValue = 0;
-      let winner = cardEntries[0][0];
+      let winner = leadPlayerId || cardEntries[0][0];
       cardEntries.forEach(([playerId, card]) => {
         if (card.suit === leadSuit && card.value > maxValue) {
           maxValue = card.value;

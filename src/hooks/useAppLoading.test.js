@@ -5,8 +5,8 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import useAppLoading from "../useAppLoading";
-import { ANIMATION_TIMINGS } from "../../constants";
+import useAppLoading from "./useAppLoading";
+import { ANIMATION_TIMINGS } from "./../constants";
 
 describe("useAppLoading", () => {
   beforeEach(() => {

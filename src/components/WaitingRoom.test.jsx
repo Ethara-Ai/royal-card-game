@@ -3,9 +3,9 @@
  * Tests rendering, player display, and start game functionality
  */
 
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import WaitingRoom from "../WaitingRoom";
+import WaitingRoom from "./WaitingRoom";
 
 describe("WaitingRoom", () => {
   const defaultProps = {
@@ -202,7 +202,9 @@ describe("WaitingRoom", () => {
         ],
       };
       render(<WaitingRoom {...longNameProps} />);
-      expect(screen.getByText("VeryLongPlayerNameThatMightOverflow")).toBeInTheDocument();
+      expect(
+        screen.getByText("VeryLongPlayerNameThatMightOverflow"),
+      ).toBeInTheDocument();
     });
   });
 
@@ -262,7 +264,9 @@ describe("WaitingRoom", () => {
     it("should have responsive padding classes", () => {
       const { container } = render(<WaitingRoom {...defaultProps} />);
       const responsiveElement = container.querySelector(".p-4");
-      expect(responsiveElement || container.querySelector(".p-3")).toBeInTheDocument();
+      expect(
+        responsiveElement || container.querySelector(".p-3"),
+      ).toBeInTheDocument();
     });
 
     it("should have responsive text classes", () => {

@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import useGameLogic from "../useGameLogic";
+import useGameLogic from "./useGameLogic";
 import {
   INITIAL_GAME_STATE,
   INITIAL_PLAYERS,
@@ -13,7 +13,7 @@ import {
   CARDS_PER_PLAYER,
   PLAYER_COUNT,
   SUITS,
-} from "../../constants";
+} from "./../constants";
 
 // Mock sonner toast
 vi.mock("sonner", () => ({
@@ -56,7 +56,9 @@ describe("useGameLogic", () => {
       const { result } = renderHook(() => useGameLogic());
 
       expect(result.current.gameState.phase).toBe(INITIAL_GAME_STATE.phase);
-      expect(result.current.gameState.currentPlayer).toBe(INITIAL_GAME_STATE.currentPlayer);
+      expect(result.current.gameState.currentPlayer).toBe(
+        INITIAL_GAME_STATE.currentPlayer,
+      );
       expect(result.current.gameState.round).toBe(INITIAL_GAME_STATE.round);
     });
 
@@ -758,13 +760,11 @@ describe("useGameLogic", () => {
         vi.advanceTimersByTime(2000);
       });
 
-      // Find an Ace if it exists in any hand
-      let aceFound = false;
+      // Find an Ace if it exists in any hand and verify its value is 14
       result.current.players.forEach((player) => {
         player.hand.forEach((card) => {
           if (card.rank === 1) {
             expect(card.value).toBe(14);
-            aceFound = true;
           }
         });
       });

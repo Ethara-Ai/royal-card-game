@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import UserHand from "../UserHand";
+import UserHand from "./UserHand";
 
 describe("UserHand", () => {
   const defaultProps = {

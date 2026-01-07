@@ -1,14 +1,11 @@
 import PropTypes from "prop-types";
 import { getPatternStyle } from "../utils/patterns";
+import { useCardCustomization } from "../context";
 
-const PlayerPanel = ({
-  player,
-  index,
-  currentPlayer,
-  cardBackColor,
-  cardBackPattern,
-  isDealing,
-}) => (
+const PlayerPanel = ({ player, index, currentPlayer, isDealing }) => {
+  const { cardBackColor, cardBackPattern } = useCardCustomization();
+
+  return (
     <div
       className={`opponent-panel transition-all duration-300 ${
         currentPlayer === index ? "player-turn-indicator" : ""
@@ -87,6 +84,7 @@ const PlayerPanel = ({
       </div>
     </div>
   );
+};
 
 PlayerPanel.propTypes = {
   player: PropTypes.shape({
@@ -98,8 +96,6 @@ PlayerPanel.propTypes = {
   }).isRequired,
   index: PropTypes.number.isRequired,
   currentPlayer: PropTypes.number.isRequired,
-  cardBackColor: PropTypes.string.isRequired,
-  cardBackPattern: PropTypes.string.isRequired,
   isDealing: PropTypes.bool.isRequired,
 };
 

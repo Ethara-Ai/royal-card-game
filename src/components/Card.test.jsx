@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import Card from "../Card";
+import Card from "./Card";
 
 describe("Card", () => {
   const defaultProps = {

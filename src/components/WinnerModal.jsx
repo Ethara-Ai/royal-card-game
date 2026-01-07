@@ -1,8 +1,24 @@
 import PropTypes from "prop-types";
 import { FaCrown, FaRedo } from "react-icons/fa";
 
-const WinnerModal = ({ players, scores, getGameWinner, resetGame }) => {
-  const winner = getGameWinner();
+/**
+ * WinnerModal - Displays the game results and winner
+ * Shows final scores sorted by rank and allows starting a new game
+ *
+ * @param {Object} props - Component props
+ * @param {Array} props.players - Array of player objects
+ * @param {Array} props.scores - Array of scores corresponding to players
+ * @param {Object} props.winner - The winning player object with player and score
+ * @param {Function} props.resetGame - Function to reset and start a new game
+ */
+const WinnerModal = ({ players, scores, winner, resetGame }) => {
+  // Sort players by score for final standings
+  const sortedPlayers = [...players]
+    .map((player, idx) => ({
+      ...player,
+      score: scores[idx],
+    }))
+    .sort((a, b) => b.score - a.score);
 
   return (
     <div
@@ -41,25 +57,17 @@ const WinnerModal = ({ players, scores, getGameWinner, resetGame }) => {
               Final Scores
             </div>
             <div className="space-y-1.5 sm:space-y-2">
-              {[...players]
-                .map((player, idx) => ({
-                  ...player,
-                  score: scores[idx],
-                }))
-                .sort((a, b) => b.score - a.score)
-                .map((player) => (
+              {sortedPlayers.map((player) => {
+                const isWinner = winner.player.id === player.id;
+                return (
                   <div
                     key={player.id}
                     className="flex justify-between items-center p-2 sm:p-3 rounded-lg transition-all duration-300"
                     style={{
-                      background:
-                        winner.player.id === player.id
-                          ? "linear-gradient(135deg, var(--color-gold-base) 0%, var(--color-gold-dark) 100%)"
-                          : "var(--color-panel-dark)",
-                      boxShadow:
-                        winner.player.id === player.id
-                          ? "var(--shadow-glow-gold)"
-                          : "none",
+                      background: isWinner
+                        ? "linear-gradient(135deg, var(--color-gold-base) 0%, var(--color-gold-dark) 100%)"
+                        : "var(--color-panel-dark)",
+                      boxShadow: isWinner ? "var(--shadow-glow-gold)" : "none",
                     }}
                   >
                     <span className="flex items-center gap-1.5 sm:gap-2">
@@ -68,28 +76,25 @@ const WinnerModal = ({ players, scores, getGameWinner, resetGame }) => {
                         alt={player.name}
                         className="w-5 h-5 sm:w-6 sm:h-6 rounded pixel-art"
                         style={{
-                          background:
-                            winner.player.id === player.id
-                              ? "rgba(255,255,255,0.2)"
-                              : "var(--color-bg-elevated)",
+                          background: isWinner
+                            ? "rgba(255,255,255,0.2)"
+                            : "var(--color-bg-elevated)",
                         }}
                       />
                       <span
                         className="font-medium text-sm sm:text-base"
                         style={{
-                          color:
-                            winner.player.id === player.id
-                              ? "#ffffff"
-                              : "var(--color-text-primary)",
-                          textShadow:
-                            winner.player.id === player.id
-                              ? "0 1px 2px rgba(0, 0, 0, 0.4)"
-                              : "none",
+                          color: isWinner
+                            ? "#ffffff"
+                            : "var(--color-text-primary)",
+                          textShadow: isWinner
+                            ? "0 1px 2px rgba(0, 0, 0, 0.4)"
+                            : "none",
                         }}
                       >
                         {player.name}
                       </span>
-                      {winner.player.id === player.id && (
+                      {isWinner && (
                         <FaCrown
                           className="text-sm sm:text-base"
                           style={{
@@ -102,20 +107,19 @@ const WinnerModal = ({ players, scores, getGameWinner, resetGame }) => {
                     <span
                       className="font-bold text-sm sm:text-base"
                       style={{
-                        color:
-                          winner.player.id === player.id
-                            ? "#ffffff"
-                            : "var(--color-text-primary)",
-                        textShadow:
-                          winner.player.id === player.id
-                            ? "0 1px 2px rgba(0, 0, 0, 0.4)"
-                            : "none",
+                        color: isWinner
+                          ? "#ffffff"
+                          : "var(--color-text-primary)",
+                        textShadow: isWinner
+                          ? "0 1px 2px rgba(0, 0, 0, 0.4)"
+                          : "none",
                       }}
                     >
                       {player.score}
                     </span>
                   </div>
-                ))}
+                );
+              })}
             </div>
           </div>
 
@@ -146,7 +150,13 @@ WinnerModal.propTypes = {
     }),
   ).isRequired,
   scores: PropTypes.arrayOf(PropTypes.number).isRequired,
-  getGameWinner: PropTypes.func.isRequired,
+  winner: PropTypes.shape({
+    player: PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+    }).isRequired,
+    score: PropTypes.number.isRequired,
+  }).isRequired,
   resetGame: PropTypes.func.isRequired,
 };
 

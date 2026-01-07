@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import Leaderboard from "../Leaderboard";
+import Leaderboard from "./Leaderboard";
 
 describe("Leaderboard", () => {
   const defaultProps = {

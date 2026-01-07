@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import WinnerModal from "../WinnerModal";
+import WinnerModal from "./WinnerModal";
 
 describe("WinnerModal", () => {
   const defaultProps = {
@@ -16,10 +16,10 @@ describe("WinnerModal", () => {
       { id: "player4", name: "Jordan" },
     ],
     scores: [3, 5, 2, 4],
-    getGameWinner: vi.fn(() => ({
+    winner: {
       player: { id: "player2", name: "Alex" },
       score: 5,
-    })),
+    },
     resetGame: vi.fn(),
   };
 
@@ -80,9 +80,10 @@ describe("WinnerModal", () => {
       });
     });
 
-    it("should call getGameWinner to determine winner", () => {
+    it("should display the correct winner", () => {
       render(<WinnerModal {...defaultProps} />);
-      expect(defaultProps.getGameWinner).toHaveBeenCalled();
+      // The winner (Alex) should be displayed
+      expect(screen.getByText("Alex")).toBeInTheDocument();
     });
   });
 
@@ -177,10 +178,10 @@ describe("WinnerModal", () => {
       const player1WinnerProps = {
         ...defaultProps,
         scores: [5, 3, 2, 4],
-        getGameWinner: vi.fn(() => ({
+        winner: {
           player: { id: "player1", name: "You" },
           score: 5,
-        })),
+        },
       };
       render(<WinnerModal {...player1WinnerProps} />);
       expect(screen.getByText("You")).toBeInTheDocument();
@@ -190,10 +191,10 @@ describe("WinnerModal", () => {
       const tiedProps = {
         ...defaultProps,
         scores: [5, 5, 3, 3],
-        getGameWinner: vi.fn(() => ({
+        winner: {
           player: { id: "player1", name: "You" },
           score: 5,
-        })),
+        },
       };
       render(<WinnerModal {...tiedProps} />);
       expect(screen.getByText("Game Over!")).toBeInTheDocument();
@@ -203,10 +204,10 @@ describe("WinnerModal", () => {
       const zeroScoresProps = {
         ...defaultProps,
         scores: [0, 0, 0, 0],
-        getGameWinner: vi.fn(() => ({
+        winner: {
           player: { id: "player1", name: "You" },
           score: 0,
-        })),
+        },
       };
       render(<WinnerModal {...zeroScoresProps} />);
       expect(screen.getByText("Game Over!")).toBeInTheDocument();
@@ -216,10 +217,10 @@ describe("WinnerModal", () => {
       const highScoresProps = {
         ...defaultProps,
         scores: [10, 15, 8, 12],
-        getGameWinner: vi.fn(() => ({
+        winner: {
           player: { id: "player2", name: "Alex" },
           score: 15,
-        })),
+        },
       };
       render(<WinnerModal {...highScoresProps} />);
       expect(screen.getByText("15")).toBeInTheDocument();
@@ -276,10 +277,10 @@ describe("WinnerModal", () => {
           { id: "player4", name: "Jordan_123" },
         ],
         scores: [3, 5, 2, 4],
-        getGameWinner: vi.fn(() => ({
+        winner: {
           player: { id: "player2", name: "Alex & Bob" },
           score: 5,
-        })),
+        },
         resetGame: vi.fn(),
       };
       render(<WinnerModal {...specialNameProps} />);
@@ -296,10 +297,10 @@ describe("WinnerModal", () => {
           { id: "player4", name: "Jordan" },
         ],
         scores: [3, 5, 2, 4],
-        getGameWinner: vi.fn(() => ({
+        winner: {
           player: { id: "player2", name: "Alex" },
           score: 5,
-        })),
+        },
         resetGame: vi.fn(),
       };
       render(<WinnerModal {...longNameProps} />);

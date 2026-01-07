@@ -6,8 +6,8 @@ import Confetti from "react-confetti";
 import { useTheme, useWindowSize, useAppLoading, useGameLogic } from "./hooks";
 
 // Components
+import { Header } from "./components/Header";
 import {
-  Header,
   LoadingScreen,
   WaitingRoom,
   Leaderboard,
@@ -15,21 +15,19 @@ import {
   WinnerModal,
 } from "./components";
 
+// Context
+import { CardCustomizationProvider } from "./context";
+
 // Config
 import ruleSets from "./config/ruleSets";
 
 // Constants
-import {
-  DEFAULT_CARD_BACK_COLOR,
-  DEFAULT_CARD_BACK_PATTERN,
-  CONFETTI_COLORS,
-  GAME_PHASES,
-} from "./constants";
+import { CONFETTI_COLORS, GAME_PHASES } from "./constants";
 
 // Styles
 import "./styles/gameStyles.css";
 
-function App() {
+function AppContent() {
   // Theme management
   const { theme, toggleTheme } = useTheme();
 
@@ -40,11 +38,7 @@ function App() {
   const { isAppLoading, showLoadingScreen, handleLoadingComplete } =
     useAppLoading();
 
-  // Card customization state
-  const [cardBackColor, setCardBackColor] = useState(DEFAULT_CARD_BACK_COLOR);
-  const [cardBackPattern, setCardBackPattern] = useState(
-    DEFAULT_CARD_BACK_PATTERN
-  );
+  // Rule set selection state
   const [selectedRuleSet, setSelectedRuleSet] = useState(0);
 
   // Game logic hook
@@ -75,6 +69,9 @@ function App() {
     gameState.phase === GAME_PHASES.DEALING ||
     gameState.phase === GAME_PHASES.PLAYING ||
     gameState.phase === GAME_PHASES.EVALUATING;
+
+  // Compute winner for modal (only when needed)
+  const winner = showWinnerModal ? getGameWinner() : null;
 
   return (
     <>
@@ -139,10 +136,6 @@ function App() {
         <Header
           theme={theme}
           toggleTheme={toggleTheme}
-          cardBackColor={cardBackColor}
-          setCardBackColor={setCardBackColor}
-          cardBackPattern={cardBackPattern}
-          setCardBackPattern={setCardBackPattern}
           selectedRuleSet={selectedRuleSet}
           setSelectedRuleSet={setSelectedRuleSet}
           ruleSets={ruleSets}
@@ -181,8 +174,6 @@ function App() {
                 playAreaCards={playAreaCards}
                 cardPositions={cardPositions}
                 trickWinner={trickWinner}
-                cardBackColor={cardBackColor}
-                cardBackPattern={cardBackPattern}
                 dealingAnimation={dealingAnimation}
                 draggedCard={draggedCard}
                 handleDragOver={handleDragOver}
@@ -197,17 +188,25 @@ function App() {
           )}
 
           {/* Winner Modal */}
-          {showWinnerModal && (
+          {showWinnerModal && winner && (
             <WinnerModal
               players={players}
               scores={gameState.scores}
-              getGameWinner={getGameWinner}
+              winner={winner}
               resetGame={resetGame}
             />
           )}
         </div>
       </div>
     </>
+  );
+}
+
+function App() {
+  return (
+    <CardCustomizationProvider>
+      <AppContent />
+    </CardCustomizationProvider>
   );
 }
 

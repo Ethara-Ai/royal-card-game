@@ -17,7 +17,7 @@ import {
   GAME_PHASES,
   CONFETTI_COLORS,
   THEMES,
-} from "../gameConstants";
+} from "./gameConstants";
 
 describe("gameConstants", () => {
   describe("INITIAL_GAME_STATE", () => {

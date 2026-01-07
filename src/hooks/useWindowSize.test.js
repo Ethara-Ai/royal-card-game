@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import useWindowSize from "../useWindowSize";
+import useWindowSize from "./useWindowSize";
 
 describe("useWindowSize", () => {
   let originalInnerWidth;
@@ -21,18 +21,22 @@ describe("useWindowSize", () => {
     resizeListeners = [];
 
     // Mock addEventListener
-    vi.spyOn(window, "addEventListener").mockImplementation((event, handler) => {
-      if (event === "resize") {
-        resizeListeners.push(handler);
-      }
-    });
+    vi.spyOn(window, "addEventListener").mockImplementation(
+      (event, handler) => {
+        if (event === "resize") {
+          resizeListeners.push(handler);
+        }
+      },
+    );
 
     // Mock removeEventListener
-    vi.spyOn(window, "removeEventListener").mockImplementation((event, handler) => {
-      if (event === "resize") {
-        resizeListeners = resizeListeners.filter((h) => h !== handler);
-      }
-    });
+    vi.spyOn(window, "removeEventListener").mockImplementation(
+      (event, handler) => {
+        if (event === "resize") {
+          resizeListeners = resizeListeners.filter((h) => h !== handler);
+        }
+      },
+    );
 
     // Set default window size
     setWindowSize(1024, 768);
@@ -103,7 +107,7 @@ describe("useWindowSize", () => {
 
       expect(window.addEventListener).toHaveBeenCalledWith(
         "resize",
-        expect.any(Function)
+        expect.any(Function),
       );
     });
   });
@@ -186,7 +190,7 @@ describe("useWindowSize", () => {
 
       expect(window.removeEventListener).toHaveBeenCalledWith(
         "resize",
-        expect.any(Function)
+        expect.any(Function),
       );
     });
 
@@ -316,6 +320,9 @@ describe("useWindowSize", () => {
 
       // Should only increment by 1 for the rerender
       expect(renderCount).toBe(initialRenderCount + 1);
+      // Verify result is still valid
+      expect(result.current).toHaveProperty("width");
+      expect(result.current).toHaveProperty("height");
     });
 
     it("should maintain stable reference structure", () => {

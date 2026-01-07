@@ -4,11 +4,11 @@
  */
 
 import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import App from "../App";
+import { render, screen, fireEvent } from "@testing-library/react";
+import App from "./App";
 
 // Mock the hooks
-vi.mock("../hooks", () => ({
+vi.mock("./hooks", () => ({
   useTheme: vi.fn(() => ({
     theme: "dark",
     toggleTheme: vi.fn(),
@@ -47,7 +47,10 @@ vi.mock("../hooks", () => ({
     startGame: vi.fn(),
     resetGame: vi.fn(),
     playCard: vi.fn(),
-    getGameWinner: vi.fn(() => ({ player: { id: "player1", name: "You" }, score: 5 })),
+    getGameWinner: vi.fn(() => ({
+      player: { id: "player1", name: "You" },
+      score: 5,
+    })),
     handleDragStart: vi.fn(),
     handleDragOver: vi.fn(),
     handleDrop: vi.fn(),
@@ -117,7 +120,7 @@ describe("App", () => {
 
   describe("loading screen", () => {
     it("should not show loading screen when showLoadingScreen is false", async () => {
-      const { useAppLoading } = await import("../hooks");
+      const { useAppLoading } = await import("./hooks");
       useAppLoading.mockReturnValue({
         isAppLoading: false,
         showLoadingScreen: false,
@@ -125,20 +128,28 @@ describe("App", () => {
       });
 
       const { container } = render(<App />);
-      expect(container.querySelector(".loading-screen")).not.toBeInTheDocument();
+      expect(
+        container.querySelector(".loading-screen"),
+      ).not.toBeInTheDocument();
     });
   });
 
   describe("game phases", () => {
     it("should render WaitingRoom in waiting phase", async () => {
-      const { useGameLogic } = await import("../hooks");
+      const { useGameLogic } = await import("./hooks");
       useGameLogic.mockReturnValue({
         gameState: { phase: "waiting", currentPlayer: 0, scores: [0, 0, 0, 0] },
         players: [
           { id: "player1", name: "You", hand: [], score: 0, isActive: true },
           { id: "player2", name: "Alex", hand: [], score: 0, isActive: false },
           { id: "player3", name: "Sam", hand: [], score: 0, isActive: false },
-          { id: "player4", name: "Jordan", hand: [], score: 0, isActive: false },
+          {
+            id: "player4",
+            name: "Jordan",
+            hand: [],
+            score: 0,
+            isActive: false,
+          },
         ],
         playAreaCards: [],
         cardPositions: [],
@@ -166,7 +177,7 @@ describe("App", () => {
 
   describe("theme", () => {
     it("should use theme from useTheme hook", async () => {
-      const { useTheme } = await import("../hooks");
+      const { useTheme } = await import("./hooks");
       useTheme.mockReturnValue({
         theme: "dark",
         toggleTheme: vi.fn(),
@@ -177,7 +188,7 @@ describe("App", () => {
     });
 
     it("should pass theme to Header", async () => {
-      const { useTheme } = await import("../hooks");
+      const { useTheme } = await import("./hooks");
       useTheme.mockReturnValue({
         theme: "light",
         toggleTheme: vi.fn(),
@@ -190,14 +201,20 @@ describe("App", () => {
 
   describe("confetti", () => {
     it("should not show confetti when showConfetti is false", async () => {
-      const { useGameLogic } = await import("../hooks");
+      const { useGameLogic } = await import("./hooks");
       useGameLogic.mockReturnValue({
         gameState: { phase: "waiting", currentPlayer: 0, scores: [0, 0, 0, 0] },
         players: [
           { id: "player1", name: "You", hand: [], score: 0, isActive: true },
           { id: "player2", name: "Alex", hand: [], score: 0, isActive: false },
           { id: "player3", name: "Sam", hand: [], score: 0, isActive: false },
-          { id: "player4", name: "Jordan", hand: [], score: 0, isActive: false },
+          {
+            id: "player4",
+            name: "Jordan",
+            hand: [],
+            score: 0,
+            isActive: false,
+          },
         ],
         playAreaCards: [],
         cardPositions: [],
@@ -253,14 +270,20 @@ describe("App", () => {
 
     it("should handle Start Game button click", async () => {
       const startGameMock = vi.fn();
-      const { useGameLogic } = await import("../hooks");
+      const { useGameLogic } = await import("./hooks");
       useGameLogic.mockReturnValue({
         gameState: { phase: "waiting", currentPlayer: 0, scores: [0, 0, 0, 0] },
         players: [
           { id: "player1", name: "You", hand: [], score: 0, isActive: true },
           { id: "player2", name: "Alex", hand: [], score: 0, isActive: false },
           { id: "player3", name: "Sam", hand: [], score: 0, isActive: false },
-          { id: "player4", name: "Jordan", hand: [], score: 0, isActive: false },
+          {
+            id: "player4",
+            name: "Jordan",
+            hand: [],
+            score: 0,
+            isActive: false,
+          },
         ],
         playAreaCards: [],
         cardPositions: [],

@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import Card from "./Card";
+import { GAME_PHASES } from "../constants";
 
 const UserHand = ({
   player,
@@ -83,7 +84,7 @@ const UserHand = ({
             card={card}
             index={index}
             totalCards={player.hand.length}
-            isPlayable={isMyTurn && gamePhase === "playing"}
+            isPlayable={isMyTurn && gamePhase === GAME_PHASES.PLAYING}
             isDragging={draggedCard?.id === card.id}
             isDealing={dealingAnimation}
             onDragStart={(e) => onDragStart(e, card)}

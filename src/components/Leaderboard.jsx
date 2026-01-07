@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import PropTypes from "prop-types";
 
 const Leaderboard = ({
@@ -7,16 +8,21 @@ const Leaderboard = ({
   trickWinner,
   ruleSetName,
 }) => {
-  const sortedPlayers = [...players]
-    .map((player, idx) => ({
-      ...player,
-      score: scores[idx],
-      originalIndex: idx,
-    }))
-    .sort((a, b) => b.score - a.score);
+  // Memoize sorted players to avoid recalculating on every render
+  const sortedPlayers = useMemo(
+    () =>
+      [...players]
+        .map((player, idx) => ({
+          ...player,
+          score: scores[idx],
+          originalIndex: idx,
+        }))
+        .sort((a, b) => b.score - a.score),
+    [players, scores],
+  );
 
   return (
-    <div className="score-sidebar w-full sm:w-44 flex-shrink-0">
+    <div className="score-sidebar w-full sm:w-44 shrink-0">
       <div
         className="p-3 sm:p-4 rounded-xl"
         style={{
@@ -112,7 +118,7 @@ Leaderboard.propTypes = {
       hand: PropTypes.array.isRequired,
       score: PropTypes.number.isRequired,
       isActive: PropTypes.bool.isRequired,
-    })
+    }),
   ).isRequired,
   scores: PropTypes.arrayOf(PropTypes.number).isRequired,
   currentPlayer: PropTypes.number.isRequired,
