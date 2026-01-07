@@ -1,0 +1,28 @@
+# Royal Card Game - robots.txt
+# https://www.robotstxt.org/robotstxt.html
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://royalcardgame.com/sitemap.xml
+
+# Disallow access to sensitive directories
+Disallow: /api/
+Disallow: /admin/
+
+# Allow all search engine crawlers
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+# Crawl-delay for polite crawling (optional)
+Crawl-delay: 1
