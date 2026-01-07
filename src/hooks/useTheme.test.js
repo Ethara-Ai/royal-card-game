@@ -5,8 +5,8 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import useTheme from "../useTheme";
-import { THEMES } from "../../constants";
+import useTheme from "./useTheme";
+import { THEMES } from "../constants";
 
 describe("useTheme", () => {
   let originalLocalStorage;
@@ -239,7 +239,10 @@ describe("useTheme", () => {
         result.current.toggleTheme();
       });
 
-      expect(mockLocalStorage.setItem).toHaveBeenCalledWith("theme", expect.any(String));
+      expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
+        "theme",
+        expect.any(String),
+      );
     });
 
     it("should save dark theme to localStorage", () => {
@@ -252,7 +255,10 @@ describe("useTheme", () => {
         result.current.setTheme(THEMES.DARK);
       });
 
-      expect(mockLocalStorage.setItem).toHaveBeenCalledWith("theme", THEMES.DARK);
+      expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
+        "theme",
+        THEMES.DARK,
+      );
     });
 
     it("should save light theme to localStorage", () => {
@@ -263,7 +269,10 @@ describe("useTheme", () => {
         result.current.setTheme(THEMES.LIGHT);
       });
 
-      expect(mockLocalStorage.setItem).toHaveBeenCalledWith("theme", THEMES.LIGHT);
+      expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
+        "theme",
+        THEMES.LIGHT,
+      );
     });
   });
 
@@ -272,7 +281,7 @@ describe("useTheme", () => {
       const { result } = renderHook(() => useTheme());
 
       expect(document.documentElement.getAttribute("data-theme")).toBe(
-        result.current.theme
+        result.current.theme,
       );
     });
 
@@ -283,7 +292,9 @@ describe("useTheme", () => {
         result.current.setTheme(THEMES.LIGHT);
       });
 
-      expect(document.documentElement.getAttribute("data-theme")).toBe(THEMES.LIGHT);
+      expect(document.documentElement.getAttribute("data-theme")).toBe(
+        THEMES.LIGHT,
+      );
     });
 
     it("should set data-theme to dark when toggled from light", () => {
@@ -296,7 +307,9 @@ describe("useTheme", () => {
         result.current.toggleTheme();
       });
 
-      expect(document.documentElement.getAttribute("data-theme")).toBe(THEMES.DARK);
+      expect(document.documentElement.getAttribute("data-theme")).toBe(
+        THEMES.DARK,
+      );
     });
   });
 
