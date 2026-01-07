@@ -1,0 +1,308 @@
+# Production Deployment Pipeline
+# This workflow handles the complete CI/CD process for deploying to AWS S3
+# Triggers on pushes to the main branch and manual workflow dispatch
+
+name: Production Deployment
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      skip_tests:
+        description: 'Skip test execution (use with caution)'
+        required: false
+        default: 'false'
+        type: boolean
+
+# Ensure only one deployment runs at a time for the same branch
+concurrency:
+  group: production-deployment-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: '20'
+  AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
+  S3_BUCKET: ${{ vars.S3_BUCKET_PRODUCTION }}
+  CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID_PRODUCTION }}
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  # Quality Gate: Linting and Code Quality Checks
+  lint:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Check Code Formatting
+        run: npm run format:check
+
+  # Quality Gate: Automated Testing
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: ${{ github.event.inputs.skip_tests != 'true' }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Run Unit Tests
+        run: npm run test:run
+
+      - name: Run Test Coverage
+        run: npm run test:coverage
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 7
+
+  # Build Stage: Create Production Artifacts
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [lint]
+
+    outputs:
+      build_id: ${{ steps.build_info.outputs.build_id }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Build Production Bundle
+        run: npm run build
+        env:
+          NODE_ENV: production
+          VITE_APP_ENV: production
+          VITE_BUILD_ID: ${{ github.sha }}
+
+      - name: Generate Build Information
+        id: build_info
+        run: |
+          BUILD_ID="${{ github.sha }}-$(date +%Y%m%d%H%M%S)"
+          echo "build_id=${BUILD_ID}" >> $GITHUB_OUTPUT
+          echo "Build ID: ${BUILD_ID}"
+
+      - name: Create Build Manifest
+        run: |
+          cat > dist/build-manifest.json << EOF
+          {
+            "buildId": "${{ steps.build_info.outputs.build_id }}",
+            "commitSha": "${{ github.sha }}",
+            "commitRef": "${{ github.ref_name }}",
+            "buildTime": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "workflow": "${{ github.workflow }}",
+            "runId": "${{ github.run_id }}",
+            "runNumber": "${{ github.run_number }}"
+          }
+          EOF
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-build
+          path: dist/
+          retention-days: 30
+          if-no-files-found: error
+
+  # Deployment Stage: Deploy to AWS S3
+  deploy:
+    name: Deploy to S3
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [build, test]
+    if: |
+      always() &&
+      needs.build.result == 'success' &&
+      (needs.test.result == 'success' || needs.test.result == 'skipped')
+    environment:
+      name: production
+      url: ${{ vars.PRODUCTION_URL }}
+
+    steps:
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: production-build
+          path: dist/
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: github-actions-deploy-${{ github.run_id }}
+
+      - name: Verify S3 Bucket Access
+        run: |
+          aws s3 ls s3://${{ env.S3_BUCKET }} --summarize || {
+            echo "Error: Unable to access S3 bucket"
+            exit 1
+          }
+
+      - name: Sync Assets to S3 (with cache headers)
+        run: |
+          # Upload static assets with long cache duration
+          aws s3 sync dist/assets/ s3://${{ env.S3_BUCKET }}/assets/ \
+            --delete \
+            --cache-control "public, max-age=31536000, immutable" \
+            --metadata-directive REPLACE
+
+      - name: Sync HTML and Root Files to S3 (no cache)
+        run: |
+          # Upload HTML and config files with no-cache for immediate updates
+          aws s3 cp dist/index.html s3://${{ env.S3_BUCKET }}/index.html \
+            --cache-control "no-cache, no-store, must-revalidate" \
+            --content-type "text/html; charset=utf-8" \
+            --metadata-directive REPLACE
+
+          # Upload build manifest
+          aws s3 cp dist/build-manifest.json s3://${{ env.S3_BUCKET }}/build-manifest.json \
+            --cache-control "no-cache" \
+            --content-type "application/json" \
+            --metadata-directive REPLACE
+
+      - name: Sync Remaining Files to S3
+        run: |
+          # Upload any remaining files
+          aws s3 sync dist/ s3://${{ env.S3_BUCKET }}/ \
+            --delete \
+            --exclude "assets/*" \
+            --exclude "index.html" \
+            --exclude "build-manifest.json" \
+            --cache-control "public, max-age=86400"
+
+      - name: Invalidate CloudFront Cache
+        if: ${{ env.CLOUDFRONT_DISTRIBUTION_ID != '' }}
+        run: |
+          INVALIDATION_ID=$(aws cloudfront create-invalidation \
+            --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*" \
+            --query 'Invalidation.Id' \
+            --output text)
+
+          echo "CloudFront Invalidation ID: ${INVALIDATION_ID}"
+
+          # Wait for invalidation to complete
+          aws cloudfront wait invalidation-completed \
+            --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --id ${INVALIDATION_ID}
+
+          echo "CloudFront cache invalidation completed"
+
+  # Post-Deployment Verification
+  verify:
+    name: Verify Deployment
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [deploy, build]
+    if: success()
+
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: github-actions-verify-${{ github.run_id }}
+
+      - name: Verify Build Manifest
+        run: |
+          DEPLOYED_BUILD_ID=$(aws s3 cp s3://${{ env.S3_BUCKET }}/build-manifest.json - | jq -r '.buildId')
+          EXPECTED_BUILD_ID="${{ needs.build.outputs.build_id }}"
+
+          if [ "${DEPLOYED_BUILD_ID}" != "${EXPECTED_BUILD_ID}" ]; then
+            echo "Error: Build ID mismatch"
+            echo "Expected: ${EXPECTED_BUILD_ID}"
+            echo "Deployed: ${DEPLOYED_BUILD_ID}"
+            exit 1
+          fi
+
+          echo "Deployment verified successfully"
+          echo "Build ID: ${DEPLOYED_BUILD_ID}"
+
+      - name: Health Check
+        if: ${{ vars.PRODUCTION_URL != '' }}
+        run: |
+          MAX_RETRIES=5
+          RETRY_COUNT=0
+
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${{ vars.PRODUCTION_URL }}" || echo "000")
+
+            if [ "$HTTP_STATUS" = "200" ]; then
+              echo "Health check passed (HTTP ${HTTP_STATUS})"
+              exit 0
+            fi
+
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+            echo "Attempt ${RETRY_COUNT}/${MAX_RETRIES}: HTTP ${HTTP_STATUS}"
+            sleep 10
+          done
+
+          echo "Health check failed after ${MAX_RETRIES} attempts"
+          exit 1
+
+  # Notification on Failure
+  notify-failure:
+    name: Notify on Failure
+    runs-on: ubuntu-latest
+    needs: [lint, test, build, deploy, verify]
+    if: failure()
+
+    steps:
+      - name: Create Failure Summary
+        run: |
+          echo "## Deployment Failed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Workflow:** ${{ github.workflow }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Run ID:** ${{ github.run_id }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Triggered by:** ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Please review the workflow logs for details." >> $GITHUB_STEP_SUMMARY

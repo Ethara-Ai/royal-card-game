@@ -1,8 +1,8 @@
 # Contributing to Royal Card Game
 
-Thank you for your interest in contributing to Royal Card Game! This document provides guidelines and information for contributors.
+Thank you for your interest in contributing to Royal Card Game. This document provides guidelines and information for contributors.
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Code of Conduct](#code-of-conduct)
 - [Getting Started](#getting-started)
@@ -13,7 +13,7 @@ Thank you for your interest in contributing to Royal Card Game! This document pr
 - [Reporting Bugs](#reporting-bugs)
 - [Suggesting Features](#suggesting-features)
 
-## 📜 Code of Conduct
+## Code of Conduct
 
 By participating in this project, you agree to maintain a respectful and inclusive environment. Please:
 
@@ -22,20 +22,20 @@ By participating in this project, you agree to maintain a respectful and inclusi
 - Focus on constructive feedback
 - Accept responsibility for your mistakes and learn from them
 
-## 🚀 Getting Started
+## Getting Started
 
-1. **Fork the repository** on GitHub
-2. **Clone your fork** locally:
+1. Fork the repository on GitHub
+2. Clone your fork locally:
    ```bash
    git clone https://github.com/YOUR-USERNAME/royal-card-game.git
    cd royal-card-game
    ```
-3. **Add the upstream remote**:
+3. Add the upstream remote:
    ```bash
    git remote add upstream https://github.com/ORIGINAL-OWNER/royal-card-game.git
    ```
 
-## 💻 Development Setup
+## Development Setup
 
 ### Prerequisites
 
@@ -55,7 +55,7 @@ By participating in this project, you agree to maintain a respectful and inclusi
    npm run dev
    ```
 
-3. Open [http://localhost:3000](http://localhost:3000) in your browser
+3. Open http://localhost:3000 in your browser
 
 ### Available Scripts
 
@@ -67,7 +67,7 @@ By participating in this project, you agree to maintain a respectful and inclusi
 | `npm run lint` | Run ESLint |
 | `npm run lint:fix` | Fix ESLint issues automatically |
 
-## 🤝 How to Contribute
+## How to Contribute
 
 ### Types of Contributions
 
@@ -83,55 +83,57 @@ We welcome many types of contributions:
 
 ### Workflow
 
-1. **Create a branch** for your work:
+1. Create a branch for your work:
    ```bash
    git checkout -b feature/your-feature-name
    # or
    git checkout -b fix/your-bug-fix
    ```
 
-2. **Make your changes** following our coding standards
+2. Make your changes following our coding standards
 
-3. **Test your changes** thoroughly
+3. Test your changes thoroughly
 
-4. **Commit your changes** with clear messages:
+4. Commit your changes with clear messages:
    ```bash
    git commit -m "feat: add new card animation"
    # or
    git commit -m "fix: resolve drag issue on mobile"
    ```
 
-5. **Push to your fork**:
+5. Push to your fork:
    ```bash
    git push origin feature/your-feature-name
    ```
 
-6. **Open a Pull Request** against the `main` branch
+6. Open a Pull Request against the `main` branch
 
-## 📥 Pull Request Process
+## Pull Request Process
 
-1. **Update documentation** if your changes require it
-2. **Ensure all tests pass** and there are no linting errors
-3. **Fill out the PR template** completely
-4. **Request a review** from maintainers
-5. **Address feedback** promptly and respectfully
+1. Update documentation if your changes require it
+2. Ensure all tests pass and there are no linting errors
+3. Fill out the PR template completely
+4. Request a review from maintainers
+5. Address feedback promptly and respectfully
 
 ### PR Title Convention
 
 Use conventional commit format for PR titles:
 
-- `feat: add new feature`
-- `fix: resolve bug`
-- `docs: update documentation`
-- `style: formatting changes`
-- `refactor: code restructuring`
-- `perf: performance improvements`
-- `test: add tests`
-- `chore: maintenance tasks`
+| Prefix | Description |
+|--------|-------------|
+| `feat:` | Add new feature |
+| `fix:` | Resolve bug |
+| `docs:` | Update documentation |
+| `style:` | Formatting changes |
+| `refactor:` | Code restructuring |
+| `perf:` | Performance improvements |
+| `test:` | Add tests |
+| `chore:` | Maintenance tasks |
 
-## 📝 Coding Standards
+## Coding Standards
 
-### JavaScript/React
+### JavaScript and React
 
 - Use functional components with hooks
 - Use PropTypes for type checking
@@ -194,7 +196,7 @@ export default ComponentName;
 - Use meaningful class names
 - Keep specificity low
 
-## 🐛 Reporting Bugs
+## Reporting Bugs
 
 When reporting bugs, please include:
 
@@ -228,9 +230,9 @@ If applicable, add screenshots.
 - Device: [e.g., iPhone 15]
 ```
 
-## 💡 Suggesting Features
+## Suggesting Features
 
-We love hearing ideas! When suggesting features:
+We welcome feature suggestions. When proposing new features:
 
 1. **Check existing issues** - Your idea might already be suggested
 2. **Be specific** - Describe the feature in detail
@@ -256,11 +258,11 @@ Other approaches you've thought about.
 Any other relevant information.
 ```
 
-## 🙏 Recognition
+## Recognition
 
-Contributors will be recognized in our README and release notes. We appreciate every contribution, no matter how small!
+Contributors will be recognized in our README and release notes. We appreciate every contribution, regardless of size.
 
-## ❓ Questions?
+## Questions
 
 If you have questions, feel free to:
 
@@ -268,4 +270,6 @@ If you have questions, feel free to:
 - Comment on a relevant issue
 - Reach out to maintainers
 
-Thank you for contributing to Royal Card Game! 🃏
+---
+
+Thank you for contributing to Royal Card Game.
