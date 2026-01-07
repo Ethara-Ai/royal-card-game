@@ -1,9 +1,10 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
 
   // Build optimizations for production
   build: {
@@ -56,7 +57,7 @@ export default defineConfig({
 
   // Development server configuration
   server: {
-    port: 3000,
+    port: 5173,
     open: true,
     cors: true,
   },
