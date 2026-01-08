@@ -1,0 +1,313 @@
+/**
+ * Card Component Styles
+ * Handles card appearance, animations, and interactive states
+ */
+
+/* ============================================================================
+   BASE CARD STYLES
+   ============================================================================ */
+
+.handCard {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease, z-index 0s;
+  transform-origin: center bottom;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: none;
+}
+
+/* Apply rotation and offset using CSS variables */
+.handCard {
+  transform: translateY(var(--card-y-offset, 0)) rotate(var(--card-rotation, 0deg));
+}
+
+/* ============================================================================
+   CARD INNER (Card Face)
+   ============================================================================ */
+
+.cardInner {
+  width: clamp(36px, 10vw, 54px);
+  height: clamp(52px, 14vw, 76px);
+  background: var(--color-card-white, #ffffff);
+  border: 1px solid var(--color-card-border, rgba(0, 0, 0, 0.1));
+  border-radius: var(--radius-md, 8px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 4px;
+  box-shadow:
+    0 3px 8px rgba(0, 0, 0, 0.15),
+    0 1px 3px rgba(0, 0, 0, 0.1);
+  transform-origin: center bottom;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Card rank text */
+.rank {
+  font-weight: bold;
+  font-size: clamp(12px, 3.2vw, 18px);
+  line-height: 1;
+}
+
+/* Card suit icon */
+.suit {
+  font-size: clamp(16px, 4vw, 24px);
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================================================
+   COLOR VARIANTS (for suits)
+   ============================================================================ */
+
+.cardRed {
+  color: var(--color-card-red, #e53e3e);
+}
+
+.cardBlack {
+  color: var(--color-card-black, #1a202c);
+}
+
+/* ============================================================================
+   CARD STATES
+   ============================================================================ */
+
+/* Playable card (interactive) */
+.playable {
+  cursor: grab;
+}
+
+.playable:hover {
+  transform: translateY(calc(var(--card-y-offset, 0) - 8px)) rotate(var(--card-rotation, 0deg));
+  filter: brightness(1.05);
+  z-index: 1000 !important;
+}
+
+.playable:active {
+  cursor: grabbing;
+}
+
+/* Disabled card (not interactive) */
+.disabled {
+  cursor: not-allowed;
+  opacity: 0.8;
+  filter: grayscale(0.2);
+}
+
+/* Dragging state */
+.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+  transform: scale(1.05) rotate(0deg) !important;
+  z-index: 9999 !important;
+}
+
+.playable.dragging {
+  filter: brightness(1.1);
+}
+
+/* ============================================================================
+   ANIMATIONS
+   ============================================================================ */
+
+/* Deal-in animation */
+.cardDealIn {
+  animation: dealIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation-delay: var(--card-delay, 0s);
+  opacity: 0;
+  transform: translateY(-100px) translateX(-50px) rotate(-45deg) scale(0.5);
+}
+
+@keyframes dealIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-100px) translateX(-50px) rotate(-45deg) scale(0.5);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(var(--card-y-offset, 0)) rotate(var(--card-rotation, 0deg)) scale(1);
+  }
+}
+
+/* Hover animation for playable cards */
+@keyframes cardHoverPulse {
+  0%, 100% {
+    box-shadow:
+      0 3px 8px rgba(0, 0, 0, 0.15),
+      0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 6px 16px rgba(0, 0, 0, 0.2),
+      0 2px 6px rgba(0, 0, 0, 0.15),
+      0 0 0 2px rgba(26, 115, 96, 0.3);
+  }
+}
+
+.playable:hover .cardInner {
+  animation: cardHoverPulse 1.5s ease-in-out infinite;
+}
+
+/* ============================================================================
+   FOCUS STYLES (Accessibility)
+   ============================================================================ */
+
+.handCard:focus {
+  outline: none;
+}
+
+.handCard:focus-visible .cardInner {
+  box-shadow:
+    0 3px 8px rgba(0, 0, 0, 0.15),
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    0 0 0 3px var(--color-felt-base, #145a4a),
+    0 0 0 5px rgba(26, 115, 96, 0.3);
+}
+
+.playable:focus-visible .cardInner {
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.2),
+    0 2px 6px rgba(0, 0, 0, 0.15),
+    0 0 0 3px var(--color-gold-base, #c9a227),
+    0 0 0 5px rgba(201, 162, 39, 0.4);
+}
+
+/* ============================================================================
+   CARD SELECTION (for keyboard navigation)
+   ============================================================================ */
+
+.selected .cardInner {
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.25),
+    0 3px 8px rgba(0, 0, 0, 0.15),
+    0 0 0 3px var(--color-gold-base, #c9a227),
+    0 0 0 6px rgba(201, 162, 39, 0.2);
+  transform: translateY(-4px);
+}
+
+/* ============================================================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================================================ */
+
+/* Mobile optimization */
+@media (max-width: 640px) {
+  .handCard {
+    margin-left: -8px !important;
+  }
+
+  .handCard:first-child {
+    margin-left: 0 !important;
+  }
+
+  .playable:hover {
+    transform: translateY(calc(var(--card-y-offset, 0) - 6px)) rotate(var(--card-rotation, 0deg));
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .handCard {
+    margin-left: -9px !important;
+  }
+
+  .handCard:first-child {
+    margin-left: 0 !important;
+  }
+}
+
+/* Desktop - original spacing */
+@media (min-width: 1025px) {
+  .handCard {
+    margin-left: -10px !important;
+  }
+
+  .handCard:first-child {
+    margin-left: 0 !important;
+  }
+}
+
+/* ============================================================================
+   PERFORMANCE OPTIMIZATIONS
+   ============================================================================ */
+
+/* GPU acceleration for transforms */
+.handCard,
+.cardInner {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Disable will-change after animation completes */
+.handCard:not(.dragging):not(:hover) {
+  will-change: auto;
+}
+
+/* ============================================================================
+   PRINT STYLES
+   ============================================================================ */
+
+@media print {
+  .handCard {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .playable:hover {
+    transform: translateY(var(--card-y-offset, 0)) rotate(var(--card-rotation, 0deg));
+    filter: none;
+  }
+
+  .cardInner {
+    box-shadow: none;
+    border: 2px solid #000;
+  }
+}
+
+/* ============================================================================
+   REDUCED MOTION
+   ============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .handCard,
+  .cardInner {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .cardDealIn {
+    animation: none;
+    opacity: 1;
+    transform: translateY(var(--card-y-offset, 0)) rotate(var(--card-rotation, 0deg)) scale(1);
+  }
+
+  .playable:hover {
+    transform: translateY(var(--card-y-offset, 0)) rotate(var(--card-rotation, 0deg));
+  }
+}
+
+/* ============================================================================
+   HIGH CONTRAST MODE
+   ============================================================================ */
+
+@media (prefers-contrast: high) {
+  .cardInner {
+    border: 2px solid currentColor;
+  }
+
+  .disabled {
+    opacity: 0.6;
+  }
+}

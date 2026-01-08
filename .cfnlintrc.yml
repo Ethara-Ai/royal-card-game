@@ -1,0 +1,38 @@
+# cfn-lint configuration file
+# https://github.com/aws-cloudformation/cfn-lint
+
+# Templates to lint
+templates:
+  - infrastructure/*.yml
+  - infrastructure/*.yaml
+
+# Regions to validate against
+regions:
+  - us-east-1
+  - us-west-2
+  - eu-west-1
+
+# Rules to ignore (uncomment as needed)
+# ignore_checks:
+#   - W3002  # Warning about hardcoded credentials
+#   - E3012  # Property value type mismatch
+
+# Configure specific rules
+configure_rules:
+  # Allow dynamic references in certain properties
+  E3012:
+    strict: false
+
+# Ignore specific templates (uncomment as needed)
+# ignore_templates:
+#   - infrastructure/dev-only-template.yml
+
+# Include experimental checks
+include_experimental: false
+
+# Output format (parseable, json, junit, pretty, sarif)
+# format: pretty
+
+# Append additional rules from custom rules directories
+# append_rules:
+#   - ./custom-cfn-rules/
