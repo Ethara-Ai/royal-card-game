@@ -112,37 +112,26 @@ const TurnInstructionOverlay = ({
       aria-label={`Your turn. ${ruleSetName || "Highest Card Wins"}. ${ruleSetDescription || "Play your highest value card to win the trick"}`}
     >
       <div className="turn-instruction-content">
-        {/* Header with icon */}
         <div className="turn-instruction-header">
           <FaLightbulb className="turn-instruction-icon" aria-hidden="true" />
           <span className="turn-instruction-label">Your Turn</span>
         </div>
 
-        {/* Primary rule - highest contrast text */}
         <div className="turn-instruction-rule">
           {ruleSetName || "Highest Card Wins"}
         </div>
 
-        {/* Rule description - secondary contrast */}
         <div className="turn-instruction-description">
           {ruleSetDescription ||
             "Play your highest value card to win the trick"}
         </div>
 
-        {/* Divider - theme-aware gradient */}
-        <div className="turn-instruction-divider" aria-hidden="true" />
-
-        {/* Instruction */}
         <div className="turn-instruction-action">
-          <span className="turn-instruction-action-icon" aria-hidden="true">
-            👆
-          </span>
-          <span>Drag a card to play</span>
+          <span>Tap a card to select, then tap the table to play</span>
         </div>
 
-        {/* Dismiss hint - muted text */}
         <div className="turn-instruction-dismiss">
-          Click anywhere to dismiss
+          Tap anywhere to start
         </div>
       </div>
     </div>

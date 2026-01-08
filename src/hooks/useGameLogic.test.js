@@ -1,21 +1,14 @@
-/**
- * Unit tests for useGameLogic custom hook
- * Tests game state management, card dealing, playing, and AI logic
- */
-
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import useGameLogic from "./useGameLogic";
 import {
   INITIAL_GAME_STATE,
-  INITIAL_PLAYERS,
   GAME_PHASES,
   CARDS_PER_PLAYER,
   PLAYER_COUNT,
   SUITS,
 } from "./../constants";
 
-// Mock sonner toast
 vi.mock("sonner", () => ({
   toast: {
     success: vi.fn(),
@@ -113,7 +106,7 @@ describe("useGameLogic", () => {
       expect(result.current).toHaveProperty("playArea");
       expect(result.current).toHaveProperty("playAreaCards");
       expect(result.current).toHaveProperty("cardPositions");
-      expect(result.current).toHaveProperty("draggedCard");
+      expect(result.current).toHaveProperty("selectedCard");
       expect(result.current).toHaveProperty("dealingAnimation");
       expect(result.current).toHaveProperty("trickWinner");
       expect(result.current).toHaveProperty("showWinnerModal");
@@ -129,21 +122,11 @@ describe("useGameLogic", () => {
       expect(typeof result.current.getGameWinner).toBe("function");
     });
 
-    it("should return all expected drag handlers", () => {
+    it("should return card selection handlers", () => {
       const { result } = renderHook(() => useGameLogic());
 
-      expect(typeof result.current.handleDragStart).toBe("function");
-      expect(typeof result.current.handleDragOver).toBe("function");
-      expect(typeof result.current.handleDrop).toBe("function");
-      expect(typeof result.current.handleDragEnd).toBe("function");
-    });
-
-    it("should return all expected touch handlers", () => {
-      const { result } = renderHook(() => useGameLogic());
-
-      expect(typeof result.current.handleTouchStart).toBe("function");
-      expect(typeof result.current.handleTouchMove).toBe("function");
-      expect(typeof result.current.handleTouchEnd).toBe("function");
+      expect(typeof result.current.handleCardSelect).toBe("function");
+      expect(typeof result.current.handlePlaySelectedCard).toBe("function");
     });
 
     it("should return setter functions", () => {
@@ -247,19 +230,16 @@ describe("useGameLogic", () => {
     it("should not start game if not in waiting phase", () => {
       const { result } = renderHook(() => useGameLogic());
 
-      // Start the game first
       act(() => {
         result.current.startGame();
       });
 
       const phaseAfterFirstStart = result.current.gameState.phase;
 
-      // Try to start again
       act(() => {
         result.current.startGame();
       });
 
-      // Phase should not change again
       expect(result.current.gameState.phase).toBe(phaseAfterFirstStart);
     });
 
@@ -270,12 +250,10 @@ describe("useGameLogic", () => {
         result.current.startGame();
       });
 
-      // Advance past dealing delay
       await act(async () => {
         vi.advanceTimersByTime(600);
       });
 
-      // Players should now have cards
       expect(result.current.players[0].hand.length).toBeGreaterThan(0);
     });
 
@@ -286,7 +264,6 @@ describe("useGameLogic", () => {
         result.current.startGame();
       });
 
-      // Advance past dealing delay
       await act(async () => {
         vi.advanceTimersByTime(600);
       });
@@ -303,7 +280,6 @@ describe("useGameLogic", () => {
         result.current.startGame();
       });
 
-      // Advance past all delays
       await act(async () => {
         vi.advanceTimersByTime(2000);
       });
@@ -318,7 +294,6 @@ describe("useGameLogic", () => {
         result.current.startGame();
       });
 
-      // Advance past all delays
       await act(async () => {
         vi.advanceTimersByTime(2000);
       });
@@ -337,7 +312,6 @@ describe("useGameLogic", () => {
     it("should reset game state to initial values", async () => {
       const { result } = renderHook(() => useGameLogic());
 
-      // Start and play the game
       act(() => {
         result.current.startGame();
       });
@@ -346,7 +320,6 @@ describe("useGameLogic", () => {
         vi.advanceTimersByTime(2000);
       });
 
-      // Reset the game
       act(() => {
         result.current.resetGame();
       });
@@ -358,7 +331,6 @@ describe("useGameLogic", () => {
     it("should clear player hands", async () => {
       const { result } = renderHook(() => useGameLogic());
 
-      // Start the game
       act(() => {
         result.current.startGame();
       });
@@ -367,7 +339,6 @@ describe("useGameLogic", () => {
         vi.advanceTimersByTime(2000);
       });
 
-      // Reset the game
       act(() => {
         result.current.resetGame();
       });
@@ -380,7 +351,6 @@ describe("useGameLogic", () => {
     it("should clear play area", async () => {
       const { result } = renderHook(() => useGameLogic());
 
-      // Start the game
       act(() => {
         result.current.startGame();
       });
@@ -389,7 +359,6 @@ describe("useGameLogic", () => {
         vi.advanceTimersByTime(2000);
       });
 
-      // Reset the game
       act(() => {
         result.current.resetGame();
       });
@@ -400,12 +369,10 @@ describe("useGameLogic", () => {
     it("should hide winner modal", async () => {
       const { result } = renderHook(() => useGameLogic());
 
-      // Manually set winner modal to true
       act(() => {
         result.current.setShowWinnerModal(true);
       });
 
-      // Reset the game
       act(() => {
         result.current.resetGame();
       });
@@ -416,12 +383,10 @@ describe("useGameLogic", () => {
     it("should hide confetti", async () => {
       const { result } = renderHook(() => useGameLogic());
 
-      // Manually set confetti to true
       act(() => {
         result.current.setShowConfetti(true);
       });
 
-      // Reset the game
       act(() => {
         result.current.resetGame();
       });
@@ -432,12 +397,21 @@ describe("useGameLogic", () => {
     it("should clear trick winner", async () => {
       const { result } = renderHook(() => useGameLogic());
 
-      // Reset the game
       act(() => {
         result.current.resetGame();
       });
 
       expect(result.current.trickWinner).toBeNull();
+    });
+
+    it("should clear selected card", async () => {
+      const { result } = renderHook(() => useGameLogic());
+
+      act(() => {
+        result.current.resetGame();
+      });
+
+      expect(result.current.selectedCard).toBeNull();
     });
   });
 
@@ -463,7 +437,6 @@ describe("useGameLogic", () => {
     it("should not play card if not current player turn", async () => {
       const { result } = renderHook(() => useGameLogic());
 
-      // Start game
       act(() => {
         result.current.startGame();
       });
@@ -474,7 +447,6 @@ describe("useGameLogic", () => {
 
       const mockCard = { id: "hearts-5", suit: "hearts", rank: 5, value: 5 };
 
-      // Try to play as player2 when it's player1's turn
       const playAreaBefore = Object.keys(result.current.playArea).length;
 
       act(() => {
@@ -506,7 +478,6 @@ describe("useGameLogic", () => {
 
       const winner = result.current.getGameWinner();
 
-      // With all zeros, should return first player (index 0)
       expect(winner.player.id).toBe("player1");
       expect(winner.score).toBe(0);
     });
@@ -514,116 +485,127 @@ describe("useGameLogic", () => {
     it("should return player with highest score", () => {
       const { result } = renderHook(() => useGameLogic());
 
-      // Test with custom scores array
       const winner = result.current.getGameWinner([1, 5, 3, 2]);
 
       expect(winner.score).toBe(5);
     });
   });
 
-  describe("drag handlers", () => {
-    describe("handleDragStart", () => {
+  describe("card selection handlers", () => {
+    describe("handleCardSelect", () => {
       it("should be a function", () => {
         const { result } = renderHook(() => useGameLogic());
 
-        expect(typeof result.current.handleDragStart).toBe("function");
+        expect(typeof result.current.handleCardSelect).toBe("function");
       });
 
-      it("should prevent default if not current player turn", () => {
+      it("should not select card if not player turn", () => {
         const { result } = renderHook(() => useGameLogic());
 
-        const mockEvent = { preventDefault: vi.fn() };
         const mockCard = { id: "hearts-5", suit: "hearts", rank: 5, value: 5 };
 
         act(() => {
-          result.current.handleDragStart(mockEvent, mockCard);
+          result.current.handleCardSelect(mockCard);
         });
 
-        expect(mockEvent.preventDefault).toHaveBeenCalled();
-      });
-    });
-
-    describe("handleDragOver", () => {
-      it("should be a function", () => {
-        const { result } = renderHook(() => useGameLogic());
-
-        expect(typeof result.current.handleDragOver).toBe("function");
+        expect(result.current.selectedCard).toBeNull();
       });
 
-      it("should prevent default", () => {
-        const { result } = renderHook(() => useGameLogic());
-
-        const mockEvent = { preventDefault: vi.fn() };
-
-        act(() => {
-          result.current.handleDragOver(mockEvent);
-        });
-
-        expect(mockEvent.preventDefault).toHaveBeenCalled();
-      });
-    });
-
-    describe("handleDrop", () => {
-      it("should be a function", () => {
-        const { result } = renderHook(() => useGameLogic());
-
-        expect(typeof result.current.handleDrop).toBe("function");
-      });
-
-      it("should prevent default", () => {
-        const { result } = renderHook(() => useGameLogic());
-
-        const mockEvent = { preventDefault: vi.fn() };
-
-        act(() => {
-          result.current.handleDrop(mockEvent);
-        });
-
-        expect(mockEvent.preventDefault).toHaveBeenCalled();
-      });
-    });
-
-    describe("handleDragEnd", () => {
-      it("should be a function", () => {
-        const { result } = renderHook(() => useGameLogic());
-
-        expect(typeof result.current.handleDragEnd).toBe("function");
-      });
-
-      it("should clear dragged card", () => {
+      it("should select card when it is player turn", async () => {
         const { result } = renderHook(() => useGameLogic());
 
         act(() => {
-          result.current.handleDragEnd();
+          result.current.startGame();
         });
 
-        expect(result.current.draggedCard).toBeNull();
+        await act(async () => {
+          vi.advanceTimersByTime(2000);
+        });
+
+        const card = result.current.players[0].hand[0];
+
+        act(() => {
+          result.current.handleCardSelect(card);
+        });
+
+        expect(result.current.selectedCard).toEqual(card);
+      });
+
+      it("should deselect card when same card is selected again", async () => {
+        const { result } = renderHook(() => useGameLogic());
+
+        act(() => {
+          result.current.startGame();
+        });
+
+        await act(async () => {
+          vi.advanceTimersByTime(2000);
+        });
+
+        const card = result.current.players[0].hand[0];
+
+        act(() => {
+          result.current.handleCardSelect(card);
+        });
+
+        expect(result.current.selectedCard).toEqual(card);
+
+        act(() => {
+          result.current.handleCardSelect(card);
+        });
+
+        expect(result.current.selectedCard).toBeNull();
       });
     });
-  });
 
-  describe("touch handlers", () => {
-    describe("handleTouchStart", () => {
+    describe("handlePlaySelectedCard", () => {
       it("should be a function", () => {
         const { result } = renderHook(() => useGameLogic());
 
-        expect(typeof result.current.handleTouchStart).toBe("function");
+        expect(typeof result.current.handlePlaySelectedCard).toBe("function");
       });
-    });
 
-    describe("handleTouchMove", () => {
-      it("should be a function", () => {
+      it("should not play if no card is selected", async () => {
         const { result } = renderHook(() => useGameLogic());
 
-        expect(typeof result.current.handleTouchMove).toBe("function");
-      });
-    });
+        act(() => {
+          result.current.startGame();
+        });
 
-    describe("handleTouchEnd", () => {
-      it("should be a function", () => {
+        await act(async () => {
+          vi.advanceTimersByTime(2000);
+        });
+
+        act(() => {
+          result.current.handlePlaySelectedCard();
+        });
+
+        expect(Object.keys(result.current.playArea)).toHaveLength(0);
+      });
+
+      it("should play the selected card", async () => {
         const { result } = renderHook(() => useGameLogic());
 
-        expect(typeof result.current.handleTouchEnd).toBe("function");
+        act(() => {
+          result.current.startGame();
+        });
+
+        await act(async () => {
+          vi.advanceTimersByTime(2000);
+        });
+
+        const card = result.current.players[0].hand[0];
+
+        act(() => {
+          result.current.handleCardSelect(card);
+        });
+
+        act(() => {
+          result.current.handlePlaySelectedCard();
+        });
+
+        expect(result.current.playArea).toHaveProperty("player1");
+        expect(result.current.playArea.player1).toEqual(card);
       });
     });
   });
@@ -638,7 +620,6 @@ describe("useGameLogic", () => {
     it("should return array with positions for played cards", async () => {
       const { result } = renderHook(() => useGameLogic());
 
-      // Start game
       act(() => {
         result.current.startGame();
       });
@@ -647,7 +628,6 @@ describe("useGameLogic", () => {
         vi.advanceTimersByTime(2000);
       });
 
-      // Get a card from player's hand
       const card = result.current.players[0].hand[0];
 
       if (card) {
@@ -762,7 +742,6 @@ describe("useGameLogic", () => {
         vi.advanceTimersByTime(2000);
       });
 
-      // Collect all card IDs
       const allCardIds = [];
       result.current.players.forEach((player) => {
         player.hand.forEach((card) => {
@@ -770,7 +749,6 @@ describe("useGameLogic", () => {
         });
       });
 
-      // All IDs should be unique
       const uniqueIds = [...new Set(allCardIds)];
       expect(uniqueIds.length).toBe(allCardIds.length);
     });
@@ -823,7 +801,6 @@ describe("useGameLogic", () => {
         vi.advanceTimersByTime(2000);
       });
 
-      // Find an Ace if it exists in any hand and verify its value is 14
       result.current.players.forEach((player) => {
         player.hand.forEach((card) => {
           if (card.rank === 1) {
@@ -831,9 +808,6 @@ describe("useGameLogic", () => {
           }
         });
       });
-
-      // It's possible no ace was dealt, but if one was, it should have value 14
-      // This test will pass either way
     });
 
     it("should set non-Ace card values equal to rank", async () => {

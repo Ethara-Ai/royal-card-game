@@ -8,13 +8,9 @@ const UserHand = ({
   playerIndex,
   currentPlayer,
   gamePhase,
-  draggedCard,
+  selectedCard,
   dealingAnimation,
-  onDragStart,
-  onDragEnd,
-  onTouchStart,
-  onTouchMove,
-  onTouchEnd,
+  onCardSelect,
 }) => {
   const isMyTurn = currentPlayer === playerIndex;
   return (
@@ -88,13 +84,9 @@ const UserHand = ({
             index={index}
             totalCards={player.hand.length}
             isPlayable={isMyTurn && gamePhase === GAME_PHASES.PLAYING}
-            isDragging={draggedCard?.id === card.id}
+            isSelected={selectedCard?.id === card.id}
             isDealing={dealingAnimation}
-            onDragStart={(e) => onDragStart(e, card)}
-            onDragEnd={onDragEnd}
-            onTouchStart={(e) => onTouchStart(e, card)}
-            onTouchMove={onTouchMove}
-            onTouchEnd={onTouchEnd}
+            onSelect={onCardSelect}
           />
         ))}
       </div>
@@ -111,13 +103,9 @@ UserHand.propTypes = {
   playerIndex: PropTypes.number.isRequired,
   currentPlayer: PropTypes.number.isRequired,
   gamePhase: PropTypes.string.isRequired,
-  draggedCard: PropTypes.object,
+  selectedCard: PropTypes.object,
   dealingAnimation: PropTypes.bool.isRequired,
-  onDragStart: PropTypes.func.isRequired,
-  onDragEnd: PropTypes.func.isRequired,
-  onTouchStart: PropTypes.func.isRequired,
-  onTouchMove: PropTypes.func.isRequired,
-  onTouchEnd: PropTypes.func.isRequired,
+  onCardSelect: PropTypes.func.isRequired,
 };
 
 export default UserHand;

@@ -1,8 +1,3 @@
-/**
- * Unit tests for UserHand component
- * Tests rendering, player display, card rendering, and interaction handlers
- */
-
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import UserHand from "./UserHand";
@@ -21,13 +16,9 @@ describe("UserHand", () => {
     playerIndex: 0,
     currentPlayer: 0,
     gamePhase: "playing",
-    draggedCard: null,
+    selectedCard: null,
     dealingAnimation: false,
-    onDragStart: vi.fn(),
-    onDragEnd: vi.fn(),
-    onTouchStart: vi.fn(),
-    onTouchMove: vi.fn(),
-    onTouchEnd: vi.fn(),
+    onCardSelect: vi.fn(),
   };
 
   afterEach(() => {
@@ -195,33 +186,33 @@ describe("UserHand", () => {
     });
   });
 
-  describe("dragged card state", () => {
-    it("should mark correct card as dragging", () => {
-      const draggingProps = {
+  describe("selected card state", () => {
+    it("should mark correct card as selected", () => {
+      const selectedProps = {
         ...defaultProps,
-        draggedCard: { id: "hearts-5", suit: "hearts", rank: 5, value: 5 },
+        selectedCard: { id: "hearts-5", suit: "hearts", rank: 5, value: 5 },
       };
-      const { container } = render(<UserHand {...draggingProps} />);
-      const draggingCards = container.querySelectorAll(".hand-card.dragging");
-      expect(draggingCards.length).toBe(1);
+      const { container } = render(<UserHand {...selectedProps} />);
+      const selectedCards = container.querySelectorAll(".hand-card.selected");
+      expect(selectedCards.length).toBe(1);
     });
 
-    it("should not mark any card as dragging when draggedCard is null", () => {
+    it("should not mark any card as selected when selectedCard is null", () => {
       const { container } = render(
-        <UserHand {...defaultProps} draggedCard={null} />,
+        <UserHand {...defaultProps} selectedCard={null} />,
       );
-      const draggingCards = container.querySelectorAll(".hand-card.dragging");
-      expect(draggingCards.length).toBe(0);
+      const selectedCards = container.querySelectorAll(".hand-card.selected");
+      expect(selectedCards.length).toBe(0);
     });
 
-    it("should not mark wrong card as dragging", () => {
-      const draggingProps = {
+    it("should not mark wrong card as selected", () => {
+      const selectedProps = {
         ...defaultProps,
-        draggedCard: { id: "spades-10", suit: "spades", rank: 10, value: 10 },
+        selectedCard: { id: "spades-10", suit: "spades", rank: 10, value: 10 },
       };
-      const { container } = render(<UserHand {...draggingProps} />);
-      const draggingCards = container.querySelectorAll(".hand-card.dragging");
-      expect(draggingCards.length).toBe(0);
+      const { container } = render(<UserHand {...selectedProps} />);
+      const selectedCards = container.querySelectorAll(".hand-card.selected");
+      expect(selectedCards.length).toBe(0);
     });
   });
 

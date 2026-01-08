@@ -1,8 +1,3 @@
-/**
- * Unit tests for DragHint component
- * Tests visibility, styling, and content
- */
-
 import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
 import { render, screen, act } from "@testing-library/react";
 import DragHint from "./DragHint";
@@ -20,7 +15,6 @@ describe("DragHint", () => {
   describe("rendering", () => {
     it("should not render initially when visible is true", () => {
       const { container } = render(<DragHint visible={true} />);
-      // Initially not visible due to delay
       expect(container.querySelector(".drag-hint")).not.toBeInTheDocument();
     });
 
@@ -32,7 +26,6 @@ describe("DragHint", () => {
     it("should render after delay when visible is true", () => {
       const { container } = render(<DragHint visible={true} />);
 
-      // Fast-forward past the show timer (500ms)
       act(() => {
         vi.advanceTimersByTime(500);
       });
@@ -48,7 +41,7 @@ describe("DragHint", () => {
       });
 
       expect(
-        screen.getByText("Drag a card to the play area"),
+        screen.getByText("Tap a card to select it"),
       ).toBeInTheDocument();
     });
   });
@@ -57,13 +50,11 @@ describe("DragHint", () => {
     it("should show after 500ms delay", () => {
       const { container } = render(<DragHint visible={true} />);
 
-      // Before delay
       act(() => {
         vi.advanceTimersByTime(400);
       });
       expect(container.querySelector(".drag-hint")).not.toBeInTheDocument();
 
-      // After delay
       act(() => {
         vi.advanceTimersByTime(100);
       });
@@ -73,10 +64,35 @@ describe("DragHint", () => {
     it("should be visible at 3000ms mark", () => {
       const { container } = render(<DragHint visible={true} />);
 
-      // At 3000ms - should be visible (between 500ms show and 5000ms hide)
       act(() => {
         vi.advanceTimersByTime(3000);
       });
+      expect(container.querySelector(".drag-hint")).toBeInTheDocument();
+    });
+  });
+
+  describe("hasSelectedCard behavior", () => {
+    it("should not render when hasSelectedCard is true", () => {
+      const { container } = render(
+        <DragHint visible={true} hasSelectedCard={true} />,
+      );
+
+      act(() => {
+        vi.advanceTimersByTime(500);
+      });
+
+      expect(container.querySelector(".drag-hint")).not.toBeInTheDocument();
+    });
+
+    it("should render when hasSelectedCard is false", () => {
+      const { container } = render(
+        <DragHint visible={true} hasSelectedCard={false} />,
+      );
+
+      act(() => {
+        vi.advanceTimersByTime(500);
+      });
+
       expect(container.querySelector(".drag-hint")).toBeInTheDocument();
     });
   });
@@ -85,15 +101,12 @@ describe("DragHint", () => {
     it("should not show if visible becomes false before delay", () => {
       const { container, rerender } = render(<DragHint visible={true} />);
 
-      // Wait less than delay
       act(() => {
         vi.advanceTimersByTime(300);
       });
 
-      // Set visible to false - this triggers cleanup which clears the timers
       rerender(<DragHint visible={false} />);
 
-      // Wait past what would be the delay
       act(() => {
         vi.advanceTimersByTime(300);
       });
@@ -128,8 +141,8 @@ describe("DragHint", () => {
     });
   });
 
-  describe("arrow icon", () => {
-    it("should render an SVG arrow", () => {
+  describe("icon", () => {
+    it("should render an SVG icon", () => {
       const { container } = render(<DragHint visible={true} />);
 
       act(() => {
@@ -140,16 +153,15 @@ describe("DragHint", () => {
       expect(svg).toBeInTheDocument();
     });
 
-    it("should have correct arrow path", () => {
+    it("should have circle elements for tap icon", () => {
       const { container } = render(<DragHint visible={true} />);
 
       act(() => {
         vi.advanceTimersByTime(500);
       });
 
-      const path = container.querySelector("svg path");
-      expect(path).toBeInTheDocument();
-      expect(path.getAttribute("d")).toContain("M12 4");
+      const circles = container.querySelectorAll("svg circle");
+      expect(circles.length).toBe(2);
     });
   });
 
@@ -157,10 +169,8 @@ describe("DragHint", () => {
     it("should cleanup timers on unmount", () => {
       const { unmount } = render(<DragHint visible={true} />);
 
-      // Unmount before timers fire
       unmount();
 
-      // Advance time past all timers - should not throw
       expect(() => {
         act(() => {
           vi.advanceTimersByTime(6000);

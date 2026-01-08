@@ -2,10 +2,8 @@ import { useState } from "react";
 import { Toaster } from "sonner";
 import Confetti from "react-confetti";
 
-// Hooks
 import { useTheme, useWindowSize, useAppLoading, useGameLogic } from "./hooks";
 
-// Components
 import { Header } from "./components/Header";
 import {
   LoadingScreen,
@@ -13,42 +11,34 @@ import {
   Leaderboard,
   GameTable,
   WinnerModal,
+  TurnTimer,
 } from "./components";
 import ErrorBoundary from "./components/ErrorBoundary";
 
-// Context
 import { CardCustomizationProvider } from "./context";
 
-// Config
 import ruleSets from "./config/ruleSets";
 
-// Constants
 import { CONFETTI_COLORS, GAME_PHASES } from "./constants";
 
-// Styles
 import "./styles/gameStyles.css";
 
 function AppContent() {
-  // Theme management
   const { theme, toggleTheme } = useTheme();
 
-  // Window size for confetti
   const windowSize = useWindowSize();
 
-  // App loading state
   const { isAppLoading, showLoadingScreen, handleLoadingComplete } =
     useAppLoading();
 
-  // Rule set selection state
   const [selectedRuleSet, setSelectedRuleSet] = useState(0);
 
-  // Game logic hook
   const {
     gameState,
     players,
     playAreaCards,
     cardPositions,
-    draggedCard,
+    selectedCard,
     dealingAnimation,
     trickWinner,
     showWinnerModal,
@@ -56,29 +46,22 @@ function AppContent() {
     startGame,
     resetGame,
     getGameWinner,
-    handleDragStart,
-    handleDragOver,
-    handleDrop,
-    handleDragEnd,
-    handleTouchStart,
-    handleTouchMove,
-    handleTouchEnd,
+    handleCardSelect,
+    handlePlaySelectedCard,
+    autoPlayCard,
     username,
     setUsername,
   } = useGameLogic(selectedRuleSet);
 
-  // Check if game is in active play state
   const isGameActive =
     gameState.phase === GAME_PHASES.DEALING ||
     gameState.phase === GAME_PHASES.PLAYING ||
     gameState.phase === GAME_PHASES.EVALUATING;
 
-  // Compute winner for modal (only when needed)
   const winner = showWinnerModal ? getGameWinner() : null;
 
   return (
     <>
-      {/* Loading Screen */}
       {showLoadingScreen && (
         <LoadingScreen
           isLoading={isAppLoading}
@@ -88,9 +71,8 @@ function AppContent() {
         />
       )}
 
-      {/* Main App Container */}
       <div
-        className={`min-h-screen transition-all duration-500 relative ${
+        className={`min-h-screen transition-all duration-500 relative flex flex-col ${
           showLoadingScreen ? "opacity-0" : "opacity-100"
         }`}
         style={{
@@ -99,7 +81,6 @@ function AppContent() {
           transition: "opacity 400ms ease-in",
         }}
       >
-        {/* Winner Confetti */}
         {showConfetti && (
           <Confetti
             width={windowSize.width}
@@ -111,7 +92,6 @@ function AppContent() {
           />
         )}
 
-        {/* Toast Notifications */}
         <Toaster
           theme="dark"
           position="bottom-right"
@@ -135,7 +115,6 @@ function AppContent() {
           }}
         />
 
-        {/* Header with Settings */}
         <Header
           theme={theme}
           toggleTheme={toggleTheme}
@@ -145,15 +124,55 @@ function AppContent() {
           resetGame={resetGame}
         />
 
-        {/* Main Content Area */}
+        {isGameActive && (
+          <div
+            className="game-info-banner w-full text-center py-2 px-4"
+            style={{
+              background: "linear-gradient(90deg, transparent 0%, var(--color-panel-base) 20%, var(--color-panel-base) 80%, transparent 100%)",
+              borderBottom: "1px solid var(--color-border-default)",
+            }}
+          >
+            <div className="max-w-7xl mx-auto flex items-center justify-center gap-3 flex-wrap">
+              <span
+                className="font-semibold"
+                style={{
+                  color: "var(--color-gold-base)",
+                  fontSize: "clamp(12px, 2.5vw, 14px)",
+                  fontFamily: "var(--font-display)",
+                  textShadow: theme === "dark" ? "0 0 8px rgba(212, 175, 55, 0.3)" : "none",
+                }}
+              >
+                {ruleSets[selectedRuleSet].name}
+              </span>
+              <span
+                style={{
+                  color: "var(--color-text-primary)",
+                  fontSize: "clamp(10px, 2vw, 12px)",
+                  opacity: 0.5,
+                }}
+              >
+                •
+              </span>
+              <span
+                style={{
+                  color: "var(--color-text-primary)",
+                  fontSize: "clamp(10px, 2vw, 12px)",
+                  opacity: 0.8,
+                }}
+              >
+                {ruleSets[selectedRuleSet].description}
+              </span>
+            </div>
+          </div>
+        )}
+
         <div
-          className="max-w-7xl mx-auto px-3 py-4 min-h-[calc(100vh-80px)] flex flex-col"
+          className="main-content-area max-w-7xl mx-auto px-3 py-2 flex flex-col w-full"
           style={{
             paddingLeft: "max(12px, env(safe-area-inset-left))",
             paddingRight: "max(12px, env(safe-area-inset-right))",
           }}
         >
-          {/* Waiting Room - Before Game Starts */}
           {gameState.phase === GAME_PHASES.WAITING && (
             <WaitingRoom
               players={players}
@@ -166,10 +185,8 @@ function AppContent() {
             />
           )}
 
-          {/* Active Game Area */}
           {isGameActive && (
             <div className="game-layout flex-1 relative">
-              {/* Game Table - Primary Focus */}
               <GameTable
                 players={players}
                 gameState={gameState}
@@ -177,19 +194,13 @@ function AppContent() {
                 cardPositions={cardPositions}
                 trickWinner={trickWinner}
                 dealingAnimation={dealingAnimation}
-                draggedCard={draggedCard}
-                handleDragOver={handleDragOver}
-                handleDrop={handleDrop}
-                handleDragStart={handleDragStart}
-                handleDragEnd={handleDragEnd}
-                handleTouchStart={handleTouchStart}
-                handleTouchMove={handleTouchMove}
-                handleTouchEnd={handleTouchEnd}
+                selectedCard={selectedCard}
+                handleCardSelect={handleCardSelect}
+                handlePlaySelectedCard={handlePlaySelectedCard}
                 ruleSetName={ruleSets[selectedRuleSet].name}
                 ruleSetDescription={ruleSets[selectedRuleSet].description}
               />
 
-              {/* Floating Leaderboard */}
               <Leaderboard
                 players={players}
                 scores={gameState.scores}
@@ -197,10 +208,29 @@ function AppContent() {
                 trickWinner={trickWinner}
                 ruleSetName={ruleSets[selectedRuleSet].name}
               />
+
+              <div
+                className="turn-timer-container"
+                style={{
+                  position: "absolute",
+                  bottom: "12px",
+                  right: "0",
+                  zIndex: 30,
+                }}
+              >
+                <TurnTimer
+                  isActive={
+                    gameState.phase === GAME_PHASES.PLAYING &&
+                    gameState.currentPlayer === 0 &&
+                    !dealingAnimation
+                  }
+                  onTimeUp={autoPlayCard}
+                  isPaused={gameState.phase !== GAME_PHASES.PLAYING}
+                />
+              </div>
             </div>
           )}
 
-          {/* Winner Modal */}
           {showWinnerModal && winner && (
             <WinnerModal
               players={players}

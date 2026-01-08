@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import PropTypes from "prop-types";
 import PlayerPanel from "./PlayerPanel";
 import PlayedCard from "./PlayedCard";
@@ -7,58 +7,178 @@ import DragHint from "./DragHint";
 import TurnInstructionOverlay from "./TurnInstructionOverlay";
 import { GAME_PHASES } from "../constants";
 
+// #region agent log
+const debugLog = (location, message, data, hypothesisId) => {
+  fetch('http://127.0.0.1:7242/ingest/8e71f18a-dc0d-47b1-8d36-29b4211ea158',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location,message,data,hypothesisId,timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix'})}).catch(()=>{});
+};
+// #endregion
+
+const useTableBounds = () => {
+  const [bounds, setBounds] = useState({ 
+    topOffset: '18%', 
+    bottomOffset: '18%',
+    leftOffset: '8%',
+    rightOffset: '8%'
+  });
+
+  useEffect(() => {
+    const calculateBounds = () => {
+      const container = document.querySelector('.game-table-area');
+      const table = document.querySelector('.poker-table');
+      const topPanel = document.querySelector('.opponent-top .opponent-panel');
+      const userHand = document.querySelector('.user-hand-panel');
+      const leftPanel = document.querySelector('.opponent-left .opponent-panel');
+      const rightPanel = document.querySelector('.opponent-right .opponent-panel');
+      
+      if (!container || !table) return;
+
+      const containerRect = container.getBoundingClientRect();
+      const tableRect = table.getBoundingClientRect();
+      const containerHeight = containerRect.height;
+      const containerWidth = containerRect.width;
+
+      const gap = 4;
+      const minEdgePadding = 4;
+
+      const tableTopRelative = tableRect.top - containerRect.top;
+      const topPanelHeight = topPanel?.getBoundingClientRect().height || 60;
+      const topPosition = Math.max(2, ((tableTopRelative - topPanelHeight - gap) / containerHeight) * 100);
+
+      const tableBottomRelative = tableRect.bottom - containerRect.top;
+      const userHandHeight = userHand?.getBoundingClientRect().height || 120;
+      const bottomPosition = Math.max(2, ((containerHeight - tableBottomRelative - userHandHeight - gap) / containerHeight) * 100);
+
+      const leftPanelWidth = leftPanel?.getBoundingClientRect().width || 80;
+      const rightPanelWidth = rightPanel?.getBoundingClientRect().width || 80;
+      
+      const tableLeftRelative = tableRect.left - containerRect.left;
+      const tableRightRelative = containerRect.right - tableRect.right;
+      
+      const spaceOnLeft = tableLeftRelative;
+      const spaceOnRight = tableRightRelative;
+      
+      let leftPosition, rightPosition;
+      
+      if (spaceOnLeft < leftPanelWidth + minEdgePadding) {
+        leftPosition = (minEdgePadding + leftPanelWidth / 2) / containerWidth * 100;
+      } else {
+        leftPosition = ((tableLeftRelative - gap) / containerWidth * 100) - (leftPanelWidth / 2 / containerWidth * 100);
+      }
+      
+      if (spaceOnRight < rightPanelWidth + minEdgePadding) {
+        rightPosition = (minEdgePadding + rightPanelWidth / 2) / containerWidth * 100;
+      } else {
+        rightPosition = ((tableRightRelative - gap) / containerWidth * 100) - (rightPanelWidth / 2 / containerWidth * 100);
+      }
+      
+      leftPosition = Math.max(minEdgePadding / containerWidth * 100 + leftPanelWidth / 2 / containerWidth * 100, leftPosition);
+      rightPosition = Math.max(minEdgePadding / containerWidth * 100 + rightPanelWidth / 2 / containerWidth * 100, rightPosition);
+
+      setBounds({
+        topOffset: `${topPosition}%`,
+        bottomOffset: `${bottomPosition}%`,
+        leftOffset: `${leftPosition}%`,
+        rightOffset: `${rightPosition}%`
+      });
+    };
+
+    const timer = setTimeout(calculateBounds, 150);
+    const resizeTimer = { current: null };
+    const handleResize = () => {
+      clearTimeout(resizeTimer.current);
+      resizeTimer.current = setTimeout(calculateBounds, 100);
+    };
+    const handleOrientationChange = () => {
+      setTimeout(calculateBounds, 200);
+    };
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleOrientationChange);
+    const mediaQuery = window.matchMedia('(orientation: portrait)');
+    mediaQuery.addEventListener?.('change', handleOrientationChange);
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(resizeTimer.current);
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleOrientationChange);
+      mediaQuery.removeEventListener?.('change', handleOrientationChange);
+    };
+  }, []);
+
+  return bounds;
+};
+
+const getBorderStyle = (cardCount, selectedCard) => {
+  if (cardCount > 0) return "none";
+  if (selectedCard) return "2px solid var(--color-gold-base)";
+  return "2px dashed var(--color-text-on-felt-muted)";
+};
+
 const PlayArea = ({
   playAreaCards,
   cardPositions,
   trickWinner,
-  onDragOver,
-  onDrop,
-}) => (
-  <div
-    className="play-area-drop absolute rounded-xl flex items-center justify-center"
-    onDragOver={onDragOver}
-    onDrop={onDrop}
-    style={{
-      top: "50%",
-      left: "50%",
-      transform: "translate(-50%, -50%)",
-      width: "300px",
-      height: "175px",
-      backgroundColor: "transparent",
-      border:
-        playAreaCards.length === 0
-          ? "2px dashed var(--color-text-on-felt-muted)"
-          : "none",
-    }}
-  >
-    {playAreaCards.length === 0 ? (
-      <div
-        className="text-sm font-medium text-center"
-        style={{ color: "var(--color-text-on-felt)" }}
-      >
-        Play cards here
-      </div>
-    ) : (
-      <div className="relative w-full h-full">
-        {playAreaCards.map(([playerId, card], index) => (
-          <PlayedCard
-            key={`${playerId}-${card.id}`}
-            card={card}
-            position={cardPositions[index]}
-            isWinner={trickWinner === playerId}
-          />
-        ))}
-      </div>
-    )}
-  </div>
-);
+  selectedCard,
+  onPlayCard,
+}) => {
+  const handleClick = () => {
+    if (selectedCard && onPlayCard) {
+      onPlayCard();
+    }
+  };
+
+  return (
+    <div
+      className={`play-area-drop absolute rounded-xl flex items-center justify-center ${selectedCard ? "play-area-ready" : ""}`}
+      onClick={handleClick}
+      style={{
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: "300px",
+        height: "175px",
+        backgroundColor: "transparent",
+        border: getBorderStyle(playAreaCards.length, selectedCard),
+        cursor: selectedCard ? "pointer" : "default",
+      }}
+    >
+      {playAreaCards.length === 0 ? (
+        <div
+          className="text-sm font-medium text-center play-area-text"
+          style={{
+            color: selectedCard
+              ? "#ffffff"
+              : "var(--color-text-on-felt)",
+            textShadow: selectedCard
+              ? "0 0 12px rgba(255, 255, 255, 0.6), 0 2px 4px rgba(0, 0, 0, 0.4)"
+              : "none",
+            fontWeight: selectedCard ? 600 : 500,
+            letterSpacing: selectedCard ? "0.02em" : "normal",
+          }}
+        >
+          {selectedCard ? "Tap here to play" : "Select a card"}
+        </div>
+      ) : (
+        <div className="relative w-full h-full">
+          {playAreaCards.map(([playerId, card], index) => (
+            <PlayedCard
+              key={`${playerId}-${card.id}`}
+              card={card}
+              position={cardPositions[index]}
+              isWinner={trickWinner === playerId}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 PlayArea.propTypes = {
   playAreaCards: PropTypes.array.isRequired,
   cardPositions: PropTypes.array.isRequired,
   trickWinner: PropTypes.string,
-  onDragOver: PropTypes.func.isRequired,
-  onDrop: PropTypes.func.isRequired,
+  selectedCard: PropTypes.object,
+  onPlayCard: PropTypes.func.isRequired,
 };
 
 const PokerTable = () => (
@@ -68,9 +188,6 @@ const PokerTable = () => (
       top: "50%",
       left: "50%",
       transform: "translate(-50%, -50%)",
-      width: "clamp(88%, 80vw, 82%)",
-      maxWidth: "900px",
-      aspectRatio: "1.75 / 1",
       borderRadius: "50%",
       boxShadow: "var(--shadow-table-rim)",
     }}
@@ -83,22 +200,25 @@ const OpponentPosition = ({
   currentPlayer,
   isDealing,
   position,
+  topOffset,
+  leftOffset,
+  rightOffset,
 }) => {
   const positionStyles = {
     top: {
-      top: "15%",
+      top: topOffset || "18%",
       left: "50%",
-      transform: "translateX(-50%) translateY(-50%)",
+      transform: "translateX(-50%)",
     },
     left: {
-      left: "clamp(2%, 3%, 5%)",
+      left: leftOffset || "8%",
       top: "50%",
-      transform: "translateY(-50%)",
+      transform: "translateX(-50%) translateY(-50%)",
     },
     right: {
-      right: "clamp(2%, 3%, 5%)",
+      right: rightOffset || "8%",
       top: "50%",
-      transform: "translateY(-50%)",
+      transform: "translateX(50%) translateY(-50%)",
     },
   };
 
@@ -132,18 +252,87 @@ const GameTable = ({
   cardPositions,
   trickWinner,
   dealingAnimation,
-  draggedCard,
-  handleDragOver,
-  handleDrop,
-  handleDragStart,
-  handleDragEnd,
-  handleTouchStart,
-  handleTouchMove,
-  handleTouchEnd,
+  selectedCard,
+  handleCardSelect,
+  handlePlaySelectedCard,
   ruleSetName,
   ruleSetDescription,
 }) => {
   const [instructionDismissed, setInstructionDismissed] = useState(false);
+  const { topOffset, bottomOffset, leftOffset, rightOffset } = useTableBounds();
+
+  // #region agent log
+  useEffect(() => {
+    const logPositions = () => {
+      const container = document.querySelector('.game-table-area');
+      const table = document.querySelector('.poker-table');
+      const topPanel = document.querySelector('.opponent-top');
+      const userHand = document.querySelector('.user-hand-area');
+      const leftPanel = document.querySelector('.opponent-left');
+      const rightPanel = document.querySelector('.opponent-right');
+
+      if (!container || !table) {
+        debugLog('GameTable.jsx:useEffect', 'Elements not found', { hasContainer: !!container, hasTable: !!table }, 'X');
+        return;
+      }
+
+      const containerRect = container.getBoundingClientRect();
+      const tableRect = table.getBoundingClientRect();
+      const topPanelRect = topPanel?.getBoundingClientRect();
+      const userHandRect = userHand?.getBoundingClientRect();
+      const leftPanelRect = leftPanel?.getBoundingClientRect();
+      const rightPanelRect = rightPanel?.getBoundingClientRect();
+      
+      debugLog('GameTable.jsx:useEffect', 'Viewport and container info', {
+        viewport: { width: window.innerWidth, height: window.innerHeight },
+        container: { top: containerRect.top, bottom: containerRect.bottom, height: containerRect.height, width: containerRect.width }
+      }, 'A');
+
+      debugLog('GameTable.jsx:useEffect', 'Table bounds', {
+        table: { top: Math.round(tableRect.top), bottom: Math.round(tableRect.bottom), left: Math.round(tableRect.left), right: Math.round(tableRect.right), height: Math.round(tableRect.height), width: Math.round(tableRect.width) }
+      }, 'B');
+
+      if (topPanelRect) {
+        const topGap = Math.round(topPanelRect.bottom - tableRect.top);
+        debugLog('GameTable.jsx:useEffect', 'Top panel position', {
+          panelBottom: Math.round(topPanelRect.bottom),
+          tableTop: Math.round(tableRect.top),
+          gap: topGap,
+          status: topGap > 5 ? 'INSIDE_TABLE' : topGap < -10 ? 'TOO_FAR' : 'TOUCHING'
+        }, 'C');
+      }
+
+      if (userHandRect) {
+        const bottomGap = Math.round(tableRect.bottom - userHandRect.top);
+        debugLog('GameTable.jsx:useEffect', 'User hand position', {
+          panelTop: Math.round(userHandRect.top),
+          tableBottom: Math.round(tableRect.bottom),
+          gap: bottomGap,
+          status: bottomGap > 5 ? 'INSIDE_TABLE' : bottomGap < -10 ? 'TOO_FAR' : 'TOUCHING'
+        }, 'D');
+      }
+
+      if (leftPanelRect && rightPanelRect) {
+        const leftGap = Math.round(leftPanelRect.right - tableRect.left);
+        const rightGap = Math.round(tableRect.right - rightPanelRect.left);
+        debugLog('GameTable.jsx:useEffect', 'Side panels position', {
+          leftPanelRight: Math.round(leftPanelRect.right),
+          rightPanelLeft: Math.round(rightPanelRect.left),
+          tableLeft: Math.round(tableRect.left),
+          tableRight: Math.round(tableRect.right),
+          leftGap,
+          rightGap,
+          leftStatus: leftGap > 5 ? 'INSIDE_TABLE' : leftGap < -10 ? 'TOO_FAR' : 'TOUCHING',
+          rightStatus: rightGap > 5 ? 'INSIDE_TABLE' : rightGap < -10 ? 'TOO_FAR' : 'TOUCHING'
+        }, 'E');
+      }
+    };
+
+    const timer = setTimeout(logPositions, 1000);
+    window.addEventListener('resize', () => setTimeout(logPositions, 300));
+    return () => clearTimeout(timer);
+  }, []);
+  // #endregion
 
   const isPlayerTurn =
     gameState.phase === GAME_PHASES.PLAYING &&
@@ -164,26 +353,18 @@ const GameTable = ({
     setInstructionDismissed(true);
   }, []);
 
-  const handleDragStartWithDismiss = useCallback(
-    (e, card) => {
+  const handleCardSelectWithDismiss = useCallback(
+    (card) => {
       setInstructionDismissed(true);
-      handleDragStart(e, card);
+      handleCardSelect(card);
     },
-    [handleDragStart],
-  );
-
-  const handleTouchStartWithDismiss = useCallback(
-    (e, card) => {
-      setInstructionDismissed(true);
-      handleTouchStart(e, card);
-    },
-    [handleTouchStart],
+    [handleCardSelect],
   );
 
   return (
     <div
       className="game-table-area flex-1 relative"
-      style={{ minHeight: "clamp(320px, 70vh, 700px)" }}
+      style={{ minHeight: 0 }}
     >
       <PokerTable />
 
@@ -191,8 +372,8 @@ const GameTable = ({
         playAreaCards={playAreaCards}
         cardPositions={cardPositions}
         trickWinner={trickWinner}
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
+        selectedCard={selectedCard}
+        onPlayCard={handlePlaySelectedCard}
       />
 
       <TurnInstructionOverlay
@@ -205,6 +386,7 @@ const GameTable = ({
       <DragHint
         key={`hint-${gameState.phase}-${gameState.currentPlayer}`}
         visible={shouldShowHint}
+        hasSelectedCard={!!selectedCard}
       />
 
       <OpponentPosition
@@ -213,6 +395,7 @@ const GameTable = ({
         currentPlayer={gameState.currentPlayer}
         isDealing={dealingAnimation}
         position="top"
+        topOffset={topOffset}
       />
 
       <OpponentPosition
@@ -221,6 +404,7 @@ const GameTable = ({
         currentPlayer={gameState.currentPlayer}
         isDealing={dealingAnimation}
         position="left"
+        leftOffset={leftOffset}
       />
 
       <OpponentPosition
@@ -229,14 +413,15 @@ const GameTable = ({
         currentPlayer={gameState.currentPlayer}
         isDealing={dealingAnimation}
         position="right"
+        rightOffset={rightOffset}
       />
 
       <div
         className="absolute user-hand-area"
         style={{
-          bottom: "15%",
+          bottom: bottomOffset,
           left: "50%",
-          transform: "translateX(-50%) translateY(50%)",
+          transform: "translateX(-50%)",
           zIndex: 10,
         }}
       >
@@ -245,13 +430,9 @@ const GameTable = ({
           playerIndex={0}
           currentPlayer={gameState.currentPlayer}
           gamePhase={gameState.phase}
-          draggedCard={draggedCard}
+          selectedCard={selectedCard}
           dealingAnimation={dealingAnimation}
-          onDragStart={handleDragStartWithDismiss}
-          onDragEnd={handleDragEnd}
-          onTouchStart={handleTouchStartWithDismiss}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
+          onCardSelect={handleCardSelectWithDismiss}
         />
       </div>
     </div>
@@ -268,14 +449,9 @@ GameTable.propTypes = {
   cardPositions: PropTypes.array.isRequired,
   trickWinner: PropTypes.string,
   dealingAnimation: PropTypes.bool.isRequired,
-  draggedCard: PropTypes.object,
-  handleDragOver: PropTypes.func.isRequired,
-  handleDrop: PropTypes.func.isRequired,
-  handleDragStart: PropTypes.func.isRequired,
-  handleDragEnd: PropTypes.func.isRequired,
-  handleTouchStart: PropTypes.func.isRequired,
-  handleTouchMove: PropTypes.func.isRequired,
-  handleTouchEnd: PropTypes.func.isRequired,
+  selectedCard: PropTypes.object,
+  handleCardSelect: PropTypes.func.isRequired,
+  handlePlaySelectedCard: PropTypes.func.isRequired,
   ruleSetName: PropTypes.string,
   ruleSetDescription: PropTypes.string,
 };

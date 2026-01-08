@@ -1,11 +1,7 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
-/**
- * DragHint component - Shows a hint to drag cards to play area
- * Displays once per game session when it's the player's turn
- */
-const DragHint = ({ visible }) => {
+const DragHint = ({ visible, hasSelectedCard }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [hasShown, setHasShown] = useState(false);
 
@@ -26,6 +22,11 @@ const DragHint = ({ visible }) => {
       };
     }
   }, [visible, hasShown]);
+
+  const shouldHide = hasSelectedCard && isVisible;
+  if (shouldHide && isVisible) {
+    return null;
+  }
 
   if (!isVisible) return null;
 
@@ -50,7 +51,6 @@ const DragHint = ({ visible }) => {
           animation: "hintFadeIn 0.5s ease-out forwards",
         }}
       >
-        {/* Animated arrow pointing up */}
         <div
           style={{
             display: "flex",
@@ -66,14 +66,11 @@ const DragHint = ({ visible }) => {
             fill="none"
             style={{ opacity: 0.7 }}
           >
-            <path
-              d="M12 4L6 10H10V20H14V10H18L12 4Z"
-              fill="var(--color-gold-light)"
-            />
+            <circle cx="12" cy="12" r="8" fill="var(--color-gold-light)" />
+            <circle cx="12" cy="12" r="4" fill="var(--color-gold-dark)" />
           </svg>
         </div>
 
-        {/* Hint text */}
         <div
           style={{
             fontFamily: "var(--font-body)",
@@ -89,7 +86,7 @@ const DragHint = ({ visible }) => {
             letterSpacing: "0.02em",
           }}
         >
-          Drag a card to the play area
+          Tap a card to select it
         </div>
       </div>
     </div>
@@ -98,6 +95,7 @@ const DragHint = ({ visible }) => {
 
 DragHint.propTypes = {
   visible: PropTypes.bool.isRequired,
+  hasSelectedCard: PropTypes.bool,
 };
 
 export default DragHint;

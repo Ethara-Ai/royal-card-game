@@ -1,8 +1,3 @@
-/**
- * Unit tests for Card component
- * Tests card rendering, styling, and interaction handlers
- */
-
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import Card from "./Card";
@@ -18,13 +13,9 @@ describe("Card", () => {
     index: 0,
     totalCards: 7,
     isPlayable: true,
-    isDragging: false,
+    isSelected: false,
     isDealing: false,
-    onDragStart: vi.fn(),
-    onDragEnd: vi.fn(),
-    onTouchStart: vi.fn(),
-    onTouchMove: vi.fn(),
-    onTouchEnd: vi.fn(),
+    onSelect: vi.fn(),
   };
 
   beforeEach(() => {
@@ -94,7 +85,6 @@ describe("Card", () => {
 
     it("should render suit icon", () => {
       const { container } = render(<Card {...defaultProps} />);
-      // Check for SVG element (suit icon)
       expect(container.querySelector("svg")).toBeInTheDocument();
     });
   });
@@ -152,18 +142,18 @@ describe("Card", () => {
       expect(container.firstChild).toHaveClass("disabled");
     });
 
-    it("should have 'dragging' class when isDragging is true", () => {
+    it("should have 'selected' class when isSelected is true", () => {
       const { container } = render(
-        <Card {...defaultProps} isDragging={true} />,
+        <Card {...defaultProps} isSelected={true} />,
       );
-      expect(container.firstChild).toHaveClass("dragging");
+      expect(container.firstChild).toHaveClass("selected");
     });
 
-    it("should not have 'dragging' class when isDragging is false", () => {
+    it("should not have 'selected' class when isSelected is false", () => {
       const { container } = render(
-        <Card {...defaultProps} isDragging={false} />,
+        <Card {...defaultProps} isSelected={false} />,
       );
-      expect(container.firstChild).not.toHaveClass("dragging");
+      expect(container.firstChild).not.toHaveClass("selected");
     });
 
     it("should have 'hand-card' class", () => {
@@ -172,71 +162,26 @@ describe("Card", () => {
     });
   });
 
-  describe("draggable behavior", () => {
-    it("should be draggable when isPlayable is true", () => {
+  describe("click behavior", () => {
+    it("should call onSelect when clicked and playable", () => {
+      const onSelect = vi.fn();
       const { container } = render(
-        <Card {...defaultProps} isPlayable={true} />,
+        <Card {...defaultProps} isPlayable={true} onSelect={onSelect} />,
       );
-      expect(container.firstChild).toHaveAttribute("draggable", "true");
+
+      fireEvent.click(container.firstChild);
+      expect(onSelect).toHaveBeenCalledTimes(1);
+      expect(onSelect).toHaveBeenCalledWith(defaultProps.card);
     });
 
-    it("should not be draggable when isPlayable is false", () => {
+    it("should not call onSelect when clicked and not playable", () => {
+      const onSelect = vi.fn();
       const { container } = render(
-        <Card {...defaultProps} isPlayable={false} />,
-      );
-      expect(container.firstChild).toHaveAttribute("draggable", "false");
-    });
-  });
-
-  describe("event handlers", () => {
-    it("should call onDragStart when drag starts", () => {
-      const onDragStart = vi.fn();
-      const { container } = render(
-        <Card {...defaultProps} onDragStart={onDragStart} />,
+        <Card {...defaultProps} isPlayable={false} onSelect={onSelect} />,
       );
 
-      fireEvent.dragStart(container.firstChild);
-      expect(onDragStart).toHaveBeenCalledTimes(1);
-    });
-
-    it("should call onDragEnd when drag ends", () => {
-      const onDragEnd = vi.fn();
-      const { container } = render(
-        <Card {...defaultProps} onDragEnd={onDragEnd} />,
-      );
-
-      fireEvent.dragEnd(container.firstChild);
-      expect(onDragEnd).toHaveBeenCalledTimes(1);
-    });
-
-    it("should call onTouchStart when touch starts", () => {
-      const onTouchStart = vi.fn();
-      const { container } = render(
-        <Card {...defaultProps} onTouchStart={onTouchStart} />,
-      );
-
-      fireEvent.touchStart(container.firstChild);
-      expect(onTouchStart).toHaveBeenCalledTimes(1);
-    });
-
-    it("should call onTouchMove when touch moves", () => {
-      const onTouchMove = vi.fn();
-      const { container } = render(
-        <Card {...defaultProps} onTouchMove={onTouchMove} />,
-      );
-
-      fireEvent.touchMove(container.firstChild);
-      expect(onTouchMove).toHaveBeenCalledTimes(1);
-    });
-
-    it("should call onTouchEnd when touch ends", () => {
-      const onTouchEnd = vi.fn();
-      const { container } = render(
-        <Card {...defaultProps} onTouchEnd={onTouchEnd} />,
-      );
-
-      fireEvent.touchEnd(container.firstChild);
-      expect(onTouchEnd).toHaveBeenCalledTimes(1);
+      fireEvent.click(container.firstChild);
+      expect(onSelect).not.toHaveBeenCalled();
     });
   });
 
@@ -268,7 +213,6 @@ describe("Card", () => {
         <Card {...defaultProps} index={3} totalCards={7} />,
       );
       const style = container.firstChild.style;
-      // Middle index for 7 cards is 3, so rotation should be 0 for middle card
       expect(style.getPropertyValue("--card-rotation")).toBe("0deg");
     });
 
@@ -289,9 +233,9 @@ describe("Card", () => {
       expect(container.firstChild.style.zIndex).toBe("12");
     });
 
-    it("should have high z-index when dragging", () => {
+    it("should have high z-index when selected", () => {
       const { container } = render(
-        <Card {...defaultProps} index={0} isDragging={true} />,
+        <Card {...defaultProps} index={0} isSelected={true} />,
       );
       expect(container.firstChild.style.zIndex).toBe("100");
     });
@@ -308,16 +252,12 @@ describe("Card", () => {
         <Card {...defaultProps} isDealing={true} />,
       );
 
-      // Initially should have the class
       expect(container.firstChild).toHaveClass("card-deal-in");
 
-      // Advance timers past the 600ms animation delay
       vi.advanceTimersByTime(700);
 
-      // Re-render to reflect state changes
       rerender(<Card {...defaultProps} isDealing={true} />);
 
-      // After animation, should not have the class
       expect(container.firstChild).not.toHaveClass("card-deal-in");
     });
 
@@ -377,7 +317,6 @@ describe("Card", () => {
           },
         };
         const { unmount } = render(<Card {...props} />);
-        // Just verify it renders without throwing
         unmount();
       });
     });

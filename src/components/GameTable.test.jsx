@@ -1,14 +1,8 @@
-/**
- * Unit tests for GameTable component
- * Tests rendering, player panels, play area, drag/drop, and game state display
- */
-
 import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import GameTable from "./GameTable";
 import { CardCustomizationProvider } from "../context";
 
-// Helper to render with context
 const renderWithContext = (ui, options) =>
   render(<CardCustomizationProvider>{ui}</CardCustomizationProvider>, options);
 
@@ -58,14 +52,9 @@ describe("GameTable", () => {
     cardPositions: [],
     trickWinner: null,
     dealingAnimation: false,
-    draggedCard: null,
-    handleDragOver: vi.fn(),
-    handleDrop: vi.fn(),
-    handleDragStart: vi.fn(),
-    handleDragEnd: vi.fn(),
-    handleTouchStart: vi.fn(),
-    handleTouchMove: vi.fn(),
-    handleTouchEnd: vi.fn(),
+    selectedCard: null,
+    handleCardSelect: vi.fn(),
+    handlePlaySelectedCard: vi.fn(),
   };
 
   beforeEach(() => {
@@ -101,9 +90,9 @@ describe("GameTable", () => {
       expect(playAreaDrop).toBeInTheDocument();
     });
 
-    it("should display 'Play cards here' when no cards in play area", () => {
+    it("should display 'Select a card' when no cards in play area", () => {
       renderWithContext(<GameTable {...defaultProps} playAreaCards={[]} />);
-      expect(screen.getByText("Play cards here")).toBeInTheDocument();
+      expect(screen.getByText("Select a card")).toBeInTheDocument();
     });
 
     it("should have felt-gradient class on poker table", () => {
@@ -117,7 +106,6 @@ describe("GameTable", () => {
     it("should render opponent panels for AI players", () => {
       const { container } = renderWithContext(<GameTable {...defaultProps} />);
       const opponentPanels = container.querySelectorAll(".opponent-panel");
-      // 3 opponent panels (player2, player3, player4)
       expect(opponentPanels.length).toBe(3);
     });
 
@@ -181,7 +169,6 @@ describe("GameTable", () => {
         <GameTable {...propsWithCards} />,
       );
       const playArea = container.querySelector(".play-area-drop");
-      // When cards are played, border should not be dashed
       expect(playArea.style.border).not.toContain("dashed");
     });
 
@@ -205,29 +192,43 @@ describe("GameTable", () => {
     });
   });
 
-  describe("drag and drop handlers", () => {
-    it("should call handleDragOver when dragging over play area", () => {
-      const handleDragOver = vi.fn();
-      const { container } = renderWithContext(
-        <GameTable {...defaultProps} handleDragOver={handleDragOver} />,
-      );
-
-      const playArea = container.querySelector(".play-area-drop");
-      fireEvent.dragOver(playArea);
-
-      expect(handleDragOver).toHaveBeenCalled();
+  describe("card selection", () => {
+    it("should display Tap here to play when card is selected", () => {
+      const selectedCardProps = {
+        ...defaultProps,
+        selectedCard: { id: "hearts-5", suit: "hearts", rank: 5, value: 5 },
+      };
+      renderWithContext(<GameTable {...selectedCardProps} />);
+      expect(screen.getByText("Tap here to play")).toBeInTheDocument();
     });
 
-    it("should call handleDrop when dropping on play area", () => {
-      const handleDrop = vi.fn();
+    it("should call handlePlaySelectedCard when clicking play area with selected card", () => {
+      const handlePlaySelectedCard = vi.fn();
+      const selectedCardProps = {
+        ...defaultProps,
+        selectedCard: { id: "hearts-5", suit: "hearts", rank: 5, value: 5 },
+        handlePlaySelectedCard,
+      };
       const { container } = renderWithContext(
-        <GameTable {...defaultProps} handleDrop={handleDrop} />,
+        <GameTable {...selectedCardProps} />,
       );
 
       const playArea = container.querySelector(".play-area-drop");
-      fireEvent.drop(playArea);
+      fireEvent.click(playArea);
 
-      expect(handleDrop).toHaveBeenCalled();
+      expect(handlePlaySelectedCard).toHaveBeenCalled();
+    });
+
+    it("should have play-area-ready class when card is selected", () => {
+      const selectedCardProps = {
+        ...defaultProps,
+        selectedCard: { id: "hearts-5", suit: "hearts", rank: 5, value: 5 },
+      };
+      const { container } = renderWithContext(
+        <GameTable {...selectedCardProps} />,
+      );
+      const playArea = container.querySelector(".play-area-drop");
+      expect(playArea).toHaveClass("play-area-ready");
     });
   });
 
@@ -246,10 +247,8 @@ describe("GameTable", () => {
 
       const { container } = renderWithContext(<GameTable {...propsForHint} />);
 
-      // Advance timers to show hint
       vi.advanceTimersByTime(600);
 
-      // Hint might be shown after delay
       expect(
         container.querySelector(".drag-hint") || container,
       ).toBeInTheDocument();
@@ -275,7 +274,6 @@ describe("GameTable", () => {
 
       vi.advanceTimersByTime(600);
 
-      // Should not show hint when cards are played
       expect(container.querySelector(".drag-hint")).toBeNull();
     });
 
@@ -297,7 +295,7 @@ describe("GameTable", () => {
         ...defaultProps,
         gameState: {
           phase: "playing",
-          currentPlayer: 1, // AI's turn
+          currentPlayer: 1,
           scores: [0, 0, 0, 0],
         },
       };
@@ -342,7 +340,6 @@ describe("GameTable", () => {
     });
 
     it("should pass cardBackPattern to PlayerPanel components", () => {
-      // cardBackPattern is now handled by context, not props
       const { container } = renderWithContext(<GameTable {...defaultProps} />);
       expect(container.querySelector(".game-table-area")).toBeInTheDocument();
     });
@@ -498,7 +495,6 @@ describe("GameTable", () => {
         ],
       };
 
-      // Should render without throwing
       const { container } = renderWithContext(
         <GameTable {...minimalPlayersProps} />,
       );
@@ -545,52 +541,28 @@ describe("GameTable", () => {
     });
   });
 
-  describe("touch handlers", () => {
-    it("should pass handleTouchStart to UserHand", () => {
-      const handleTouchStart = vi.fn();
-      const { container } = renderWithContext(
-        <GameTable {...defaultProps} handleTouchStart={handleTouchStart} />,
-      );
-      expect(container.querySelector(".user-hand-area")).toBeInTheDocument();
-    });
-
-    it("should pass handleTouchMove to UserHand", () => {
-      const handleTouchMove = vi.fn();
-      const { container } = renderWithContext(
-        <GameTable {...defaultProps} handleTouchMove={handleTouchMove} />,
-      );
-      expect(container.querySelector(".user-hand-area")).toBeInTheDocument();
-    });
-
-    it("should pass handleTouchEnd to UserHand", () => {
-      const handleTouchEnd = vi.fn();
-      const { container } = renderWithContext(
-        <GameTable {...defaultProps} handleTouchEnd={handleTouchEnd} />,
-      );
-      expect(container.querySelector(".user-hand-area")).toBeInTheDocument();
-    });
-  });
-
-  describe("draggedCard state", () => {
-    it("should pass draggedCard to UserHand", () => {
-      const draggedCardProps = {
+  describe("selected card state", () => {
+    it("should pass selectedCard to UserHand", () => {
+      const selectedCardProps = {
         ...defaultProps,
-        draggedCard: { id: "hearts-5", suit: "hearts", rank: 5, value: 5 },
+        selectedCard: { id: "hearts-5", suit: "hearts", rank: 5, value: 5 },
       };
 
       const { container } = renderWithContext(
-        <GameTable {...draggedCardProps} />,
+        <GameTable {...selectedCardProps} />,
       );
       expect(container.querySelector(".user-hand-area")).toBeInTheDocument();
     });
 
-    it("should handle null draggedCard", () => {
-      const noDragProps = {
+    it("should handle null selectedCard", () => {
+      const noSelectionProps = {
         ...defaultProps,
-        draggedCard: null,
+        selectedCard: null,
       };
 
-      const { container } = renderWithContext(<GameTable {...noDragProps} />);
+      const { container } = renderWithContext(
+        <GameTable {...noSelectionProps} />,
+      );
       expect(container.querySelector(".user-hand-area")).toBeInTheDocument();
     });
   });

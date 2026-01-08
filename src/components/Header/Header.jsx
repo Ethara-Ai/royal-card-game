@@ -24,7 +24,7 @@ const Header = ({
   return (
     <>
       <header
-        className="header-container p-3 sm:p-4 relative z-50"
+        className="header-container py-2 px-3 sm:py-2 sm:px-4 relative z-50"
         style={{
           background:
             "linear-gradient(180deg, var(--color-bg-elevated) 0%, var(--color-bg-surface) 100%)",

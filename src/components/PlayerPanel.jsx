@@ -18,7 +18,7 @@ const PlayerPanel = ({ player, index, currentPlayer, isDealing }) => {
         padding: "clamp(6px, 1.2vw, 12px) clamp(8px, 1.6vw, 16px)",
         boxShadow: "var(--shadow-lg)",
         border: "1px solid var(--color-border-default)",
-        minWidth: "clamp(90px, 15vw, 160px)",
+        minWidth: "clamp(110px, 18vw, 180px)",
       }}
     >
       <div className="flex items-center gap-2 mb-1.5">

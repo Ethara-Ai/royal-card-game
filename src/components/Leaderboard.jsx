@@ -9,7 +9,7 @@ const Leaderboard = ({
   trickWinner,
   ruleSetName,
 }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   const toggleCollapse = useCallback(() => {
     setIsCollapsed((prev) => !prev);
@@ -64,7 +64,7 @@ const Leaderboard = ({
             className="leaderboard-close-btn"
             onClick={toggleCollapse}
             aria-label="Hide leaderboard"
-          >
+      >
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -88,8 +88,8 @@ const Leaderboard = ({
                 style={{
                   background: "var(--color-panel-dark)",
                   border: isCurrentPlayer
-                    ? "1px solid var(--color-border-gold)"
-                    : "1px solid transparent",
+                      ? "1px solid var(--color-border-gold)"
+                      : "1px solid transparent",
                 }}
               >
                 <div className="leaderboard-rank">#{index + 1}</div>
