@@ -2,41 +2,61 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import PropTypes from "prop-types";
 
 const TURN_DURATION = 30;
+const TIMER_RADIUS = 14;
+const CIRCUMFERENCE = 2 * Math.PI * TIMER_RADIUS;
+
+const getTimerStrokeColor = (isCritical, isLow) => {
+  if (isCritical) return "#ef4444";
+  if (isLow) return "#f59e0b";
+  return "var(--color-gold-base)";
+};
+
+const getTimerTextColor = (isCritical, isLow) => {
+  if (isCritical) return "#ef4444";
+  if (isLow) return "#f59e0b";
+  return "var(--color-text-primary)";
+};
 
 const TurnTimer = ({ isActive, onTimeUp, isPaused }) => {
   const [timeLeft, setTimeLeft] = useState(TURN_DURATION);
   const intervalRef = useRef(null);
   const hasTriggeredRef = useRef(false);
+  const initialTimeoutRef = useRef(null);
 
   const clearTimer = useCallback(() => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
+    if (initialTimeoutRef.current) {
+      clearTimeout(initialTimeoutRef.current);
+      initialTimeoutRef.current = null;
+    }
   }, []);
 
   useEffect(() => {
     if (isActive && !isPaused) {
       hasTriggeredRef.current = false;
-      setTimeLeft(TURN_DURATION);
-      
-      intervalRef.current = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            clearTimer();
-            if (!hasTriggeredRef.current) {
-              hasTriggeredRef.current = true;
-              setTimeout(() => onTimeUp(), 0);
-            }
-            return 0;
+      let currentTime = TURN_DURATION;
+
+      const tick = () => {
+        setTimeLeft(currentTime);
+        if (currentTime <= 0) {
+          clearTimer();
+          if (!hasTriggeredRef.current) {
+            hasTriggeredRef.current = true;
+            onTimeUp();
           }
-          return prev - 1;
-        });
-      }, 1000);
+        } else {
+          currentTime -= 1;
+        }
+      };
+
+      initialTimeoutRef.current = setTimeout(tick, 0);
+      intervalRef.current = setInterval(tick, 1000);
     } else {
       clearTimer();
       if (!isActive) {
-        setTimeLeft(TURN_DURATION);
         hasTriggeredRef.current = false;
       }
     }
@@ -49,9 +69,7 @@ const TurnTimer = ({ isActive, onTimeUp, isPaused }) => {
   const progress = (timeLeft / TURN_DURATION) * 100;
   const isLow = timeLeft <= 10;
   const isCritical = timeLeft <= 5;
-
-  const circumference = 2 * Math.PI * 18;
-  const strokeDashoffset = circumference - (progress / 100) * circumference;
+  const strokeDashoffset = CIRCUMFERENCE - (progress / 100) * CIRCUMFERENCE;
 
   return (
     <div className="turn-timer">
@@ -76,11 +94,11 @@ const TurnTimer = ({ isActive, onTimeUp, isPaused }) => {
             cy="20"
             r="14"
             fill="none"
-            stroke={isCritical ? "#ef4444" : isLow ? "#f59e0b" : "var(--color-gold-base)"}
+            stroke={getTimerStrokeColor(isCritical, isLow)}
             strokeWidth="3"
             strokeLinecap="round"
-            strokeDasharray={2 * Math.PI * 14}
-            strokeDashoffset={(2 * Math.PI * 14) - (progress / 100) * (2 * Math.PI * 14)}
+            strokeDasharray={CIRCUMFERENCE}
+            strokeDashoffset={strokeDashoffset}
             transform="rotate(-90 20 20)"
             style={{ transition: "stroke-dashoffset 1s linear, stroke 0.3s ease" }}
           />
@@ -88,7 +106,7 @@ const TurnTimer = ({ isActive, onTimeUp, isPaused }) => {
         <span
           className="turn-timer-text"
           style={{
-            color: isCritical ? "#ef4444" : isLow ? "#f59e0b" : "var(--color-text-primary)",
+            color: getTimerTextColor(isCritical, isLow),
           }}
         >
           {timeLeft}

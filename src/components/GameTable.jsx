@@ -13,6 +13,12 @@ const debugLog = (location, message, data, hypothesisId) => {
 };
 // #endregion
 
+const getPositionStatus = (gap) => {
+  if (gap > 5) return 'INSIDE_TABLE';
+  if (gap < -10) return 'TOO_FAR';
+  return 'TOUCHING';
+};
+
 const useTableBounds = () => {
   const [bounds, setBounds] = useState({ 
     topOffset: '18%', 
@@ -298,7 +304,7 @@ const GameTable = ({
           panelBottom: Math.round(topPanelRect.bottom),
           tableTop: Math.round(tableRect.top),
           gap: topGap,
-          status: topGap > 5 ? 'INSIDE_TABLE' : topGap < -10 ? 'TOO_FAR' : 'TOUCHING'
+          status: getPositionStatus(topGap)
         }, 'C');
       }
 
@@ -308,7 +314,7 @@ const GameTable = ({
           panelTop: Math.round(userHandRect.top),
           tableBottom: Math.round(tableRect.bottom),
           gap: bottomGap,
-          status: bottomGap > 5 ? 'INSIDE_TABLE' : bottomGap < -10 ? 'TOO_FAR' : 'TOUCHING'
+          status: getPositionStatus(bottomGap)
         }, 'D');
       }
 
@@ -322,8 +328,8 @@ const GameTable = ({
           tableRight: Math.round(tableRect.right),
           leftGap,
           rightGap,
-          leftStatus: leftGap > 5 ? 'INSIDE_TABLE' : leftGap < -10 ? 'TOO_FAR' : 'TOUCHING',
-          rightStatus: rightGap > 5 ? 'INSIDE_TABLE' : rightGap < -10 ? 'TOO_FAR' : 'TOUCHING'
+          leftStatus: getPositionStatus(leftGap),
+          rightStatus: getPositionStatus(rightGap)
         }, 'E');
       }
     };
