@@ -1,10 +1,19 @@
-/* eslint-disable react-refresh/only-export-components */
 /**
  * Test Utilities
  * Custom render wrapper and helper functions for testing React components
  */
 
-import { render } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+  within,
+  renderHook,
+  cleanup,
+  prettyDOM,
+} from "@testing-library/react";
 import { vi, expect } from "vitest";
 
 /**
@@ -19,9 +28,17 @@ const customRender = (ui, options = {}) => {
   return render(ui, { wrapper: Wrapper, ...renderOptions });
 };
 
-// Re-export everything from testing library
-// eslint-disable-next-line react-refresh/only-export-components
-export * from "@testing-library/react";
+// Re-export commonly used testing library utilities
+export {
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+  within,
+  renderHook,
+  cleanup,
+  prettyDOM,
+};
 
 // Override render with custom render
 export { customRender as render };
