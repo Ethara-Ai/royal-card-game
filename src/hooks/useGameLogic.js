@@ -124,10 +124,10 @@ const useGameLogic = (selectedRuleSet = 0) => {
       hand: newDeck.slice(
         index * CARDS_PER_PLAYER,
         (index + 1) * CARDS_PER_PLAYER,
-      );
-      player.score = 0;
-    });
-    setPlayers(newPlayers);
+      ),
+      score: 0,
+    }));
+    setBasePlayers(newPlayers);
     setPlayArea({});
   }, [createDeck, basePlayers]);
 
@@ -216,7 +216,14 @@ const useGameLogic = (selectedRuleSet = 0) => {
         }
       }, ANIMATION_TIMINGS.trickEvaluationDelay);
     },
-    [selectedRuleSet, players, gameState.scores, getGameWinner, playAICard],
+    [
+      selectedRuleSet,
+      players,
+      gameState.scores,
+      leadPlayerId,
+      getGameWinner,
+      safeSetTimeout,
+    ],
   );
 
   /**
@@ -234,7 +241,7 @@ const useGameLogic = (selectedRuleSet = 0) => {
       newPlayers[playerIndex].hand = newPlayers[playerIndex].hand.filter(
         (c) => c.id !== randomCard.id,
       );
-      setBasePlayers(newBasePlayers);
+      setBasePlayers(newPlayers);
 
       const newPlayArea = { ...currentPlayArea, [player.id]: randomCard };
       setPlayArea(newPlayArea);
@@ -263,7 +270,7 @@ const useGameLogic = (selectedRuleSet = 0) => {
         }
       }
     },
-    [players, gameState.phase, evaluateTrick],
+    [players, gameState.phase, evaluateTrick, safeSetTimeout],
   );
 
   // Keep the ref updated with the latest playAICard function
@@ -285,7 +292,7 @@ const useGameLogic = (selectedRuleSet = 0) => {
       newPlayers[playerIndex].hand = newPlayers[playerIndex].hand.filter(
         (c) => c.id !== card.id,
       );
-      setBasePlayers(newBasePlayers);
+      setBasePlayers(newPlayers);
 
       const newPlayArea = { ...playArea, [playerId]: card };
       setPlayArea(newPlayArea);
@@ -318,7 +325,7 @@ const useGameLogic = (selectedRuleSet = 0) => {
         }
       }
     },
-    [gameState, players, playArea, evaluateTrick, playAICard],
+    [gameState, players, playArea, evaluateTrick, safeSetTimeout],
   );
 
   /**

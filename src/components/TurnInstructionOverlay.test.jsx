@@ -4,12 +4,7 @@
  */
 
 import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
-import {
-  render,
-  screen,
-  fireEvent,
-  act,
-} from "@testing-library/react";
+import { render, screen, fireEvent, act } from "@testing-library/react";
 import TurnInstructionOverlay from "./TurnInstructionOverlay";
 
 describe("TurnInstructionOverlay", () => {

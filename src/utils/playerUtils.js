@@ -30,7 +30,4 @@ export const getPlayerDisplayName = (player) => {
  */
 export const isHumanPlayer = (player) => player?.id === "player1";
 
-export default {
-  getPlayerDisplayName,
-  isHumanPlayer,
-};
+export default { getPlayerDisplayName, isHumanPlayer };
