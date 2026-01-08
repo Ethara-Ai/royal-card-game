@@ -8,14 +8,14 @@ import { FaCrown } from "react-icons/fa";
 const HeaderBranding = ({ onReset }) => (
   <h1
     onClick={onReset}
-    className="text-lg sm:text-xl md:text-2xl game-title flex items-center gap-2 sm:gap-3 cursor-pointer transition-all duration-300 hover:scale-105"
+    className="text-lg sm:text-xs md:text-2xl game-title flex items-center gap-2 sm:gap-3 cursor-pointer transition-all duration-300 hover:scale-105 mr-2 sm:mr-0 min-w-0 flex-shrink"
     title="Return to home"
   >
     <FaCrown
       className="header-crown text-base sm:text-lg md:text-xl"
       style={{ color: "var(--color-gold-light)" }}
     />
-    <span className="gold-text whitespace-nowrap">Royal Card Game</span>
+    <span className="gold-text ">Royal Card Game</span>
   </h1>
 );
 

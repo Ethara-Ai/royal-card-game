@@ -55,7 +55,7 @@ const SettingsPanel = ({
     <div className="relative" ref={settingsRef}>
       <button
         onClick={handleSettingsClick}
-        className="p-2 sm:p-2.5 rounded-lg transition-all duration-300 hover:scale-105"
+        className="p-2 sm:p-2.5 rounded-lg transition-all duration-300 hover:scale-105 flex items-center justify-center"
         style={{
           background: "var(--color-panel-dark)",
           color: "var(--color-text-secondary)",
@@ -108,7 +108,10 @@ const SettingsPanel = ({
             />
 
             <button
-              onClick={resetGame}
+              onClick={() => {
+                setShowSettings(false);
+                resetGame();
+              }}
               className="w-full px-3 py-2 rounded-lg font-semibold transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2 text-sm reset-game-btn"
               style={{
                 background:

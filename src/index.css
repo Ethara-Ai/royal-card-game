@@ -1841,3 +1841,11 @@ body {
 .whitespace-nowrap {
   white-space: nowrap;
 }
+
+@media (min-width: 640px) {
+  html, body, #root, .min-h-screen {
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+  }
+}

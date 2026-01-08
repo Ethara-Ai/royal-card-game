@@ -111,7 +111,7 @@ const HowToPlayModal = ({
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg transition-all duration-300 hover:scale-110"
+            className="p-2 rounded-lg transition-all duration-300 hover:scale-110 flex items-center justify-center"
             style={{
               background: "var(--color-panel-dark)",
               color: "var(--color-text-secondary)",
@@ -145,7 +145,7 @@ const HowToPlayModal = ({
                 >
                   <div className="flex items-start gap-3">
                     <div
-                      className="p-2 rounded-lg shrink-0"
+                      className="p-2 rounded-lg shrink-0 flex items-center justify-center"
                       style={{
                         background: "var(--color-panel-base)",
                         color: "var(--color-gold-light)",

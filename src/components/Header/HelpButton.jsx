@@ -8,7 +8,7 @@ import { FaQuestionCircle } from "react-icons/fa";
 const HelpButton = ({ onClick }) => (
   <button
     onClick={onClick}
-    className="p-2 sm:p-2.5 rounded-lg transition-all duration-300 hover:scale-105"
+    className="p-2 sm:p-2.5 rounded-lg transition-all duration-300 hover:scale-105 flex items-center justify-center"
     style={{
       background: "var(--color-panel-dark)",
       color: "var(--color-text-secondary)",
