@@ -182,8 +182,7 @@ export const createMockTouchEvent = (type, touchData = {}) => {
  * @param {number} ms - Milliseconds to wait
  * @returns {Promise} Promise that resolves after the specified time
  */
-export const waitFor = (ms) =>
-  new Promise((resolve) => setTimeout(resolve, ms));
+export const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
  * Simulates a window resize event
