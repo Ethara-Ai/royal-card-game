@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import { FaCrown, FaRedo } from "react-icons/fa";
+import { getPlayerDisplayName } from "../utils/playerUtils";
 
 /**
  * WinnerModal - Displays the game results and winner
@@ -92,7 +93,7 @@ const WinnerModal = ({ players, scores, winner, resetGame }) => {
                             : "none",
                         }}
                       >
-                        {player.name}
+                        {getPlayerDisplayName(player)}
                       </span>
                       {isWinner && (
                         <FaCrown

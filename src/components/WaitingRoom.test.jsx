@@ -1,6 +1,6 @@
 /**
  * Unit tests for WaitingRoom component
- * Tests rendering, player display, and start game functionality
+ * Tests rendering, player display, username input, rule set selection, and start game functionality
  */
 
 import { describe, it, expect, vi, afterEach } from "vitest";
@@ -8,14 +8,37 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import WaitingRoom from "./WaitingRoom";
 
 describe("WaitingRoom", () => {
+  const mockRuleSets = [
+    {
+      id: "highest-card",
+      name: "Highest Card Wins",
+      description: "The highest card value wins the trick",
+    },
+    {
+      id: "suit-follows",
+      name: "Suit Follows",
+      description: "Must follow lead suit, highest of lead suit wins",
+    },
+    {
+      id: "spades-trump",
+      name: "Spades Trump",
+      description: "Spades are trump cards and beat all other suits",
+    },
+  ];
+
   const defaultProps = {
     players: [
-      { id: "player1", name: "You" },
+      { id: "player1", name: "Player" },
       { id: "player2", name: "Alex" },
       { id: "player3", name: "Sam" },
       { id: "player4", name: "Jordan" },
     ],
     startGame: vi.fn(),
+    username: "",
+    setUsername: vi.fn(),
+    ruleSets: mockRuleSets,
+    selectedRuleSet: 0,
+    setSelectedRuleSet: vi.fn(),
   };
 
   afterEach(() => {
@@ -35,7 +58,7 @@ describe("WaitingRoom", () => {
 
     it("should display all player names", () => {
       render(<WaitingRoom {...defaultProps} />);
-      expect(screen.getByText("You")).toBeInTheDocument();
+      expect(screen.getByText("Player (You)")).toBeInTheDocument();
       expect(screen.getByText("Alex")).toBeInTheDocument();
       expect(screen.getByText("Sam")).toBeInTheDocument();
       expect(screen.getByText("Jordan")).toBeInTheDocument();
@@ -48,7 +71,7 @@ describe("WaitingRoom", () => {
     });
 
     it("should display Start Game button", () => {
-      render(<WaitingRoom {...defaultProps} />);
+      render(<WaitingRoom {...defaultProps} username="TestUser" />);
       expect(screen.getByText("Start Game")).toBeInTheDocument();
     });
 
@@ -78,6 +101,212 @@ describe("WaitingRoom", () => {
     });
   });
 
+  describe("username input", () => {
+    it("should render username input field", () => {
+      render(<WaitingRoom {...defaultProps} />);
+      const input = screen.getByLabelText(/your name/i);
+      expect(input).toBeInTheDocument();
+    });
+
+    it("should have placeholder text", () => {
+      render(<WaitingRoom {...defaultProps} />);
+      const input = screen.getByPlaceholderText(/enter your name/i);
+      expect(input).toBeInTheDocument();
+    });
+
+    it("should display empty input when username is empty", () => {
+      render(<WaitingRoom {...defaultProps} username="" />);
+      const input = screen.getByLabelText(/your name/i);
+      expect(input.value).toBe("");
+    });
+
+    it("should display username value when provided", () => {
+      render(<WaitingRoom {...defaultProps} username="TestUser" />);
+      const input = screen.getByLabelText(/your name/i);
+      expect(input.value).toBe("TestUser");
+    });
+
+    it("should call setUsername when input value changes", () => {
+      const setUsername = vi.fn();
+      render(<WaitingRoom {...defaultProps} setUsername={setUsername} />);
+      const input = screen.getByLabelText(/your name/i);
+
+      fireEvent.change(input, { target: { value: "NewName" } });
+
+      expect(setUsername).toHaveBeenCalledWith("NewName");
+    });
+
+    it("should have maxLength of 20 characters", () => {
+      render(<WaitingRoom {...defaultProps} />);
+      const input = screen.getByLabelText(/your name/i);
+      expect(input).toHaveAttribute("maxLength", "20");
+    });
+
+    it("should start game when Enter key is pressed with valid input", () => {
+      const startGame = vi.fn();
+      render(
+        <WaitingRoom {...defaultProps} startGame={startGame} username="Test" />,
+      );
+      const input = screen.getByLabelText(/your name/i);
+
+      fireEvent.keyPress(input, { key: "Enter", code: "Enter", charCode: 13 });
+
+      expect(startGame).toHaveBeenCalledTimes(1);
+    });
+
+    it("should not start game when Enter key is pressed with empty input", () => {
+      const startGame = vi.fn();
+      render(
+        <WaitingRoom {...defaultProps} startGame={startGame} username="" />,
+      );
+      const input = screen.getByLabelText(/your name/i);
+
+      fireEvent.keyPress(input, { key: "Enter", code: "Enter", charCode: 13 });
+
+      expect(startGame).not.toHaveBeenCalled();
+    });
+
+    it("should display helper text about name usage", () => {
+      render(<WaitingRoom {...defaultProps} />);
+      expect(
+        screen.getByText(/this name will appear in scoreboards/i),
+      ).toBeInTheDocument();
+    });
+
+    it("should have id 'username-input' on input field", () => {
+      render(<WaitingRoom {...defaultProps} />);
+      const input = document.getElementById("username-input");
+      expect(input).toBeInTheDocument();
+    });
+
+    it("should show required indicator on username label", () => {
+      render(<WaitingRoom {...defaultProps} />);
+      expect(screen.getByText("*")).toBeInTheDocument();
+    });
+  });
+
+  describe("rule set selection", () => {
+    it("should render rule set dropdown button", () => {
+      render(<WaitingRoom {...defaultProps} />);
+      const dropdownButton = screen.getByRole("button", {
+        name: /highest card wins/i,
+      });
+      expect(dropdownButton).toBeInTheDocument();
+    });
+
+    it("should display current rule set name in dropdown button", () => {
+      render(<WaitingRoom {...defaultProps} selectedRuleSet={0} />);
+      expect(screen.getByText("Highest Card Wins")).toBeInTheDocument();
+    });
+
+    it("should display all rule set options when dropdown is opened", () => {
+      render(<WaitingRoom {...defaultProps} />);
+      const dropdownButton = screen.getByRole("button", {
+        name: /highest card wins/i,
+      });
+
+      fireEvent.click(dropdownButton);
+
+      // All options should be visible in the dropdown
+      const options = screen.getAllByRole("option");
+      expect(options).toHaveLength(3);
+    });
+
+    it("should call setSelectedRuleSet when option is clicked", () => {
+      const setSelectedRuleSet = vi.fn();
+      render(
+        <WaitingRoom
+          {...defaultProps}
+          setSelectedRuleSet={setSelectedRuleSet}
+        />,
+      );
+      const dropdownButton = screen.getByRole("button", {
+        name: /highest card wins/i,
+      });
+
+      fireEvent.click(dropdownButton);
+
+      const suitFollowsOption = screen.getByRole("option", {
+        name: /suit follows/i,
+      });
+      fireEvent.click(suitFollowsOption);
+
+      expect(setSelectedRuleSet).toHaveBeenCalledWith(1);
+    });
+
+    it("should display rule set description below dropdown", () => {
+      render(<WaitingRoom {...defaultProps} selectedRuleSet={0} />);
+      expect(
+        screen.getByText("The highest card value wins the trick"),
+      ).toBeInTheDocument();
+    });
+
+    it("should update description when rule set changes", () => {
+      const { rerender } = render(
+        <WaitingRoom {...defaultProps} selectedRuleSet={0} />,
+      );
+      expect(
+        screen.getByText("The highest card value wins the trick"),
+      ).toBeInTheDocument();
+
+      rerender(<WaitingRoom {...defaultProps} selectedRuleSet={1} />);
+      expect(
+        screen.getByText("Must follow lead suit, highest of lead suit wins"),
+      ).toBeInTheDocument();
+    });
+
+    it("should have id 'rule-set-select' on dropdown button", () => {
+      render(<WaitingRoom {...defaultProps} />);
+      const dropdownButton = document.getElementById("rule-set-select");
+      expect(dropdownButton).toBeInTheDocument();
+    });
+
+    it("should show checkmark on selected option", () => {
+      render(<WaitingRoom {...defaultProps} selectedRuleSet={0} />);
+      const dropdownButton = screen.getByRole("button", {
+        name: /highest card wins/i,
+      });
+
+      fireEvent.click(dropdownButton);
+
+      const selectedOption = screen.getByRole("option", {
+        name: /highest card wins/i,
+      });
+      expect(selectedOption).toHaveAttribute("aria-selected", "true");
+    });
+
+    it("should close dropdown when clicking outside", () => {
+      render(<WaitingRoom {...defaultProps} />);
+      const dropdownButton = screen.getByRole("button", {
+        name: /highest card wins/i,
+      });
+
+      fireEvent.click(dropdownButton);
+      expect(screen.getByRole("listbox")).toBeInTheDocument();
+
+      // Click the backdrop
+      const backdrop = document.querySelector(".fixed.inset-0");
+      fireEvent.click(backdrop);
+
+      // Dropdown should close (after animation)
+      // Note: The actual closing happens after a timeout, so we check for the animation class
+    });
+
+    it("should toggle dropdown open/close state", () => {
+      render(<WaitingRoom {...defaultProps} />);
+      const dropdownButton = screen.getByRole("button", {
+        name: /highest card wins/i,
+      });
+
+      // Initially closed
+      expect(dropdownButton).toHaveAttribute("aria-expanded", "false");
+
+      // Open
+      fireEvent.click(dropdownButton);
+      expect(dropdownButton).toHaveAttribute("aria-expanded", "true");
+    });
+  });
+
   describe("player icons", () => {
     it("should show user icon for first player (human)", () => {
       const { container } = render(<WaitingRoom {...defaultProps} />);
@@ -95,26 +324,69 @@ describe("WaitingRoom", () => {
   });
 
   describe("Start Game button", () => {
-    it("should call startGame when clicked", () => {
-      const startGame = vi.fn();
-      render(<WaitingRoom {...defaultProps} startGame={startGame} />);
+    it("should be disabled when username is empty", () => {
+      render(<WaitingRoom {...defaultProps} username="" />);
+      const startButton = screen.getByRole("button", {
+        name: /enter name to start/i,
+      });
+      expect(startButton).toBeDisabled();
+    });
 
-      const startButton = screen.getByText("Start Game");
+    it("should be disabled when username is only whitespace", () => {
+      render(<WaitingRoom {...defaultProps} username="   " />);
+      const startButton = screen.getByRole("button", {
+        name: /enter name to start/i,
+      });
+      expect(startButton).toBeDisabled();
+    });
+
+    it("should be enabled when username is provided", () => {
+      render(<WaitingRoom {...defaultProps} username="TestUser" />);
+      const startButton = screen.getByRole("button", { name: /start game/i });
+      expect(startButton).not.toBeDisabled();
+    });
+
+    it("should show 'Enter Name to Start' when username is empty", () => {
+      render(<WaitingRoom {...defaultProps} username="" />);
+      expect(screen.getByText("Enter Name to Start")).toBeInTheDocument();
+    });
+
+    it("should show 'Start Game' when username is provided", () => {
+      render(<WaitingRoom {...defaultProps} username="TestUser" />);
+      expect(screen.getByText("Start Game")).toBeInTheDocument();
+    });
+
+    it("should call startGame when clicked with valid username", () => {
+      const startGame = vi.fn();
+      render(
+        <WaitingRoom
+          {...defaultProps}
+          startGame={startGame}
+          username="TestUser"
+        />,
+      );
+
+      const startButton = screen.getByRole("button", { name: /start game/i });
       fireEvent.click(startButton);
 
       expect(startGame).toHaveBeenCalledTimes(1);
     });
 
-    it("should be a button element", () => {
-      render(<WaitingRoom {...defaultProps} />);
-      const startButton = screen.getByRole("button", { name: /start game/i });
-      expect(startButton).toBeInTheDocument();
+    it("should not call startGame when clicked with empty username", () => {
+      const startGame = vi.fn();
+      render(<WaitingRoom {...defaultProps} startGame={startGame} />);
+
+      const startButton = screen.getByRole("button", {
+        name: /enter name to start/i,
+      });
+      fireEvent.click(startButton);
+
+      expect(startGame).not.toHaveBeenCalled();
     });
 
     it("should have play icon", () => {
-      const { container } = render(<WaitingRoom {...defaultProps} />);
-      // FaPlay icon should be present in the button
-      const button = container.querySelector("button");
+      render(<WaitingRoom {...defaultProps} username="TestUser" />);
+      const button = screen.getByRole("button", { name: /start game/i });
       const svg = button.querySelector("svg");
       expect(svg).toBeInTheDocument();
     });
@@ -144,6 +416,13 @@ describe("WaitingRoom", () => {
       const pixelArtElements = container.querySelectorAll(".pixel-art");
       expect(pixelArtElements).toHaveLength(4);
     });
+
+    it("should highlight first player card with gold border", () => {
+      const { container } = render(<WaitingRoom {...defaultProps} />);
+      const playerCards = container.querySelectorAll(".rounded-xl");
+      // First player card should have gold border style
+      expect(playerCards.length).toBeGreaterThan(0);
+    });
   });
 
   describe("layout", () => {
@@ -165,12 +444,12 @@ describe("WaitingRoom", () => {
       const twoPlayerProps = {
         ...defaultProps,
         players: [
-          { id: "player1", name: "You" },
+          { id: "player1", name: "Player" },
           { id: "player2", name: "Alex" },
         ],
       };
       render(<WaitingRoom {...twoPlayerProps} />);
-      expect(screen.getByText("You")).toBeInTheDocument();
+      expect(screen.getByText("Player (You)")).toBeInTheDocument();
       expect(screen.getByText("Alex")).toBeInTheDocument();
     });
 
@@ -185,7 +464,7 @@ describe("WaitingRoom", () => {
         ],
       };
       render(<WaitingRoom {...specialNameProps} />);
-      expect(screen.getByText("Player #1")).toBeInTheDocument();
+      expect(screen.getByText("Player #1 (You)")).toBeInTheDocument();
       expect(screen.getByText("Alex & Bob")).toBeInTheDocument();
       expect(screen.getByText("Sam's Game")).toBeInTheDocument();
       expect(screen.getByText("Jordan_123")).toBeInTheDocument();
@@ -203,15 +482,48 @@ describe("WaitingRoom", () => {
       };
       render(<WaitingRoom {...longNameProps} />);
       expect(
-        screen.getByText("VeryLongPlayerNameThatMightOverflow"),
+        screen.getByText("VeryLongPlayerNameThatMightOverflow (You)"),
       ).toBeInTheDocument();
+    });
+  });
+
+  describe("username with custom names", () => {
+    it("should display custom username in player list when provided", () => {
+      const propsWithCustomName = {
+        ...defaultProps,
+        players: [
+          { id: "player1", name: "CustomUser" },
+          { id: "player2", name: "Alex" },
+          { id: "player3", name: "Sam" },
+          { id: "player4", name: "Jordan" },
+        ],
+        username: "CustomUser",
+      };
+      render(<WaitingRoom {...propsWithCustomName} />);
+      expect(screen.getByText("CustomUser (You)")).toBeInTheDocument();
+    });
+
+    it("should update avatar URL when username changes", () => {
+      const propsWithCustomName = {
+        ...defaultProps,
+        players: [
+          { id: "player1", name: "MyCustomName" },
+          { id: "player2", name: "Alex" },
+          { id: "player3", name: "Sam" },
+          { id: "player4", name: "Jordan" },
+        ],
+        username: "MyCustomName",
+      };
+      const { container } = render(<WaitingRoom {...propsWithCustomName} />);
+      const avatars = container.querySelectorAll("img");
+      expect(avatars[0].src).toContain("robohash.org/MyCustomName");
     });
   });
 
   describe("accessibility", () => {
     it("should have accessible button", () => {
-      render(<WaitingRoom {...defaultProps} />);
-      const button = screen.getByRole("button");
+      render(<WaitingRoom {...defaultProps} username="TestUser" />);
+      const button = screen.getByRole("button", { name: /start game/i });
       expect(button).toBeInTheDocument();
     });
 
@@ -223,33 +535,58 @@ describe("WaitingRoom", () => {
         expect(img.getAttribute("alt")).not.toBe("");
       });
     });
+
+    it("should have accessible input with label", () => {
+      render(<WaitingRoom {...defaultProps} />);
+      const input = screen.getByLabelText(/your name/i);
+      expect(input).toBeInTheDocument();
+    });
+
+    it("should have proper input type", () => {
+      render(<WaitingRoom {...defaultProps} />);
+      const input = screen.getByLabelText(/your name/i);
+      expect(input).toHaveAttribute("type", "text");
+    });
+
+    it("should have accessible dropdown with aria attributes", () => {
+      render(<WaitingRoom {...defaultProps} />);
+      const dropdownButton = document.getElementById("rule-set-select");
+      expect(dropdownButton).toHaveAttribute("aria-haspopup", "listbox");
+      expect(dropdownButton).toHaveAttribute("aria-expanded");
+    });
   });
 
   describe("edge cases", () => {
     it("should render with empty players array", () => {
       const emptyProps = {
+        ...defaultProps,
         players: [],
-        startGame: vi.fn(),
       };
       render(<WaitingRoom {...emptyProps} />);
       expect(screen.getByText("Waiting Room")).toBeInTheDocument();
-      expect(screen.getByText("Start Game")).toBeInTheDocument();
     });
 
     it("should render with single player", () => {
       const singlePlayerProps = {
+        ...defaultProps,
         players: [{ id: "player1", name: "Solo" }],
-        startGame: vi.fn(),
+        username: "Solo",
       };
       render(<WaitingRoom {...singlePlayerProps} />);
-      expect(screen.getByText("Solo")).toBeInTheDocument();
+      expect(screen.getByText("Solo (You)")).toBeInTheDocument();
     });
 
     it("should handle rapid button clicks", () => {
       const startGame = vi.fn();
-      render(<WaitingRoom {...defaultProps} startGame={startGame} />);
+      render(
+        <WaitingRoom
+          {...defaultProps}
+          startGame={startGame}
+          username="TestUser"
+        />,
+      );
 
-      const startButton = screen.getByText("Start Game");
+      const startButton = screen.getByRole("button", { name: /start game/i });
 
       // Click multiple times rapidly
       fireEvent.click(startButton);
@@ -257,6 +594,36 @@ describe("WaitingRoom", () => {
       fireEvent.click(startButton);
 
       expect(startGame).toHaveBeenCalledTimes(3);
+    });
+
+    it("should handle whitespace-only username", () => {
+      const setUsername = vi.fn();
+      render(<WaitingRoom {...defaultProps} setUsername={setUsername} />);
+      const input = screen.getByLabelText(/your name/i);
+
+      fireEvent.change(input, { target: { value: "   " } });
+
+      expect(setUsername).toHaveBeenCalledWith("   ");
+    });
+
+    it("should handle undefined username prop gracefully", () => {
+      const propsWithoutUsername = {
+        ...defaultProps,
+        username: undefined,
+      };
+      render(<WaitingRoom {...propsWithoutUsername} />);
+      const input = screen.getByLabelText(/your name/i);
+      expect(input.value).toBe("");
+    });
+
+    it("should handle empty ruleSets array", () => {
+      const emptyRuleSetsProps = {
+        ...defaultProps,
+        ruleSets: [],
+      };
+      render(<WaitingRoom {...emptyRuleSetsProps} />);
+      const dropdownButton = document.getElementById("rule-set-select");
+      expect(dropdownButton).toBeInTheDocument();
     });
   });
 

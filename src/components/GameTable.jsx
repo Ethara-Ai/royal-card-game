@@ -1,8 +1,10 @@
+import { useState, useCallback } from "react";
 import PropTypes from "prop-types";
 import PlayerPanel from "./PlayerPanel";
 import PlayedCard from "./PlayedCard";
 import UserHand from "./UserHand";
 import DragHint from "./DragHint";
+import TurnInstructionOverlay from "./TurnInstructionOverlay";
 import { GAME_PHASES } from "../constants";
 
 /**
@@ -152,13 +154,51 @@ const GameTable = ({
   handleTouchStart,
   handleTouchMove,
   handleTouchEnd,
+  ruleSetName,
+  ruleSetDescription,
 }) => {
+  // Track if instruction overlay has been dismissed this turn
+  const [instructionDismissed, setInstructionDismissed] = useState(false);
+
+  // Reset dismissed state when it becomes player's turn again
+  const isPlayerTurn =
+    gameState.phase === GAME_PHASES.PLAYING &&
+    gameState.currentPlayer === 0 &&
+    !dealingAnimation;
+
+  // Show instruction overlay at start of player's turn
+  const shouldShowInstruction =
+    isPlayerTurn && playAreaCards.length === 0 && !instructionDismissed;
+
   // Show hint when it's player's turn, no cards in play area, and not dealing
   const shouldShowHint =
     gameState.phase === GAME_PHASES.PLAYING &&
     gameState.currentPlayer === 0 &&
     playAreaCards.length === 0 &&
-    !dealingAnimation;
+    !dealingAnimation &&
+    instructionDismissed; // Only show hint after instruction is dismissed
+
+  // Dismiss instruction overlay
+  const handleInstructionDismiss = useCallback(() => {
+    setInstructionDismissed(true);
+  }, []);
+
+  // Reset dismissed state when turn changes or new trick starts
+  const handleDragStartWithDismiss = useCallback(
+    (e, card) => {
+      setInstructionDismissed(true);
+      handleDragStart(e, card);
+    },
+    [handleDragStart],
+  );
+
+  const handleTouchStartWithDismiss = useCallback(
+    (e, card) => {
+      setInstructionDismissed(true);
+      handleTouchStart(e, card);
+    },
+    [handleTouchStart],
+  );
 
   return (
     <div
@@ -175,6 +215,14 @@ const GameTable = ({
         trickWinner={trickWinner}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
+      />
+
+      {/* Turn instruction overlay */}
+      <TurnInstructionOverlay
+        visible={shouldShowInstruction}
+        ruleSetName={ruleSetName}
+        ruleSetDescription={ruleSetDescription}
+        onDismiss={handleInstructionDismiss}
       />
 
       {/* Drag instruction hint */}
@@ -225,9 +273,9 @@ const GameTable = ({
           gamePhase={gameState.phase}
           draggedCard={draggedCard}
           dealingAnimation={dealingAnimation}
-          onDragStart={handleDragStart}
+          onDragStart={handleDragStartWithDismiss}
           onDragEnd={handleDragEnd}
-          onTouchStart={handleTouchStart}
+          onTouchStart={handleTouchStartWithDismiss}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         />
@@ -254,6 +302,13 @@ GameTable.propTypes = {
   handleTouchStart: PropTypes.func.isRequired,
   handleTouchMove: PropTypes.func.isRequired,
   handleTouchEnd: PropTypes.func.isRequired,
+  ruleSetName: PropTypes.string,
+  ruleSetDescription: PropTypes.string,
+};
+
+GameTable.defaultProps = {
+  ruleSetName: "Highest Card Wins",
+  ruleSetDescription: "The highest card value wins the trick",
 };
 
 export default GameTable;

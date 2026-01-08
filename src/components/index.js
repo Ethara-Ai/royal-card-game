@@ -11,6 +11,7 @@ export { default as Leaderboard } from "./Leaderboard";
 export { default as LoadingScreen } from "./LoadingScreen";
 export { default as PlayedCard } from "./PlayedCard";
 export { default as PlayerPanel } from "./PlayerPanel";
+export { default as TurnInstructionOverlay } from "./TurnInstructionOverlay";
 export { default as UserHand } from "./UserHand";
 export { default as WaitingRoom } from "./WaitingRoom";
 export { default as WinnerModal } from "./WinnerModal";

@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { getPatternStyle } from "../utils/patterns";
 import { useCardCustomization } from "../context";
+import { getPlayerDisplayName } from "../utils/playerUtils";
 
 const PlayerPanel = ({ player, index, currentPlayer, isDealing }) => {
   const { cardBackColor, cardBackPattern } = useCardCustomization();
@@ -39,7 +40,7 @@ const PlayerPanel = ({ player, index, currentPlayer, isDealing }) => {
               fontSize: "clamp(8px, 2.2vw, 11px)",
             }}
           >
-            {player.name}
+            {getPlayerDisplayName(player)}
           </div>
           <div
             style={{

@@ -85,7 +85,7 @@ describe("useGameLogic", () => {
     it("should initialize with correct player names", () => {
       const { result } = renderHook(() => useGameLogic());
 
-      expect(result.current.players[0].name).toBe("You");
+      expect(result.current.players[0].name).toBe("Player");
       expect(result.current.players[1].name).toBe("Alex");
       expect(result.current.players[2].name).toBe("Sam");
       expect(result.current.players[3].name).toBe("Jordan");
@@ -151,6 +151,69 @@ describe("useGameLogic", () => {
 
       expect(typeof result.current.setShowWinnerModal).toBe("function");
       expect(typeof result.current.setShowConfetti).toBe("function");
+    });
+
+    it("should return username and setUsername", () => {
+      const { result } = renderHook(() => useGameLogic());
+
+      expect(result.current).toHaveProperty("username");
+      expect(typeof result.current.setUsername).toBe("function");
+    });
+  });
+
+  describe("username functionality", () => {
+    it("should initialize username as empty string", () => {
+      const { result } = renderHook(() => useGameLogic());
+
+      expect(result.current.username).toBe("");
+    });
+
+    it("should update player1 name when username is set", () => {
+      const { result } = renderHook(() => useGameLogic());
+
+      act(() => {
+        result.current.setUsername("TestUser");
+      });
+
+      expect(result.current.players[0].name).toBe("TestUser");
+    });
+
+    it("should keep default name when username is empty", () => {
+      const { result } = renderHook(() => useGameLogic());
+
+      expect(result.current.players[0].name).toBe("Player");
+    });
+
+    it("should trim whitespace from username", () => {
+      const { result } = renderHook(() => useGameLogic());
+
+      act(() => {
+        result.current.setUsername("  TrimmedName  ");
+      });
+
+      expect(result.current.players[0].name).toBe("TrimmedName");
+    });
+
+    it("should keep default name when username is only whitespace", () => {
+      const { result } = renderHook(() => useGameLogic());
+
+      act(() => {
+        result.current.setUsername("   ");
+      });
+
+      expect(result.current.players[0].name).toBe("Player");
+    });
+
+    it("should not affect other player names when username is set", () => {
+      const { result } = renderHook(() => useGameLogic());
+
+      act(() => {
+        result.current.setUsername("CustomName");
+      });
+
+      expect(result.current.players[1].name).toBe("Alex");
+      expect(result.current.players[2].name).toBe("Sam");
+      expect(result.current.players[3].name).toBe("Jordan");
     });
   });
 

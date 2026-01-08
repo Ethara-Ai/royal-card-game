@@ -45,7 +45,7 @@ describe("WinnerModal", () => {
 
     it("should display all player names", () => {
       render(<WinnerModal {...defaultProps} />);
-      expect(screen.getByText("You")).toBeInTheDocument();
+      expect(screen.getByText("You (You)")).toBeInTheDocument();
       expect(screen.getByText("Alex")).toBeInTheDocument();
       expect(screen.getByText("Sam")).toBeInTheDocument();
       expect(screen.getByText("Jordan")).toBeInTheDocument();
@@ -184,7 +184,7 @@ describe("WinnerModal", () => {
         },
       };
       render(<WinnerModal {...player1WinnerProps} />);
-      expect(screen.getByText("You")).toBeInTheDocument();
+      expect(screen.getByText("You (You)")).toBeInTheDocument();
     });
 
     it("should handle tied scores", () => {
@@ -284,7 +284,7 @@ describe("WinnerModal", () => {
         resetGame: vi.fn(),
       };
       render(<WinnerModal {...specialNameProps} />);
-      expect(screen.getByText("Player #1")).toBeInTheDocument();
+      expect(screen.getByText("Player #1 (You)")).toBeInTheDocument();
       expect(screen.getByText("Alex & Bob")).toBeInTheDocument();
     });
 
@@ -304,7 +304,7 @@ describe("WinnerModal", () => {
         resetGame: vi.fn(),
       };
       render(<WinnerModal {...longNameProps} />);
-      expect(screen.getByText("VeryLongPlayerName")).toBeInTheDocument();
+      expect(screen.getByText("VeryLongPlayerName (You)")).toBeInTheDocument();
     });
 
     it("should handle rapid button clicks", () => {

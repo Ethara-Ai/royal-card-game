@@ -38,7 +38,7 @@ describe("Leaderboard", () => {
 
     it("should display all player names", () => {
       render(<Leaderboard {...defaultProps} />);
-      expect(screen.getByText("You")).toBeInTheDocument();
+      expect(screen.getByText("You (You)")).toBeInTheDocument();
       expect(screen.getByText("Alex")).toBeInTheDocument();
       expect(screen.getByText("Sam")).toBeInTheDocument();
       expect(screen.getByText("Jordan")).toBeInTheDocument();
@@ -85,7 +85,7 @@ describe("Leaderboard", () => {
       // Alex (5) should be first, then Jordan (4), You (3), Sam (2)
       expect(names[0]).toBe("Alex");
       expect(names[1]).toBe("Jordan");
-      expect(names[2]).toBe("You");
+      expect(names[2]).toBe("You (You)");
       expect(names[3]).toBe("Sam");
     });
 
@@ -96,7 +96,7 @@ describe("Leaderboard", () => {
       };
       render(<Leaderboard {...tiedProps} />);
       // All players should still be displayed
-      expect(screen.getByText("You")).toBeInTheDocument();
+      expect(screen.getByText("You (You)")).toBeInTheDocument();
       expect(screen.getByText("Alex")).toBeInTheDocument();
       expect(screen.getByText("Sam")).toBeInTheDocument();
       expect(screen.getByText("Jordan")).toBeInTheDocument();
@@ -337,7 +337,7 @@ describe("Leaderboard", () => {
         ],
       };
       render(<Leaderboard {...specialNameProps} />);
-      expect(screen.getByText("Player #1")).toBeInTheDocument();
+      expect(screen.getByText("Player #1 (You)")).toBeInTheDocument();
       expect(screen.getByText("Alex & Bob")).toBeInTheDocument();
       expect(screen.getByText("Sam's Game")).toBeInTheDocument();
       expect(screen.getByText("Jordan_123")).toBeInTheDocument();
@@ -378,7 +378,7 @@ describe("Leaderboard", () => {
       };
       render(<Leaderboard {...emptyRuleProps} />);
       // Should still render without crashing
-      expect(screen.getByText("You")).toBeInTheDocument();
+      expect(screen.getByText("You (You)")).toBeInTheDocument();
     });
 
     it("should handle currentPlayer out of bounds gracefully", () => {

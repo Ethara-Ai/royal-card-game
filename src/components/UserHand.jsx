@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import Card from "./Card";
 import { GAME_PHASES } from "../constants";
+import { getPlayerDisplayName } from "../utils/playerUtils";
 
 const UserHand = ({
   player,
@@ -47,7 +48,7 @@ const UserHand = ({
               fontSize: "clamp(9px, 2.5vw, 12px)",
             }}
           >
-            {player.name}
+            {getPlayerDisplayName(player)}
           </div>
           <div
             style={{

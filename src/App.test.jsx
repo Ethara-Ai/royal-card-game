@@ -31,7 +31,7 @@ vi.mock("./hooks", () => ({
       maxRounds: 5,
     },
     players: [
-      { id: "player1", name: "You", hand: [], score: 0, isActive: true },
+      { id: "player1", name: "Player", hand: [], score: 0, isActive: true },
       { id: "player2", name: "Alex", hand: [], score: 0, isActive: false },
       { id: "player3", name: "Sam", hand: [], score: 0, isActive: false },
       { id: "player4", name: "Jordan", hand: [], score: 0, isActive: false },
@@ -48,7 +48,7 @@ vi.mock("./hooks", () => ({
     resetGame: vi.fn(),
     playCard: vi.fn(),
     getGameWinner: vi.fn(() => ({
-      player: { id: "player1", name: "You" },
+      player: { id: "player1", name: "Player" },
       score: 5,
     })),
     handleDragStart: vi.fn(),
@@ -60,6 +60,8 @@ vi.mock("./hooks", () => ({
     handleTouchEnd: vi.fn(),
     setShowWinnerModal: vi.fn(),
     setShowConfetti: vi.fn(),
+    username: "",
+    setUsername: vi.fn(),
   })),
 }));
 
@@ -106,12 +108,13 @@ describe("App", () => {
 
     it("should render Start Game button in waiting phase", () => {
       render(<App />);
-      expect(screen.getByText("Start Game")).toBeInTheDocument();
+      // Button shows "Enter Name to Start" when username is empty
+      expect(screen.getByText("Enter Name to Start")).toBeInTheDocument();
     });
 
     it("should display all player names in waiting room", () => {
       render(<App />);
-      expect(screen.getByText("You")).toBeInTheDocument();
+      expect(screen.getByText("Player (You)")).toBeInTheDocument();
       expect(screen.getByText("Alex")).toBeInTheDocument();
       expect(screen.getByText("Sam")).toBeInTheDocument();
       expect(screen.getByText("Jordan")).toBeInTheDocument();
@@ -140,7 +143,7 @@ describe("App", () => {
       useGameLogic.mockReturnValue({
         gameState: { phase: "waiting", currentPlayer: 0, scores: [0, 0, 0, 0] },
         players: [
-          { id: "player1", name: "You", hand: [], score: 0, isActive: true },
+          { id: "player1", name: "Player", hand: [], score: 0, isActive: true },
           { id: "player2", name: "Alex", hand: [], score: 0, isActive: false },
           { id: "player3", name: "Sam", hand: [], score: 0, isActive: false },
           {
@@ -205,7 +208,7 @@ describe("App", () => {
       useGameLogic.mockReturnValue({
         gameState: { phase: "waiting", currentPlayer: 0, scores: [0, 0, 0, 0] },
         players: [
-          { id: "player1", name: "You", hand: [], score: 0, isActive: true },
+          { id: "player1", name: "Player", hand: [], score: 0, isActive: true },
           { id: "player2", name: "Alex", hand: [], score: 0, isActive: false },
           { id: "player3", name: "Sam", hand: [], score: 0, isActive: false },
           {
@@ -274,7 +277,13 @@ describe("App", () => {
       useGameLogic.mockReturnValue({
         gameState: { phase: "waiting", currentPlayer: 0, scores: [0, 0, 0, 0] },
         players: [
-          { id: "player1", name: "You", hand: [], score: 0, isActive: true },
+          {
+            id: "player1",
+            name: "TestUser",
+            hand: [],
+            score: 0,
+            isActive: true,
+          },
           { id: "player2", name: "Alex", hand: [], score: 0, isActive: false },
           { id: "player3", name: "Sam", hand: [], score: 0, isActive: false },
           {
@@ -302,6 +311,8 @@ describe("App", () => {
         handleTouchStart: vi.fn(),
         handleTouchMove: vi.fn(),
         handleTouchEnd: vi.fn(),
+        username: "TestUser",
+        setUsername: vi.fn(),
       });
 
       render(<App />);

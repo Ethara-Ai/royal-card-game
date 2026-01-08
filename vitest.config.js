@@ -5,6 +5,16 @@ export default defineConfig({
   plugins: [react()],
 
   test: {
+    // Limit concurrent processes to reduce system load
+    pool: 'threads',
+    poolOptions: {
+      threads: {
+        minThreads: 1,
+        maxThreads: 2,
+      },
+    },
+    maxConcurrency: 5,
+
     // Use jsdom environment for React component testing
     environment: "jsdom",
 

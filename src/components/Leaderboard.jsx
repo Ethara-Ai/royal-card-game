@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import PropTypes from "prop-types";
+import { getPlayerDisplayName } from "../utils/playerUtils";
 
 const Leaderboard = ({
   players,
@@ -81,7 +82,7 @@ const Leaderboard = ({
                       fontSize: "11px",
                     }}
                   >
-                    {player.name}
+                    {getPlayerDisplayName(player)}
                   </div>
                   <div
                     className={`text-xs font-bold ${

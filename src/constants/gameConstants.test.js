@@ -100,7 +100,7 @@ describe("gameConstants", () => {
 
     it("should have player1 as the first player", () => {
       expect(INITIAL_PLAYERS[0].id).toBe("player1");
-      expect(INITIAL_PLAYERS[0].name).toBe("You");
+      expect(INITIAL_PLAYERS[0].name).toBe("Player");
     });
 
     it("should have player1 as active", () => {
@@ -127,7 +127,7 @@ describe("gameConstants", () => {
     });
 
     it("should have correct player names", () => {
-      expect(INITIAL_PLAYERS[0].name).toBe("You");
+      expect(INITIAL_PLAYERS[0].name).toBe("Player");
       expect(INITIAL_PLAYERS[1].name).toBe("Alex");
       expect(INITIAL_PLAYERS[2].name).toBe("Sam");
       expect(INITIAL_PLAYERS[3].name).toBe("Jordan");

@@ -16,7 +16,7 @@ describe("GameTable", () => {
   const mockPlayers = [
     {
       id: "player1",
-      name: "You",
+      name: "Player",
       hand: [
         { id: "hearts-5", suit: "hearts", rank: 5, value: 5 },
         { id: "diamonds-10", suit: "diamonds", rank: 10, value: 10 },
@@ -129,7 +129,7 @@ describe("GameTable", () => {
 
     it("should display all player names", () => {
       renderWithContext(<GameTable {...defaultProps} />);
-      expect(screen.getByText("You")).toBeInTheDocument();
+      expect(screen.getByText("Player (You)")).toBeInTheDocument();
       expect(screen.getByText("Alex")).toBeInTheDocument();
       expect(screen.getByText("Sam")).toBeInTheDocument();
       expect(screen.getByText("Jordan")).toBeInTheDocument();
@@ -485,7 +485,7 @@ describe("GameTable", () => {
       const minimalPlayersProps = {
         ...defaultProps,
         players: [
-          { id: "player1", name: "You", hand: [], score: 0, isActive: true },
+          { id: "player1", name: "Player", hand: [], score: 0, isActive: true },
           { id: "player2", name: "Alex", hand: [], score: 0, isActive: false },
           { id: "player3", name: "Sam", hand: [], score: 0, isActive: false },
           {

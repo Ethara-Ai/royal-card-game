@@ -16,7 +16,7 @@ export const INITIAL_GAME_STATE = {
 
 // Initial players configuration
 export const INITIAL_PLAYERS = [
-  { id: "player1", name: "You", hand: [], score: 0, isActive: true },
+  { id: "player1", name: "Player", hand: [], score: 0, isActive: true },
   { id: "player2", name: "Alex", hand: [], score: 0, isActive: false },
   { id: "player3", name: "Sam", hand: [], score: 0, isActive: false },
   { id: "player4", name: "Jordan", hand: [], score: 0, isActive: false },

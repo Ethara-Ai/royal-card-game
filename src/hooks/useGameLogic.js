@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import {
   INITIAL_GAME_STATE,
@@ -10,6 +10,7 @@ import {
   GAME_PHASES,
 } from "../constants";
 import ruleSets from "../config/ruleSets";
+import { getPlayerDisplayName } from "../utils/playerUtils";
 
 /**
  * Custom hook for managing all game logic and state
@@ -19,11 +20,23 @@ import ruleSets from "../config/ruleSets";
  * @returns {Object} Game state, players, and handler functions
  */
 const useGameLogic = (selectedRuleSet = 0) => {
+  // Username state for the human player
+  const [username, setUsername] = useState("");
+
   // Core game state
   const [gameState, setGameState] = useState(INITIAL_GAME_STATE);
-  const [players, setPlayers] = useState(INITIAL_PLAYERS);
+  const [basePlayers, setBasePlayers] = useState(INITIAL_PLAYERS);
   const [playArea, setPlayArea] = useState({});
   const [leadPlayerId, setLeadPlayerId] = useState(null);
+
+  // Compute players with username applied to player1
+  const players = useMemo(() => {
+    return basePlayers.map((player) =>
+      player.id === "player1" && username.trim()
+        ? { ...player, name: username.trim() }
+        : player,
+    );
+  }, [basePlayers, username]);
 
   // UI state
   const [draggedCard, setDraggedCard] = useState(null);
@@ -104,7 +117,7 @@ const useGameLogic = (selectedRuleSet = 0) => {
   const dealCards = useCallback(() => {
     const newDeck = createDeck();
     // Create new player objects instead of mutating existing ones
-    const newPlayers = players.map((player, index) => ({
+    const newPlayers = basePlayers.map((player, index) => ({
       ...player,
       hand: newDeck.slice(
         index * CARDS_PER_PLAYER,
@@ -112,9 +125,9 @@ const useGameLogic = (selectedRuleSet = 0) => {
       ),
       score: 0,
     }));
-    setPlayers(newPlayers);
+    setBasePlayers(newPlayers);
     setPlayArea({});
-  }, [createDeck, players]);
+  }, [createDeck, basePlayers]);
 
   /**
    * Gets card positions for played cards in the center
@@ -146,9 +159,11 @@ const useGameLogic = (selectedRuleSet = 0) => {
 
   /**
    * Evaluates the trick and determines the winner
+   * @param {Object} trickCards - Cards played in the current trick
+   * @param {boolean} isLastTrick - Whether this is the final trick of the game
    */
   const evaluateTrick = useCallback(
-    (trickCards) => {
+    (trickCards, isLastTrick = false) => {
       setGameState((prev) => ({ ...prev, phase: GAME_PHASES.EVALUATING }));
 
       const winnerPlayerId = ruleSets[selectedRuleSet].evaluateWinner(
@@ -156,10 +171,11 @@ const useGameLogic = (selectedRuleSet = 0) => {
         leadPlayerId,
       );
       const winnerIndex = players.findIndex((p) => p.id === winnerPlayerId);
-      const winnerName = players[winnerIndex].name;
+      const winnerPlayer = players[winnerIndex];
+      const winnerDisplayName = getPlayerDisplayName(winnerPlayer);
 
       setTrickWinner(winnerPlayerId);
-      toast.success(`${winnerName} wins the trick!`);
+      toast.success(`${winnerDisplayName} wins the trick!`);
 
       const newScores = [...gameState.scores];
       newScores[winnerIndex] += 1;
@@ -169,29 +185,26 @@ const useGameLogic = (selectedRuleSet = 0) => {
           ...prev,
           scores: newScores,
           currentPlayer: winnerIndex,
-          phase:
-            players[0].hand.length === 0
-              ? GAME_PHASES.GAME_OVER
-              : GAME_PHASES.PLAYING,
+          phase: isLastTrick ? GAME_PHASES.GAME_OVER : GAME_PHASES.PLAYING,
         }));
         setPlayArea({});
         setLeadPlayerId(null);
         setTrickWinner(null);
 
-        if (players[0].hand.length === 0) {
+        if (isLastTrick) {
           const winner = getGameWinner(newScores);
           setShowWinnerModal(true);
           if (winner.player.id === "player1") {
             setShowConfetti(true);
-            toast.success("Congratulations! You won the game!");
+            toast.success(`Congratulations! You won the game!`);
             safeSetTimeout(
               () => setShowConfetti(false),
               ANIMATION_TIMINGS.confettiDuration,
             );
           } else {
-            toast.info(`${winner.player.name} wins the game!`);
+            toast.info(`${getPlayerDisplayName(winner.player)} wins the game!`);
           }
-        } else if (winnerIndex !== 0) {
+        } else if (!isLastTrick && winnerIndex !== 0) {
           safeSetTimeout(() => {
             // Use ref to get the latest playAICard function
             if (playAICardRef.current) {
@@ -223,12 +236,12 @@ const useGameLogic = (selectedRuleSet = 0) => {
 
       const randomCard = getRandomCard(player.hand);
       // Immutable update for players
-      const newPlayers = players.map((p, idx) =>
+      const newBasePlayers = basePlayers.map((p, idx) =>
         idx === playerIndex
           ? { ...p, hand: p.hand.filter((c) => c.id !== randomCard.id) }
           : p,
       );
-      setPlayers(newPlayers);
+      setBasePlayers(newBasePlayers);
 
       const newPlayArea = { ...currentPlayArea, [player.id]: randomCard };
       setPlayArea(newPlayArea);
@@ -239,8 +252,10 @@ const useGameLogic = (selectedRuleSet = 0) => {
       }
 
       if (Object.keys(newPlayArea).length === 4) {
+        // Calculate if this is the last trick (all players will have 0 cards after this)
+        const isLastTrick = player.hand.length === 1;
         safeSetTimeout(() => {
-          evaluateTrick(newPlayArea);
+          evaluateTrick(newPlayArea, isLastTrick);
         }, ANIMATION_TIMINGS.cardPlayDelay);
       } else {
         const nextPlayer = (playerIndex + 1) % 4;
@@ -255,7 +270,7 @@ const useGameLogic = (selectedRuleSet = 0) => {
         }
       }
     },
-    [players, gameState.phase, evaluateTrick, safeSetTimeout],
+    [players, basePlayers, gameState.phase, evaluateTrick, safeSetTimeout],
   );
 
   // Keep the ref updated with the latest playAICard function
@@ -274,12 +289,12 @@ const useGameLogic = (selectedRuleSet = 0) => {
       if (playerIndex !== gameState.currentPlayer) return;
 
       // Immutable update for players
-      const newPlayers = players.map((p, idx) =>
+      const newBasePlayers = basePlayers.map((p, idx) =>
         idx === playerIndex
           ? { ...p, hand: p.hand.filter((c) => c.id !== card.id) }
           : p,
       );
-      setPlayers(newPlayers);
+      setBasePlayers(newBasePlayers);
 
       const newPlayArea = { ...playArea, [playerId]: card };
       setPlayArea(newPlayArea);
@@ -294,8 +309,11 @@ const useGameLogic = (selectedRuleSet = 0) => {
       }
 
       if (Object.keys(newPlayArea).length === 4) {
+        // Calculate if this is the last trick (player will have 0 cards after playing this one)
+        const playerObj = players.find((p) => p.id === playerId);
+        const isLastTrick = playerObj.hand.length === 1;
         safeSetTimeout(() => {
-          evaluateTrick(newPlayArea);
+          evaluateTrick(newPlayArea, isLastTrick);
         }, ANIMATION_TIMINGS.cardPlayDelay);
       } else {
         const nextPlayer = (gameState.currentPlayer + 1) % 4;
@@ -309,7 +327,7 @@ const useGameLogic = (selectedRuleSet = 0) => {
         }
       }
     },
-    [gameState, players, playArea, evaluateTrick, safeSetTimeout],
+    [gameState, players, basePlayers, playArea, evaluateTrick, safeSetTimeout],
   );
 
   /**
@@ -347,10 +365,10 @@ const useGameLogic = (selectedRuleSet = 0) => {
     setTrickWinner(null);
     setShowConfetti(false);
     // Immutable update for players
-    const resetPlayers = players.map((p) => ({ ...p, hand: [], score: 0 }));
-    setPlayers(resetPlayers);
+    const resetPlayers = basePlayers.map((p) => ({ ...p, hand: [], score: 0 }));
+    setBasePlayers(resetPlayers);
     toast.info("Game reset! Ready for a new game?");
-  }, [players]);
+  }, [basePlayers]);
 
   // Touch event handlers
   const handleTouchStart = useCallback(
@@ -465,6 +483,10 @@ const useGameLogic = (selectedRuleSet = 0) => {
     // Setters for external control
     setShowWinnerModal,
     setShowConfetti,
+
+    // Username management
+    username,
+    setUsername,
   };
 };
 

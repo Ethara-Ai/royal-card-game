@@ -259,7 +259,7 @@ describe("PlayerPanel", () => {
         index: 0,
       };
       renderWithContext(<PlayerPanel {...player1Props} />);
-      expect(screen.getByText("You")).toBeInTheDocument();
+      expect(screen.getByText("You (You)")).toBeInTheDocument();
     });
 
     it("should render player3 correctly", () => {

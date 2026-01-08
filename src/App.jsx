@@ -62,6 +62,8 @@ function AppContent() {
     handleTouchStart,
     handleTouchMove,
     handleTouchEnd,
+    username,
+    setUsername,
   } = useGameLogic(selectedRuleSet);
 
   // Check if game is in active play state
@@ -152,7 +154,15 @@ function AppContent() {
         >
           {/* Waiting Room - Before Game Starts */}
           {gameState.phase === GAME_PHASES.WAITING && (
-            <WaitingRoom players={players} startGame={startGame} />
+            <WaitingRoom
+              players={players}
+              startGame={startGame}
+              username={username}
+              setUsername={setUsername}
+              ruleSets={ruleSets}
+              selectedRuleSet={selectedRuleSet}
+              setSelectedRuleSet={setSelectedRuleSet}
+            />
           )}
 
           {/* Active Game Area */}
@@ -183,6 +193,8 @@ function AppContent() {
                 handleTouchStart={handleTouchStart}
                 handleTouchMove={handleTouchMove}
                 handleTouchEnd={handleTouchEnd}
+                ruleSetName={ruleSets[selectedRuleSet].name}
+                ruleSetDescription={ruleSets[selectedRuleSet].description}
               />
             </div>
           )}

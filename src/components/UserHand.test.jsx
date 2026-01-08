@@ -37,12 +37,12 @@ describe("UserHand", () => {
   describe("rendering", () => {
     it("should render without crashing", () => {
       render(<UserHand {...defaultProps} />);
-      expect(screen.getByText("You")).toBeInTheDocument();
+      expect(screen.getByText("You (You)")).toBeInTheDocument();
     });
 
     it("should display the player name", () => {
       render(<UserHand {...defaultProps} />);
-      expect(screen.getByText("You")).toBeInTheDocument();
+      expect(screen.getByText("You (You)")).toBeInTheDocument();
     });
 
     it("should display the number of cards in hand", () => {
@@ -310,7 +310,7 @@ describe("UserHand", () => {
         },
       };
       render(<UserHand {...specialNameProps} />);
-      expect(screen.getByText("Player #1")).toBeInTheDocument();
+      expect(screen.getByText("Player #1 (You)")).toBeInTheDocument();
     });
 
     it("should handle player with long name", () => {
