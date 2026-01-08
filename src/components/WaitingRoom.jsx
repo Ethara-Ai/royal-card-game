@@ -8,6 +8,7 @@ import {
   FaCheck,
 } from "react-icons/fa";
 import { getPlayerDisplayName } from "../utils/playerUtils";
+import { sanitizeUsername } from "../utils/sanitize";
 
 /**
  * Returns the appropriate CSS class for dropdown animation state
@@ -35,7 +36,13 @@ const WaitingRoom = ({
   const isUsernameValid = (username || "").trim().length > 0;
 
   const handleInputChange = (e) => {
-    setUsername(e.target.value);
+    const sanitized = sanitizeUsername(e.target.value, {
+      maxLength: 20,
+      allowSpaces: true,
+      allowNumbers: true,
+      allowSpecialChars: false,
+    });
+    setUsername(sanitized);
   };
 
   const handleKeyPress = (e) => {

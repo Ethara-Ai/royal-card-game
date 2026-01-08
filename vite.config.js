@@ -1,10 +1,25 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
+import { visualizer } from "rollup-plugin-visualizer";
 
 // https://vite.dev/config/
-export default defineConfig({
-  plugins: [react(), tailwindcss()],
+export default defineConfig(({ mode }) => ({
+  plugins: [
+    react(),
+    tailwindcss(),
+
+    // Bundle analyzer - only in build mode when ANALYZE=true
+    mode === "production" &&
+      process.env.ANALYZE === "true" &&
+      visualizer({
+        open: true,
+        filename: "dist/stats.html",
+        gzipSize: true,
+        brotliSize: true,
+        template: "treemap", // or "sunburst", "network"
+      }),
+  ].filter(Boolean),
 
   // Build optimizations for production
   build: {
@@ -53,6 +68,20 @@ export default defineConfig({
 
     // Warn if chunk size exceeds limit
     chunkSizeWarningLimit: 500,
+
+    // Report compressed size
+    reportCompressedSize: true,
+
+    // Performance optimizations
+    cssCodeSplit: true,
+    assetsInlineLimit: 4096, // inline assets smaller than 4kb
+  },
+
+  // Performance monitoring
+  esbuild: {
+    logOverride: {
+      "this-is-undefined-in-esm": "silent",
+    },
   },
 
   // Development server configuration
@@ -82,5 +111,12 @@ export default defineConfig({
   // Define global constants
   define: {
     __APP_VERSION__: JSON.stringify("1.0.0"),
+    __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
   },
-});
+
+  // Performance optimizations
+  optimizeDeps: {
+    include: ["react", "react-dom", "react-icons", "sonner"],
+    exclude: ["react-confetti"], // lazy loaded
+  },
+}));

@@ -14,6 +14,7 @@ import {
   GameTable,
   WinnerModal,
 } from "./components";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 // Context
 import { CardCustomizationProvider } from "./context";
@@ -216,9 +217,11 @@ function AppContent() {
 
 function App() {
   return (
-    <CardCustomizationProvider>
-      <AppContent />
-    </CardCustomizationProvider>
+    <ErrorBoundary componentName="App" showDetails={true}>
+      <CardCustomizationProvider>
+        <AppContent />
+      </CardCustomizationProvider>
+    </ErrorBoundary>
   );
 }
 

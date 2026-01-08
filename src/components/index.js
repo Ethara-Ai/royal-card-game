@@ -5,6 +5,7 @@
 
 export { default as Card } from "./Card";
 export { default as DragHint } from "./DragHint";
+export { default as ErrorBoundary } from "./ErrorBoundary";
 export { default as GameTable } from "./GameTable";
 export { default as HowToPlayModal } from "./HowToPlayModal";
 export { default as Leaderboard } from "./Leaderboard";

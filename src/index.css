@@ -1105,6 +1105,149 @@ body {
   box-shadow: 0 0 0 2px var(--tw-ring-color);
 }
 
+/* ============================================================================
+   ACCESSIBILITY STYLES
+   ============================================================================ */
+
+/* Skip Link - Hidden by default, visible on focus */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--color-gold);
+  color: var(--color-text-inverse);
+  padding: 0.75rem 1.5rem;
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: 0 0 0.5rem 0.5rem;
+  z-index: 100;
+  transition: top 0.2s ease-in-out;
+}
+
+.skip-link:focus {
+  top: 0;
+  outline: 3px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+/* Keyboard Focus Styles */
+[data-keyboard-focus="true"] {
+  outline: 3px solid var(--color-gold);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.3);
+  z-index: 10;
+}
+
+/* Focus Visible - Modern focus indicator */
+:focus-visible {
+  outline: 3px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+/* Remove outline for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Enhanced focus for interactive elements */
+button:focus-visible,
+[role="button"]:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--color-gold);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2);
+}
+
+/* Card focus styles */
+.card-playing:focus-visible {
+  outline: 3px solid var(--color-gold);
+  outline-offset: 4px;
+  box-shadow: 0 0 0 6px rgba(212, 175, 55, 0.3);
+  transform: translateY(-8px) scale(1.05);
+}
+
+/* Modal focus trap */
+[role="dialog"]:focus {
+  outline: none;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  :focus-visible {
+    outline-width: 4px;
+    outline-offset: 3px;
+  }
+
+  [data-keyboard-focus="true"] {
+    outline-width: 4px;
+    box-shadow: 0 0 0 6px rgba(212, 175, 55, 0.5);
+  }
+
+  .skip-link:focus {
+    outline-width: 4px;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .skip-link {
+    transition: none;
+  }
+
+  [data-keyboard-focus="true"],
+  :focus-visible {
+    transition: none;
+  }
+}
+
+/* Screen Reader Only Class */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.sr-only-focusable:focus,
+.sr-only-focusable:active {
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Focus within for containers */
+.focus-within\:ring-2:focus-within {
+  box-shadow: 0 0 0 2px var(--color-gold);
+}
+
+/* Keyboard navigation indicators */
+[aria-pressed="true"] {
+  background-color: rgba(212, 175, 55, 0.1);
+}
+
+[aria-selected="true"] {
+  background-color: rgba(212, 175, 55, 0.15);
+  border-color: var(--color-gold);
+}
+
+/* Touch target size for accessibility */
+@media (pointer: coarse) {
+  button,
+  [role="button"],
+  a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
 @media (min-width: 640px) {
   .sm\:w-6 {
     width: 1.5rem;
