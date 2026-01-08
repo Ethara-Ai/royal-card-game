@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 /**
  * Test Utilities
  * Custom render wrapper and helper functions for testing React components

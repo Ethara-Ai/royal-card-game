@@ -167,17 +167,8 @@ function AppContent() {
 
           {/* Active Game Area */}
           {isGameActive && (
-            <div className="game-layout flex-1 flex flex-row gap-4">
-              {/* Leaderboard Sidebar */}
-              <Leaderboard
-                players={players}
-                scores={gameState.scores}
-                currentPlayer={gameState.currentPlayer}
-                trickWinner={trickWinner}
-                ruleSetName={ruleSets[selectedRuleSet].name}
-              />
-
-              {/* Game Table */}
+            <div className="game-layout flex-1 relative">
+              {/* Game Table - Primary Focus */}
               <GameTable
                 players={players}
                 gameState={gameState}
@@ -195,6 +186,15 @@ function AppContent() {
                 handleTouchEnd={handleTouchEnd}
                 ruleSetName={ruleSets[selectedRuleSet].name}
                 ruleSetDescription={ruleSets[selectedRuleSet].description}
+              />
+
+              {/* Floating Leaderboard */}
+              <Leaderboard
+                players={players}
+                scores={gameState.scores}
+                currentPlayer={gameState.currentPlayer}
+                trickWinner={trickWinner}
+                ruleSetName={ruleSets[selectedRuleSet].name}
               />
             </div>
           )}

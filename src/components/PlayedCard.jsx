@@ -30,8 +30,8 @@ const PlayedCard = ({ card, position, isWinner }) => {
       <div
         className="card-face"
         style={{
-          width: "clamp(36px, 10vw, 56px)",
-          height: "clamp(50px, 14vw, 80px)",
+          width: "clamp(44px, 12vw, 68px)",
+          height: "clamp(62px, 17vw, 96px)",
           background: "var(--color-card-white)",
           border: "1px solid var(--color-card-border)",
           borderRadius: "var(--radius-md)",
@@ -39,8 +39,8 @@ const PlayedCard = ({ card, position, isWinner }) => {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          gap: "2px",
-          padding: "3px",
+          gap: "3px",
+          padding: "4px",
           boxShadow: "var(--shadow-card)",
           overflow: "hidden",
         }}
@@ -49,7 +49,7 @@ const PlayedCard = ({ card, position, isWinner }) => {
           className="font-bold"
           style={{
             color,
-            fontSize: "clamp(11px, 3vw, 16px)",
+            fontSize: "clamp(14px, 3.5vw, 20px)",
             lineHeight: 1,
           }}
         >
@@ -57,7 +57,7 @@ const PlayedCard = ({ card, position, isWinner }) => {
         </div>
         <div
           style={{
-            fontSize: "clamp(14px, 4vw, 22px)",
+            fontSize: "clamp(18px, 5vw, 28px)",
             lineHeight: 1,
             display: "flex",
             alignItems: "center",

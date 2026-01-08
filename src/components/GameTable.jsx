@@ -7,10 +7,6 @@ import DragHint from "./DragHint";
 import TurnInstructionOverlay from "./TurnInstructionOverlay";
 import { GAME_PHASES } from "../constants";
 
-/**
- * PlayArea component - The center area where cards are played
- * Handles drop zone and displays played cards
- */
 const PlayArea = ({
   playAreaCards,
   cardPositions,
@@ -26,8 +22,8 @@ const PlayArea = ({
       top: "50%",
       left: "50%",
       transform: "translate(-50%, -50%)",
-      width: "240px",
-      height: "140px",
+      width: "300px",
+      height: "175px",
       backgroundColor: "transparent",
       border:
         playAreaCards.length === 0
@@ -65,9 +61,6 @@ PlayArea.propTypes = {
   onDrop: PropTypes.func.isRequired,
 };
 
-/**
- * PokerTable component - The visual table surface
- */
 const PokerTable = () => (
   <div
     className="poker-table absolute felt-gradient"
@@ -75,18 +68,15 @@ const PokerTable = () => (
       top: "50%",
       left: "50%",
       transform: "translate(-50%, -50%)",
-      width: "clamp(85%, 75vw, 75%)",
-      maxWidth: "700px",
-      aspectRatio: "1.8 / 1",
+      width: "clamp(88%, 80vw, 82%)",
+      maxWidth: "900px",
+      aspectRatio: "1.75 / 1",
       borderRadius: "50%",
       boxShadow: "var(--shadow-table-rim)",
     }}
   />
 );
 
-/**
- * OpponentPosition component - Positions opponent panels around the table
- */
 const OpponentPosition = ({
   player,
   index,
@@ -96,17 +86,17 @@ const OpponentPosition = ({
 }) => {
   const positionStyles = {
     top: {
-      top: "18%",
+      top: "15%",
       left: "50%",
       transform: "translateX(-50%) translateY(-50%)",
     },
     left: {
-      left: "clamp(1%, 2%, 4%)",
+      left: "clamp(2%, 3%, 5%)",
       top: "50%",
       transform: "translateY(-50%)",
     },
     right: {
-      right: "clamp(1%, 2%, 4%)",
+      right: "clamp(2%, 3%, 5%)",
       top: "50%",
       transform: "translateY(-50%)",
     },
@@ -135,10 +125,6 @@ OpponentPosition.propTypes = {
   position: PropTypes.oneOf(["top", "left", "right"]).isRequired,
 };
 
-/**
- * GameTable component - Main game table orchestrating all game elements
- * Uses composition pattern for better organization and maintainability
- */
 const GameTable = ({
   players,
   gameState,
@@ -157,33 +143,27 @@ const GameTable = ({
   ruleSetName,
   ruleSetDescription,
 }) => {
-  // Track if instruction overlay has been dismissed this turn
   const [instructionDismissed, setInstructionDismissed] = useState(false);
 
-  // Reset dismissed state when it becomes player's turn again
   const isPlayerTurn =
     gameState.phase === GAME_PHASES.PLAYING &&
     gameState.currentPlayer === 0 &&
     !dealingAnimation;
 
-  // Show instruction overlay at start of player's turn
   const shouldShowInstruction =
     isPlayerTurn && playAreaCards.length === 0 && !instructionDismissed;
 
-  // Show hint when it's player's turn, no cards in play area, and not dealing
   const shouldShowHint =
     gameState.phase === GAME_PHASES.PLAYING &&
     gameState.currentPlayer === 0 &&
     playAreaCards.length === 0 &&
     !dealingAnimation &&
-    instructionDismissed; // Only show hint after instruction is dismissed
+    instructionDismissed;
 
-  // Dismiss instruction overlay
   const handleInstructionDismiss = useCallback(() => {
     setInstructionDismissed(true);
   }, []);
 
-  // Reset dismissed state when turn changes or new trick starts
   const handleDragStartWithDismiss = useCallback(
     (e, card) => {
       setInstructionDismissed(true);
@@ -203,12 +183,10 @@ const GameTable = ({
   return (
     <div
       className="game-table-area flex-1 relative"
-      style={{ minHeight: "clamp(280px, 60vh, 600px)" }}
+      style={{ minHeight: "clamp(320px, 70vh, 700px)" }}
     >
-      {/* Poker table surface */}
       <PokerTable />
 
-      {/* Central play area */}
       <PlayArea
         playAreaCards={playAreaCards}
         cardPositions={cardPositions}
@@ -217,7 +195,6 @@ const GameTable = ({
         onDrop={handleDrop}
       />
 
-      {/* Turn instruction overlay */}
       <TurnInstructionOverlay
         visible={shouldShowInstruction}
         ruleSetName={ruleSetName}
@@ -225,13 +202,11 @@ const GameTable = ({
         onDismiss={handleInstructionDismiss}
       />
 
-      {/* Drag instruction hint */}
       <DragHint
         key={`hint-${gameState.phase}-${gameState.currentPlayer}`}
         visible={shouldShowHint}
       />
 
-      {/* Opponent panels */}
       <OpponentPosition
         player={players[2]}
         index={2}
@@ -256,11 +231,10 @@ const GameTable = ({
         position="right"
       />
 
-      {/* User's hand at the bottom */}
       <div
         className="absolute user-hand-area"
         style={{
-          bottom: "18%",
+          bottom: "15%",
           left: "50%",
           transform: "translateX(-50%) translateY(50%)",
           zIndex: 10,

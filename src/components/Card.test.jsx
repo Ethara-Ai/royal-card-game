@@ -279,7 +279,7 @@ describe("Card", () => {
 
     it("should have negative margin-left for non-first cards", () => {
       const { container } = render(<Card {...defaultProps} index={1} />);
-      expect(container.firstChild.style.marginLeft).toBe("-8px");
+      expect(container.firstChild.style.marginLeft).toBe("-10px");
     });
   });
 

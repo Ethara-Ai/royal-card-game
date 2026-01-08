@@ -30,13 +30,15 @@ const useGameLogic = (selectedRuleSet = 0) => {
   const [leadPlayerId, setLeadPlayerId] = useState(null);
 
   // Compute players with username applied to player1
-  const players = useMemo(() => {
-    return basePlayers.map((player) =>
-      player.id === "player1" && username.trim()
-        ? { ...player, name: username.trim() }
-        : player,
-    );
-  }, [basePlayers, username]);
+  const players = useMemo(
+    () =>
+      basePlayers.map((player) =>
+        player.id === "player1" && username.trim()
+          ? { ...player, name: username.trim() }
+          : player,
+      ),
+    [basePlayers, username],
+  );
 
   // UI state
   const [draggedCard, setDraggedCard] = useState(null);

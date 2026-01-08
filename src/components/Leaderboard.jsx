@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import PropTypes from "prop-types";
 import { getPlayerDisplayName } from "../utils/playerUtils";
 
@@ -9,7 +9,12 @@ const Leaderboard = ({
   trickWinner,
   ruleSetName,
 }) => {
-  // Memoize sorted players to avoid recalculating on every render
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  const toggleCollapse = useCallback(() => {
+    setIsCollapsed((prev) => !prev);
+  }, []);
+
   const sortedPlayers = useMemo(
     () =>
       [...players]
@@ -22,85 +27,90 @@ const Leaderboard = ({
     [players, scores],
   );
 
-  return (
-    <div className="score-sidebar w-full sm:w-44 shrink-0">
-      <div
-        className="p-3 sm:p-4 rounded-xl"
-        style={{
-          background:
-            "linear-gradient(180deg, var(--color-panel-light) 0%, var(--color-panel-base) 100%)",
-          border: "1px solid var(--color-border-subtle)",
-          boxShadow: "var(--shadow-lg)",
-        }}
-      >
-        <div
-          className="text-xs font-medium uppercase tracking-wider mb-2 sm:mb-3"
-          style={{ color: "var(--color-text)" }}
+  if (isCollapsed) {
+    return (
+      <div className="leaderboard-container score-sidebar collapsed">
+        <button
+          className="leaderboard-collapsed-btn"
+          onClick={toggleCollapse}
+          aria-label="Show leaderboard"
+          aria-expanded="false"
         >
-          {ruleSetName}
+          <svg
+            className="leaderboard-collapsed-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M12 20V10" />
+            <path d="M18 20V4" />
+            <path d="M6 20v-4" />
+          </svg>
+          <span className="leaderboard-collapsed-label">Leaderboard</span>
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="leaderboard-container score-sidebar expanded">
+      <div className="leaderboard-panel">
+        <div className="leaderboard-header">
+          <span className="leaderboard-title">{ruleSetName}</span>
+          <button
+            className="leaderboard-close-btn"
+            onClick={toggleCollapse}
+            aria-label="Hide leaderboard"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
         </div>
-        <div className="space-y-1.5 sm:space-y-2">
+        <div className="leaderboard-players">
           {sortedPlayers.map((player, index) => {
             const score = scores[player.originalIndex];
+            const isCurrentPlayer = currentPlayer === player.originalIndex;
             return (
               <div
                 key={player.id}
-                className={`flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 rounded-lg transition-all duration-300 ${
-                  currentPlayer === player.originalIndex
-                    ? "player-turn-indicator"
-                    : ""
-                }`}
+                className={`leaderboard-player flex items-center rounded-lg transition-all duration-300 ${isCurrentPlayer ? "player-turn-indicator" : ""}`}
                 style={{
                   background: "var(--color-panel-dark)",
-                  border:
-                    currentPlayer === player.originalIndex
-                      ? "1px solid var(--color-border-gold)"
-                      : "1px solid transparent",
+                  border: isCurrentPlayer
+                    ? "1px solid var(--color-border-gold)"
+                    : "1px solid transparent",
                 }}
               >
-                <div
-                  className="text-xs font-bold opacity-60"
-                  style={{
-                    color: "var(--color-text)",
-                    width: "18px",
-                    fontSize: "10px",
-                  }}
-                >
-                  #{index + 1}
-                </div>
+                <div className="leaderboard-rank">#{index + 1}</div>
                 <img
                   src={`https://robohash.org/${player.name}?set=set4&size=24x24`}
                   alt={player.name}
-                  className="w-5 h-5 sm:w-6 sm:h-6 rounded pixel-art"
+                  className="leaderboard-avatar pixel-art"
                   style={{ background: "var(--color-bg-elevated)" }}
                 />
-                <div className="flex-1 min-w-0">
-                  <div
-                    className="text-xs font-medium truncate"
-                    style={{
-                      color: "var(--color-text-primary)",
-                      fontSize: "11px",
-                    }}
-                  >
+                <div className="leaderboard-player-info">
+                  <div className="leaderboard-player-name truncate">
                     {getPlayerDisplayName(player)}
                   </div>
                   <div
-                    className={`text-xs font-bold ${
-                      trickWinner === player.id ? "score-update" : ""
-                    }`}
-                    style={{
-                      color: "var(--color-gold-light)",
-                      fontSize: "11px",
-                    }}
+                    className={`leaderboard-player-score ${trickWinner === player.id ? "score-update" : ""}`}
                   >
                     {score}
                   </div>
                 </div>
-                {currentPlayer === player.originalIndex && (
-                  <div
-                    className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full animate-pulse"
-                    style={{ background: "var(--color-accent-success)" }}
-                  ></div>
+                {isCurrentPlayer && (
+                  <div className="leaderboard-active-indicator animate-pulse" />
                 )}
               </div>
             );

@@ -28,9 +28,7 @@ export const getPlayerDisplayName = (player) => {
  * @param {string} player.id - The player's unique identifier
  * @returns {boolean} True if the player is the human player
  */
-export const isHumanPlayer = (player) => {
-  return player?.id === "player1";
-};
+export const isHumanPlayer = (player) => player?.id === "player1";
 
 export default {
   getPlayerDisplayName,

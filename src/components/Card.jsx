@@ -49,26 +49,26 @@ const Card = ({
         "--card-rotation": `${rotation}deg`,
         "--card-y-offset": `${yOffset}px`,
         "--card-delay": `${index * 0.08}s`,
-        marginLeft: index === 0 ? "0" : "-8px",
+        marginLeft: index === 0 ? "0" : "-10px",
         zIndex: isDragging ? 100 : 10 + index,
       }}
     >
       <div
         className="card-inner"
         style={{
-          width: "clamp(28px, 8vw, 42px)",
-          height: "clamp(40px, 11vw, 58px)",
+          width: "clamp(36px, 10vw, 54px)",
+          height: "clamp(52px, 14vw, 76px)",
           background: "var(--color-card-white)",
           border: "1px solid var(--color-card-border)",
-          borderRadius: "var(--radius-sm)",
+          borderRadius: "var(--radius-md)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          gap: "1px",
-          padding: "2px",
+          gap: "2px",
+          padding: "4px",
           color: cardColor,
-          boxShadow: "0 2px 6px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08)",
+          boxShadow: "0 3px 8px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.1)",
           transformOrigin: "center bottom",
           overflow: "hidden",
         }}
@@ -76,7 +76,7 @@ const Card = ({
         <div
           className="font-bold"
           style={{
-            fontSize: "clamp(10px, 2.5vw, 14px)",
+            fontSize: "clamp(12px, 3.2vw, 18px)",
             lineHeight: 1,
           }}
         >
@@ -84,7 +84,7 @@ const Card = ({
         </div>
         <div
           style={{
-            fontSize: "clamp(12px, 3vw, 18px)",
+            fontSize: "clamp(16px, 4vw, 24px)",
             lineHeight: 1,
             display: "flex",
             alignItems: "center",

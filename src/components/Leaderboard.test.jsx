@@ -226,7 +226,7 @@ describe("Leaderboard", () => {
 
     it("should have rounded container", () => {
       const { container } = render(<Leaderboard {...defaultProps} />);
-      const roundedElement = container.querySelector(".rounded-xl");
+      const roundedElement = container.querySelector(".leaderboard-panel");
       expect(roundedElement).toBeInTheDocument();
     });
 
@@ -266,9 +266,7 @@ describe("Leaderboard", () => {
   describe("layout", () => {
     it("should have space between player items", () => {
       const { container } = render(<Leaderboard {...defaultProps} />);
-      const spacedContainer = container.querySelector(
-        ".space-y-1\\.5, .space-y-2",
-      );
+      const spacedContainer = container.querySelector(".leaderboard-players");
       expect(spacedContainer).toBeInTheDocument();
     });
 
@@ -392,22 +390,22 @@ describe("Leaderboard", () => {
   });
 
   describe("responsive styling", () => {
-    it("should have responsive width classes", () => {
+    it("should have leaderboard container", () => {
       const { container } = render(<Leaderboard {...defaultProps} />);
-      const responsiveElement = container.querySelector(".w-full");
+      const responsiveElement = container.querySelector(".leaderboard-container");
       expect(responsiveElement).toBeInTheDocument();
     });
 
     it("should have responsive padding", () => {
       const { container } = render(<Leaderboard {...defaultProps} />);
-      const paddedElement = container.querySelector(".p-3, .p-4");
+      const paddedElement = container.querySelector(".leaderboard-panel");
       expect(paddedElement).toBeInTheDocument();
     });
 
-    it("should have responsive gap classes", () => {
+    it("should have leaderboard players container", () => {
       const { container } = render(<Leaderboard {...defaultProps} />);
-      const gapElement = container.querySelector('[class*="gap"]');
-      expect(gapElement).toBeInTheDocument();
+      const playersContainer = container.querySelector(".leaderboard-players");
+      expect(playersContainer).toBeInTheDocument();
     });
   });
 

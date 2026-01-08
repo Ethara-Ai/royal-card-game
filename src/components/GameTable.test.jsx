@@ -463,12 +463,12 @@ describe("GameTable", () => {
   });
 
   describe("player positions", () => {
-    it("should position top opponent at 18% from top", () => {
+    it("should position top opponent at 15% from top", () => {
       const { container } = renderWithContext(<GameTable {...defaultProps} />);
       const opponentTop = container
         .querySelector(".opponent-top")
         .closest("div[style]");
-      expect(opponentTop.style.top).toBe("18%");
+      expect(opponentTop.style.top).toBe("15%");
     });
 
     it("should position user hand at bottom", () => {
@@ -476,7 +476,7 @@ describe("GameTable", () => {
       const userHandArea = container
         .querySelector(".user-hand-area")
         .closest("div[style]");
-      expect(userHandArea.style.bottom).toBe("18%");
+      expect(userHandArea.style.bottom).toBe("15%");
     });
   });
 

@@ -49,10 +49,10 @@ button {
 }
 
 .hand-card.playable:hover .card-inner {
-  transform: rotate(0deg) translateY(-12px) scale(1.03);
+  transform: rotate(0deg) translateY(-14px) scale(1.05);
   box-shadow:
-    0 8px 20px rgba(0, 0, 0, 0.25),
-    0 0 0 1px var(--color-gold-base);
+    0 10px 24px rgba(0, 0, 0, 0.28),
+    0 0 0 2px var(--color-gold-base);
 }
 
 .hand-card.playable:active {
@@ -68,8 +68,8 @@ button {
 }
 
 .hand-card.dragging .card-inner {
-  transform: scale(1.15) rotate(5deg) !important;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5) !important;
+  transform: scale(1.18) rotate(5deg) !important;
+  box-shadow: 0 28px 56px rgba(0, 0, 0, 0.55) !important;
   border: 2px solid var(--color-gold-base) !important;
 }
 
@@ -96,8 +96,8 @@ button {
   position: absolute;
   left: 50%;
   top: 50%;
-  margin-left: -28px;
-  margin-top: -40px;
+  margin-left: -34px;
+  margin-top: -48px;
 }
 
 .played-card.card-enter {
@@ -320,6 +320,188 @@ button {
 }
 
 /* ===========================================
+   COLLAPSIBLE LEADERBOARD STYLES
+   =========================================== */
+
+.leaderboard-container {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 30;
+}
+
+/* Collapsed State - Button with Label */
+.leaderboard-collapsed-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: linear-gradient(
+    180deg,
+    var(--color-panel-light) 0%,
+    var(--color-panel-base) 100%
+  );
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.leaderboard-collapsed-btn:hover {
+  background: linear-gradient(
+    180deg,
+    var(--color-panel-hover) 0%,
+    var(--color-panel-light) 100%
+  );
+  border-color: var(--color-border-gold);
+  box-shadow: var(--shadow-lg), var(--shadow-glow-gold);
+  transform: translateX(2px);
+}
+
+.leaderboard-collapsed-btn:active {
+  transform: scale(0.98);
+}
+
+.leaderboard-collapsed-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--color-gold-light);
+  flex-shrink: 0;
+}
+
+.leaderboard-collapsed-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  letter-spacing: 0.02em;
+}
+
+/* Expanded State - Panel */
+.leaderboard-panel {
+  background: linear-gradient(
+    180deg,
+    var(--color-panel-light) 0%,
+    var(--color-panel-base) 100%
+  );
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  width: 155px;
+  padding: 10px;
+}
+
+.leaderboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.leaderboard-title {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-secondary);
+}
+
+.leaderboard-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  background: var(--color-panel-dark);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.leaderboard-close-btn svg {
+  width: 12px;
+  height: 12px;
+  color: var(--color-text-muted);
+  transition: color 0.2s ease;
+}
+
+.leaderboard-close-btn:hover {
+  background: var(--color-panel-hover);
+  border-color: var(--color-border-gold);
+}
+
+.leaderboard-close-btn:hover svg {
+  color: var(--color-gold-light);
+}
+
+.leaderboard-close-btn:active {
+  transform: scale(0.9);
+}
+
+.leaderboard-players {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.leaderboard-player {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: var(--radius-md);
+  transition: all 0.3s ease;
+}
+
+.leaderboard-rank {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  width: 16px;
+  flex-shrink: 0;
+}
+
+.leaderboard-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.leaderboard-player-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.leaderboard-player-name {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leaderboard-player-score {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-gold-light);
+}
+
+.leaderboard-active-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent-success);
+  flex-shrink: 0;
+}
+
+/* ===========================================
    TURN INSTRUCTION OVERLAY - THEME AWARE
    Supports light/dark themes with proper contrast
    =========================================== */
@@ -491,119 +673,18 @@ button {
 }
 
 /* ===========================================
-   RESPONSIVE BREAKPOINTS
+   RESPONSIVE BREAKPOINTS - ENHANCED FOR EMPHASIS
    =========================================== */
 
 /* Large Desktop (1440px+) */
 @media (min-width: 1440px) {
   .game-table-area {
-    min-height: 700px !important;
+    min-height: 750px !important;
   }
 
   .poker-table {
-    width: 70% !important;
-    max-width: 800px !important;
-  }
-
-  .opponent-top {
-    top: 20% !important;
-  }
-
-  .user-hand-area {
-    bottom: 20% !important;
-  }
-
-  .opponent-left {
-    left: 5% !important;
-  }
-
-  .opponent-right {
-    right: 5% !important;
-  }
-
-  .opponent-panel {
-    min-width: 140px !important;
-  }
-
-  .hand-card .card-inner {
-    width: 44px !important;
-    height: 60px !important;
-  }
-
-  .hand-card .card-inner > div:first-child {
-    font-size: 13px !important;
-  }
-
-  .hand-card .card-inner > div:last-child {
-    font-size: 16px !important;
-  }
-
-  .played-card .card-face {
-    width: 52px !important;
-    height: 72px !important;
-  }
-
-  .played-card .card-face > div:first-child {
-    font-size: 14px !important;
-  }
-
-  .played-card .card-face > div:last-child {
-    font-size: 18px !important;
-  }
-}
-
-/* Laptop/Desktop (1024px - 1439px) */
-@media (max-width: 1439px) and (min-width: 1025px) {
-  .game-table-area {
-    min-height: 580px !important;
-  }
-
-  .poker-table {
-    width: 75% !important;
-  }
-
-  .opponent-top {
-    top: 18% !important;
-  }
-
-  .user-hand-area {
-    bottom: 18% !important;
-  }
-}
-
-/* iPad Landscape / Small Laptop (1024px) */
-@media (max-width: 1024px) {
-  .game-layout {
-    flex-direction: column !important;
-  }
-
-  .score-sidebar {
-    width: 100% !important;
-    margin-bottom: 12px;
-  }
-
-  .score-sidebar > div {
-    padding: 12px !important;
-  }
-
-  .score-sidebar .space-y-2 {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  .score-sidebar .space-y-2 > * {
-    margin-top: 0 !important;
-    flex: 1;
-    min-width: 120px;
-  }
-
-  .game-table-area {
-    min-height: 480px !important;
-  }
-
-  .poker-table {
-    width: 85% !important;
+    width: 78% !important;
+    max-width: 950px !important;
   }
 
   .opponent-top {
@@ -615,27 +696,61 @@ button {
   }
 
   .opponent-left {
-    left: 3% !important;
+    left: 6% !important;
   }
 
   .opponent-right {
-    right: 3% !important;
+    right: 6% !important;
   }
 
   .opponent-panel {
-    min-width: 90px !important;
-    padding: 4px 6px !important;
+    min-width: 170px !important;
+  }
+
+  .hand-card .card-inner {
+    width: 56px !important;
+    height: 78px !important;
+  }
+
+  .hand-card .card-inner > div:first-child {
+    font-size: 18px !important;
+  }
+
+  .hand-card .card-inner > div:last-child {
+    font-size: 24px !important;
+  }
+
+  .played-card .card-face {
+    width: 70px !important;
+    height: 98px !important;
+  }
+
+  .played-card .card-face > div:first-child {
+    font-size: 20px !important;
+  }
+
+  .played-card .card-face > div:last-child {
+    font-size: 28px !important;
+  }
+
+  .play-area-drop {
+    width: 360px !important;
+    height: 210px !important;
+  }
+
+  .leaderboard-panel {
+    width: 165px;
   }
 }
 
-/* iPad Portrait (768px - 1023px) */
-@media (max-width: 1023px) and (min-width: 768px) {
+/* Laptop/Desktop (1024px - 1439px) */
+@media (max-width: 1439px) and (min-width: 1025px) {
   .game-table-area {
-    min-height: 450px !important;
+    min-height: 640px !important;
   }
 
   .poker-table {
-    width: 88% !important;
+    width: 80% !important;
   }
 
   .opponent-top {
@@ -646,63 +761,33 @@ button {
     bottom: 15% !important;
   }
 
-  .opponent-left {
-    left: 2% !important;
-  }
-
-  .opponent-right {
-    right: 2% !important;
-  }
-
-  .opponent-panel {
-    min-width: 80px !important;
-    padding: 3px 5px !important;
-  }
-
-  .hand-card .card-inner {
-    width: 34px !important;
-    height: 48px !important;
-  }
-
-  .hand-card .card-inner > div:first-child {
-    font-size: 11px !important;
-  }
-
-  .hand-card .card-inner > div:last-child {
-    font-size: 14px !important;
-  }
-
-  .hand-card {
-    margin-left: -7px !important;
-  }
-
-  .played-card .card-face {
-    width: 44px !important;
-    height: 62px !important;
-  }
-
-  .played-card .card-face > div:first-child {
-    font-size: 12px !important;
-  }
-
-  .played-card .card-face > div:last-child {
-    font-size: 15px !important;
-  }
-
   .play-area-drop {
-    width: 160px !important;
-    height: 100px !important;
+    width: 320px !important;
+    height: 190px !important;
   }
 }
 
-/* Large Mobile / Small Tablet (640px - 767px) */
-@media (max-width: 767px) and (min-width: 640px) {
+/* iPad Landscape / Small Laptop (1024px) */
+@media (max-width: 1024px) {
+  .game-layout {
+    flex-direction: column !important;
+  }
+
+  .leaderboard-container {
+    top: 12px;
+    left: 12px;
+  }
+
+  .leaderboard-panel {
+    width: 140px;
+  }
+
   .game-table-area {
-    min-height: 380px !important;
+    min-height: 520px !important;
   }
 
   .poker-table {
-    width: 92% !important;
+    width: 88% !important;
   }
 
   .opponent-top {
@@ -714,6 +799,209 @@ button {
   }
 
   .opponent-left {
+    left: 4% !important;
+  }
+
+  .opponent-right {
+    right: 4% !important;
+  }
+
+  .opponent-panel {
+    min-width: 110px !important;
+    padding: 6px 10px !important;
+  }
+
+  .play-area-drop {
+    width: 280px !important;
+    height: 165px !important;
+  }
+}
+
+/* iPad Portrait (768px - 1023px) */
+@media (max-width: 1023px) and (min-width: 768px) {
+  .game-table-area {
+    min-height: 480px !important;
+  }
+
+  .poker-table {
+    width: 90% !important;
+  }
+
+  .opponent-top {
+    top: 13% !important;
+  }
+
+  .user-hand-area {
+    bottom: 13% !important;
+  }
+
+  .opponent-left {
+    left: 3% !important;
+  }
+
+  .opponent-right {
+    right: 3% !important;
+  }
+
+  .opponent-panel {
+    min-width: 100px !important;
+    padding: 5px 8px !important;
+  }
+
+  .hand-card .card-inner {
+    width: 42px !important;
+    height: 60px !important;
+  }
+
+  .hand-card .card-inner > div:first-child {
+    font-size: 14px !important;
+  }
+
+  .hand-card .card-inner > div:last-child {
+    font-size: 18px !important;
+  }
+
+  .hand-card {
+    margin-left: -9px !important;
+  }
+
+  .played-card .card-face {
+    width: 54px !important;
+    height: 76px !important;
+  }
+
+  .played-card .card-face > div:first-child {
+    font-size: 16px !important;
+  }
+
+  .played-card .card-face > div:last-child {
+    font-size: 20px !important;
+  }
+
+  .play-area-drop {
+    width: 240px !important;
+    height: 140px !important;
+  }
+}
+
+/* Large Mobile / Small Tablet (640px - 767px) */
+@media (max-width: 767px) and (min-width: 640px) {
+  .game-table-area {
+    min-height: 420px !important;
+  }
+
+  .poker-table {
+    width: 94% !important;
+  }
+
+  .opponent-top {
+    top: 12% !important;
+  }
+
+  .user-hand-area {
+    bottom: 12% !important;
+  }
+
+  .opponent-left {
+    left: 2% !important;
+  }
+
+  .opponent-right {
+    right: 2% !important;
+  }
+
+  .opponent-panel {
+    min-width: 85px !important;
+    padding: 4px 6px !important;
+  }
+
+  .opponent-panel .card-backs {
+    display: none !important;
+  }
+
+  .hand-card .card-inner {
+    width: 38px !important;
+    height: 54px !important;
+    padding: 3px !important;
+    gap: 1px !important;
+  }
+
+  .hand-card .card-inner > div:first-child {
+    font-size: 13px !important;
+  }
+
+  .hand-card .card-inner > div:last-child {
+    font-size: 16px !important;
+  }
+
+  .hand-card {
+    margin-left: -8px !important;
+  }
+
+  .played-card .card-face {
+    width: 46px !important;
+    height: 64px !important;
+    padding: 3px !important;
+    gap: 2px !important;
+  }
+
+  .played-card .card-face > div:first-child {
+    font-size: 13px !important;
+  }
+
+  .played-card .card-face > div:last-child {
+    font-size: 16px !important;
+  }
+
+  .play-area-drop {
+    width: 200px !important;
+    height: 120px !important;
+  }
+
+  .leaderboard-container {
+    top: 10px;
+    left: 10px;
+  }
+
+  .leaderboard-panel {
+    width: 130px;
+    padding: 8px;
+  }
+
+  .leaderboard-collapsed-btn {
+    padding: 8px 12px;
+    gap: 6px;
+  }
+
+  .leaderboard-collapsed-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .leaderboard-collapsed-label {
+    font-size: 10px;
+  }
+}
+
+/* Mobile (480px - 639px) */
+@media (max-width: 639px) and (min-width: 480px) {
+  .game-table-area {
+    min-height: 380px !important;
+  }
+
+  .poker-table {
+    width: 96% !important;
+  }
+
+  .opponent-top {
+    top: 11% !important;
+  }
+
+  .user-hand-area {
+    bottom: 11% !important;
+  }
+
+  .opponent-left {
     left: 1% !important;
   }
 
@@ -722,8 +1010,150 @@ button {
   }
 
   .opponent-panel {
-    min-width: 65px !important;
-    padding: 2px 4px !important;
+    min-width: 70px !important;
+    padding: 3px 5px !important;
+  }
+
+  .opponent-panel .card-backs {
+    display: none !important;
+  }
+
+  .opponent-panel .text-xs {
+    font-size: 9px !important;
+  }
+
+  .hand-card .card-inner {
+    width: 34px !important;
+    height: 48px !important;
+    padding: 2px !important;
+    gap: 1px !important;
+  }
+
+  .hand-card .card-inner > div:first-child {
+    font-size: 12px !important;
+  }
+
+  .hand-card .card-inner > div:last-child {
+    font-size: 14px !important;
+  }
+
+  .hand-card {
+    margin-left: -7px !important;
+  }
+
+  .played-card .card-face {
+    width: 42px !important;
+    height: 58px !important;
+    padding: 2px !important;
+    gap: 1px !important;
+  }
+
+  .played-card .card-face > div:first-child {
+    font-size: 12px !important;
+  }
+
+  .played-card .card-face > div:last-child {
+    font-size: 14px !important;
+  }
+
+  .play-area-drop {
+    width: 170px !important;
+    height: 100px !important;
+  }
+
+  .settings-menu {
+    width: 220px !important;
+  }
+
+  .leaderboard-container {
+    top: 8px;
+    left: 8px;
+  }
+
+  .leaderboard-panel {
+    width: 120px;
+    padding: 8px;
+  }
+
+  .leaderboard-collapsed-btn {
+    padding: 8px 10px;
+    gap: 5px;
+  }
+
+  .leaderboard-collapsed-icon {
+    width: 13px;
+    height: 13px;
+  }
+
+  .leaderboard-collapsed-label {
+    font-size: 9px;
+  }
+
+  .leaderboard-player {
+    padding: 5px 6px;
+    gap: 5px;
+  }
+
+  .leaderboard-avatar {
+    width: 18px;
+    height: 18px;
+  }
+
+  .leaderboard-player-name,
+  .leaderboard-player-score {
+    font-size: 9px;
+  }
+
+  .leaderboard-close-btn {
+    width: 18px;
+    height: 18px;
+  }
+
+  .leaderboard-close-btn svg {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+/* Small Mobile (< 480px) */
+@media (max-width: 479px) {
+  .game-table-area {
+    min-height: 340px !important;
+  }
+
+  .poker-table {
+    width: 98% !important;
+    aspect-ratio: 1.6 / 1 !important;
+  }
+
+  .opponent-top {
+    top: 9% !important;
+  }
+
+  .user-hand-area {
+    bottom: 9% !important;
+  }
+
+  .opponent-left {
+    left: 0 !important;
+  }
+
+  .opponent-right {
+    right: 0 !important;
+  }
+
+  .opponent-panel {
+    min-width: 60px !important;
+    padding: 3px 4px !important;
+  }
+
+  .opponent-panel .w-5 {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  .opponent-panel .text-xs {
+    font-size: 8px !important;
   }
 
   .opponent-panel .card-backs {
@@ -746,14 +1176,14 @@ button {
   }
 
   .hand-card {
-    margin-left: -6px !important;
+    margin-left: -5px !important;
   }
 
   .played-card .card-face {
     width: 36px !important;
     height: 50px !important;
     padding: 2px !important;
-    gap: 1px !important;
+    gap: 0 !important;
   }
 
   .played-card .card-face > div:first-child {
@@ -768,203 +1198,89 @@ button {
     width: 140px !important;
     height: 85px !important;
   }
-}
-
-/* Mobile (480px - 639px) */
-@media (max-width: 639px) and (min-width: 480px) {
-  .game-table-area {
-    min-height: 340px !important;
-  }
-
-  .poker-table {
-    width: 95% !important;
-  }
-
-  .opponent-top {
-    top: 12% !important;
-  }
-
-  .user-hand-area {
-    bottom: 12% !important;
-  }
-
-  .opponent-left {
-    left: 0 !important;
-  }
-
-  .opponent-right {
-    right: 0 !important;
-  }
-
-  .opponent-panel {
-    min-width: 55px !important;
-    padding: 2px 3px !important;
-  }
-
-  .opponent-panel .card-backs {
-    display: none !important;
-  }
-
-  .opponent-panel .text-xs {
-    font-size: 8px !important;
-  }
-
-  .hand-card .card-inner {
-    width: 26px !important;
-    height: 36px !important;
-    padding: 1px !important;
-    gap: 0 !important;
-  }
-
-  .hand-card .card-inner > div:first-child {
-    font-size: 9px !important;
-  }
-
-  .hand-card .card-inner > div:last-child {
-    font-size: 10px !important;
-  }
-
-  .hand-card {
-    margin-left: -5px !important;
-  }
-
-  .played-card .card-face {
-    width: 32px !important;
-    height: 44px !important;
-    padding: 2px !important;
-    gap: 0 !important;
-  }
-
-  .played-card .card-face > div:first-child {
-    font-size: 9px !important;
-  }
-
-  .played-card .card-face > div:last-child {
-    font-size: 11px !important;
-  }
-
-  .play-area-drop {
-    width: 120px !important;
-    height: 75px !important;
-  }
-
-  .settings-menu {
-    width: 220px !important;
-  }
-
-  .score-sidebar .space-y-2 > * {
-    min-width: 100px !important;
-  }
-}
-
-/* Small Mobile (< 480px) */
-@media (max-width: 479px) {
-  .game-table-area {
-    min-height: 300px !important;
-  }
-
-  .poker-table {
-    width: 98% !important;
-    aspect-ratio: 1.6 / 1 !important;
-  }
-
-  .opponent-top {
-    top: 10% !important;
-  }
-
-  .user-hand-area {
-    bottom: 10% !important;
-  }
-
-  .opponent-left {
-    left: 0 !important;
-  }
-
-  .opponent-right {
-    right: 0 !important;
-  }
-
-  .opponent-panel {
-    min-width: 50px !important;
-    padding: 2px 3px !important;
-  }
-
-  .opponent-panel .w-5 {
-    width: 12px !important;
-    height: 12px !important;
-  }
-
-  .opponent-panel .text-xs {
-    font-size: 7px !important;
-  }
-
-  .opponent-panel .card-backs {
-    display: none !important;
-  }
-
-  .hand-card .card-inner {
-    width: 24px !important;
-    height: 34px !important;
-    padding: 1px !important;
-    gap: 0 !important;
-  }
-
-  .hand-card .card-inner > div:first-child {
-    font-size: 8px !important;
-  }
-
-  .hand-card .card-inner > div:last-child {
-    font-size: 9px !important;
-  }
-
-  .hand-card {
-    margin-left: -4px !important;
-  }
-
-  .played-card .card-face {
-    width: 28px !important;
-    height: 38px !important;
-    padding: 1px !important;
-    gap: 0 !important;
-  }
-
-  .played-card .card-face > div:first-child {
-    font-size: 8px !important;
-  }
-
-  .played-card .card-face > div:last-child {
-    font-size: 10px !important;
-  }
-
-  .play-area-drop {
-    width: 90px !important;
-    height: 60px !important;
-  }
 
   .settings-menu {
     width: 200px !important;
     max-height: calc(100vh - 80px) !important;
   }
 
-  .score-sidebar .space-y-2 > * {
-    min-width: 80px !important;
-    padding: 6px !important;
+  .leaderboard-container {
+    top: 6px;
+    left: 6px;
   }
 
-  .score-sidebar .text-xs {
-    font-size: 9px !important;
+  .leaderboard-panel {
+    width: 110px;
+    padding: 6px;
   }
 
-  .score-sidebar .w-6 {
-    width: 18px !important;
-    height: 18px !important;
+  .leaderboard-collapsed-btn {
+    padding: 6px 8px;
+    gap: 4px;
+  }
+
+  .leaderboard-collapsed-icon {
+    width: 12px;
+    height: 12px;
+  }
+
+  .leaderboard-collapsed-label {
+    font-size: 8px;
+  }
+
+  .leaderboard-players {
+    gap: 4px;
+  }
+
+  .leaderboard-player {
+    padding: 4px 5px;
+    gap: 4px;
+  }
+
+  .leaderboard-rank {
+    font-size: 8px;
+    width: 14px;
+  }
+
+  .leaderboard-avatar {
+    width: 16px;
+    height: 16px;
+  }
+
+  .leaderboard-player-name,
+  .leaderboard-player-score {
+    font-size: 8px;
+  }
+
+  .leaderboard-title {
+    font-size: 8px;
+  }
+
+  .leaderboard-header {
+    margin-bottom: 6px;
+    padding-bottom: 5px;
+  }
+
+  .leaderboard-close-btn {
+    width: 16px;
+    height: 16px;
+  }
+
+  .leaderboard-close-btn svg {
+    width: 9px;
+    height: 9px;
+  }
+
+  .leaderboard-active-indicator {
+    width: 5px;
+    height: 5px;
   }
 }
 
 /* Extra Small Mobile (< 360px) */
 @media (max-width: 359px) {
   .game-table-area {
-    min-height: 260px !important;
+    min-height: 300px !important;
   }
 
   .poker-table {
@@ -988,79 +1304,113 @@ button {
   }
 
   .opponent-panel {
-    min-width: 42px !important;
-    padding: 2px 2px !important;
+    min-width: 50px !important;
+    padding: 2px 3px !important;
   }
 
   .hand-card .card-inner {
-    width: 20px !important;
-    height: 28px !important;
+    width: 26px !important;
+    height: 36px !important;
     padding: 1px !important;
     gap: 0 !important;
   }
 
   .hand-card .card-inner > div:first-child {
-    font-size: 7px !important;
+    font-size: 9px !important;
   }
 
   .hand-card .card-inner > div:last-child {
-    font-size: 8px !important;
+    font-size: 10px !important;
   }
 
   .hand-card {
-    margin-left: -3px !important;
+    margin-left: -4px !important;
   }
 
   .played-card .card-face {
-    width: 24px !important;
-    height: 32px !important;
+    width: 30px !important;
+    height: 42px !important;
     padding: 1px !important;
     gap: 0 !important;
   }
 
   .played-card .card-face > div:first-child {
-    font-size: 7px !important;
+    font-size: 9px !important;
   }
 
   .played-card .card-face > div:last-child {
-    font-size: 8px !important;
+    font-size: 10px !important;
   }
 
   .play-area-drop {
-    width: 85px !important;
-    height: 55px !important;
+    width: 110px !important;
+    height: 70px !important;
+  }
+
+  .leaderboard-panel {
+    width: 95px;
+    padding: 5px;
+  }
+
+  .leaderboard-collapsed-btn {
+    padding: 5px 7px;
+    gap: 4px;
+  }
+
+  .leaderboard-collapsed-icon {
+    width: 11px;
+    height: 11px;
+  }
+
+  .leaderboard-collapsed-label {
+    font-size: 7px;
+  }
+
+  .leaderboard-close-btn {
+    width: 14px;
+    height: 14px;
+  }
+
+  .leaderboard-close-btn svg {
+    width: 8px;
+    height: 8px;
   }
 }
 
 /* Landscape orientation adjustments for mobile */
 @media (max-height: 500px) and (orientation: landscape) {
   .game-table-area {
-    min-height: 280px !important;
+    min-height: 320px !important;
   }
 
   .poker-table {
-    width: 60% !important;
+    width: 65% !important;
     aspect-ratio: 2 / 1 !important;
   }
 
   .opponent-panel {
-    min-width: 75px !important;
+    min-width: 90px !important;
   }
 
-  .score-sidebar {
+  .leaderboard-container {
     position: fixed !important;
-    left: 8px !important;
-    top: 60px !important;
-    width: auto !important;
-    max-width: 140px !important;
-    z-index: 40 !important;
+    top: auto !important;
+    bottom: 10px !important;
+    left: 10px !important;
   }
 
-  .score-sidebar .space-y-2 {
-    flex-direction: column !important;
+  .leaderboard-panel {
+    width: 140px;
   }
 
-  .score-sidebar .space-y-2 > * {
-    min-width: unset !important;
+  .leaderboard-players {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .leaderboard-player {
+    flex: 1;
+    min-width: 85px;
   }
 }
