@@ -122,10 +122,10 @@ const useGameLogic = (selectedRuleSet = 0) => {
       hand: newDeck.slice(
         index * CARDS_PER_PLAYER,
         (index + 1) * CARDS_PER_PLAYER,
-      ),
-      score: 0,
-    }));
-    setBasePlayers(newPlayers);
+      );
+      player.score = 0;
+    });
+    setPlayers(newPlayers);
     setPlayArea({});
   }, [createDeck, basePlayers]);
 
@@ -214,14 +214,7 @@ const useGameLogic = (selectedRuleSet = 0) => {
         }
       }, ANIMATION_TIMINGS.trickEvaluationDelay);
     },
-    [
-      selectedRuleSet,
-      players,
-      gameState.scores,
-      getGameWinner,
-      safeSetTimeout,
-      leadPlayerId,
-    ],
+    [selectedRuleSet, players, gameState.scores, getGameWinner, playAICard],
   );
 
   /**
@@ -235,11 +228,9 @@ const useGameLogic = (selectedRuleSet = 0) => {
       }
 
       const randomCard = getRandomCard(player.hand);
-      // Immutable update for players
-      const newBasePlayers = basePlayers.map((p, idx) =>
-        idx === playerIndex
-          ? { ...p, hand: p.hand.filter((c) => c.id !== randomCard.id) }
-          : p,
+      const newPlayers = [...players];
+      newPlayers[playerIndex].hand = newPlayers[playerIndex].hand.filter(
+        (c) => c.id !== randomCard.id,
       );
       setBasePlayers(newBasePlayers);
 
@@ -270,7 +261,7 @@ const useGameLogic = (selectedRuleSet = 0) => {
         }
       }
     },
-    [players, basePlayers, gameState.phase, evaluateTrick, safeSetTimeout],
+    [players, gameState.phase, evaluateTrick],
   );
 
   // Keep the ref updated with the latest playAICard function
@@ -288,11 +279,9 @@ const useGameLogic = (selectedRuleSet = 0) => {
       const playerIndex = players.findIndex((p) => p.id === playerId);
       if (playerIndex !== gameState.currentPlayer) return;
 
-      // Immutable update for players
-      const newBasePlayers = basePlayers.map((p, idx) =>
-        idx === playerIndex
-          ? { ...p, hand: p.hand.filter((c) => c.id !== card.id) }
-          : p,
+      const newPlayers = [...players];
+      newPlayers[playerIndex].hand = newPlayers[playerIndex].hand.filter(
+        (c) => c.id !== card.id,
       );
       setBasePlayers(newBasePlayers);
 
@@ -327,7 +316,7 @@ const useGameLogic = (selectedRuleSet = 0) => {
         }
       }
     },
-    [gameState, players, basePlayers, playArea, evaluateTrick, safeSetTimeout],
+    [gameState, players, playArea, evaluateTrick, playAICard],
   );
 
   /**
