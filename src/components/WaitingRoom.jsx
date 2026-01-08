@@ -150,7 +150,7 @@ const WaitingRoom = ({
           />
           <p
             className="text-xs mt-1.5"
-            style={{ color: "var(--color-text-muted)" }}
+            style={{ color: "var(--color-text-primary)" }}
           >
             This name will appear in scoreboards and victory messages
           </p>
@@ -162,7 +162,7 @@ const WaitingRoom = ({
             className="block text-xs font-medium uppercase tracking-wider mb-2"
             style={{ color: "var(--color-text-gold)" }}
           >
-            Game Rules
+            Select Game Mode
           </label>
           <div className="relative">
             {/* Dropdown Trigger */}
@@ -265,7 +265,7 @@ const WaitingRoom = ({
                           </div>
                           <div
                             className="text-xs mt-1 leading-relaxed"
-                            style={{ color: "var(--color-text-muted)" }}
+                            style={{ color: "var(--color-text-primary)" }}
                           >
                             {rule.description}
                           </div>
@@ -281,7 +281,7 @@ const WaitingRoom = ({
           {!showDropdown && currentRuleSet && (
             <p
               className="text-xs mt-1.5 flex items-center gap-1.5"
-              style={{ color: "var(--color-text-muted)" }}
+              style={{ color: "var(--color-text-primary)" }}
             >
               <span
                 className="inline-block w-1.5 h-1.5 rounded-full"

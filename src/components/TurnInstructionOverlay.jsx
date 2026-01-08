@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import PropTypes from "prop-types";
-import { FaLightbulb } from "react-icons/fa";
+import { FaLightbulb, FaHandPointer } from "react-icons/fa";
 
 /**
  * TurnInstructionOverlay component - Shows turn instructions at the start of each turn
- * Displays the current rule set and basic instructions
- * Disappears when player interacts with their hand or after a timeout
+ * Displays the current rule set and basic instructions with a blur overlay
+ * Disappears only when player taps on the overlay
  *
  * Theme Compliance:
  * - Uses CSS variables for all colors (supports light/dark themes)
@@ -21,14 +21,14 @@ const TurnInstructionOverlay = ({
   onDismiss,
 }) => {
   const [showState, setShowState] = useState("hidden"); // "hidden" | "visible" | "exiting"
-  const timersRef = useRef({ show: null, hide: null, exit: null });
+  const timersRef = useRef({ show: null, exit: null });
   const lastVisibleRef = useRef(false);
 
   const clearAllTimers = useCallback(() => {
     Object.values(timersRef.current).forEach((timer) => {
       if (timer) clearTimeout(timer);
     });
-    timersRef.current = { show: null, hide: null, exit: null };
+    timersRef.current = { show: null, exit: null };
   }, []);
 
   const handleDismiss = useCallback(() => {
@@ -54,15 +54,6 @@ const TurnInstructionOverlay = ({
       timersRef.current.show = setTimeout(() => {
         setShowState("visible");
       }, 200);
-
-      // Auto-dismiss after 5 seconds
-      timersRef.current.hide = setTimeout(() => {
-        setShowState("exiting");
-        timersRef.current.exit = setTimeout(() => {
-          setShowState("hidden");
-          if (onDismiss) onDismiss();
-        }, 300);
-      }, 5000);
     }
 
     // Becoming hidden - reset with minimal delay to avoid sync setState
@@ -76,26 +67,6 @@ const TurnInstructionOverlay = ({
     return clearAllTimers;
   }, [visible, onDismiss, clearAllTimers]);
 
-  // Listen for any interaction to dismiss
-  useEffect(() => {
-    if (showState !== "visible") return;
-
-    const handleInteraction = () => {
-      handleDismiss();
-    };
-
-    // Listen for mouse/touch events on the game area
-    document.addEventListener("mousedown", handleInteraction);
-    document.addEventListener("touchstart", handleInteraction);
-    document.addEventListener("dragstart", handleInteraction);
-
-    return () => {
-      document.removeEventListener("mousedown", handleInteraction);
-      document.removeEventListener("touchstart", handleInteraction);
-      document.removeEventListener("dragstart", handleInteraction);
-    };
-  }, [showState, handleDismiss]);
-
   // Cleanup on unmount
   useEffect(() => clearAllTimers, [clearAllTimers]);
 
@@ -105,6 +76,21 @@ const TurnInstructionOverlay = ({
   const animationClass = isExiting ? "exiting" : "entering";
 
   return (
+    <div
+      className={`turn-instruction-backdrop ${animationClass}`}
+      onClick={handleDismiss}
+      onTouchEnd={handleDismiss}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") handleDismiss();
+      }}
+      aria-label="Tap to dismiss and start your turn"
+    >
+      {/* Blur overlay for the game */}
+      <div className="turn-instruction-blur" aria-hidden="true" />
+
+      {/* Main instruction content */}
     <div
       className={`turn-instruction-overlay ${animationClass}`}
       role="status"
@@ -131,8 +117,19 @@ const TurnInstructionOverlay = ({
         </div>
 
         <div className="turn-instruction-dismiss">
+            <span className="turn-instruction-dismiss-pulse" />
           Tap anywhere to start
+          </div>
         </div>
+      </div>
+
+      {/* Card instruction pointer */}
+      <div className="turn-instruction-card-pointer" aria-hidden="true">
+        <div className="turn-instruction-pointer-content">
+          <FaHandPointer className="turn-instruction-pointer-icon" />
+          <span className="turn-instruction-pointer-text">Select a card from your hand</span>
+        </div>
+        <div className="turn-instruction-pointer-arrow" />
       </div>
     </div>
   );

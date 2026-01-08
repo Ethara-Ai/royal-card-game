@@ -6,7 +6,7 @@ import {
   getCardColor,
 } from "../utils/cardHelpers";
 
-const PlayedCard = ({ card, position, isWinner }) => {
+const PlayedCard = ({ card, position, isWinner, useFlexLayout = false }) => {
   const rank = getRankDisplay(card.rank);
   const suit = getSuitIcon(card.suit);
   const color = getCardColor(card.suit);
@@ -17,30 +17,36 @@ const PlayedCard = ({ card, position, isWinner }) => {
     return () => clearTimeout(timer);
   }, []);
 
+  // Small rotation for visual interest in flex layout
+  const flexRotation = useFlexLayout ? position.rotation * 0.5 : 0;
+
   return (
     <div
-      className={`played-card ${isAnimating ? "card-enter" : "card-settled"} ${isWinner ? "winner-glow" : ""}`}
+      className={`played-card-flex ${isAnimating ? "card-enter-flex" : ""} ${isWinner ? "winner-glow" : ""}`}
       style={{
-        "--target-x": `${position.x}px`,
-        "--target-y": `${position.y}px`,
-        "--target-rotation": `${position.rotation}deg`,
+        position: useFlexLayout ? "relative" : "absolute",
+        transform: useFlexLayout 
+          ? `rotate(${flexRotation}deg)` 
+          : `translate(${position.x}px, ${position.y}px) rotate(${position.rotation}deg)`,
         zIndex: position.zIndex,
+        transition: "transform 0.3s ease-out",
+        flexShrink: 0,
       }}
     >
       <div
         className="card-face"
         style={{
-          width: "clamp(44px, 12vw, 68px)",
-          height: "clamp(62px, 17vw, 96px)",
+          width: "clamp(28px, 8vw, 68px)",
+          height: "clamp(40px, 11vw, 96px)",
           background: "var(--color-card-white)",
           border: "1px solid var(--color-card-border)",
-          borderRadius: "var(--radius-md)",
+          borderRadius: "var(--radius-sm)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          gap: "3px",
-          padding: "4px",
+          gap: "1px",
+          padding: "2px",
           boxShadow: "var(--shadow-card)",
           overflow: "hidden",
         }}
@@ -49,7 +55,7 @@ const PlayedCard = ({ card, position, isWinner }) => {
           className="font-bold"
           style={{
             color,
-            fontSize: "clamp(14px, 3.5vw, 20px)",
+            fontSize: "clamp(9px, 2.5vw, 20px)",
             lineHeight: 1,
           }}
         >
@@ -57,7 +63,7 @@ const PlayedCard = ({ card, position, isWinner }) => {
         </div>
         <div
           style={{
-            fontSize: "clamp(18px, 5vw, 28px)",
+            fontSize: "clamp(11px, 3vw, 28px)",
             lineHeight: 1,
             display: "flex",
             alignItems: "center",
@@ -85,6 +91,11 @@ PlayedCard.propTypes = {
     zIndex: PropTypes.number.isRequired,
   }).isRequired,
   isWinner: PropTypes.bool.isRequired,
+  useFlexLayout: PropTypes.bool,
+};
+
+PlayedCard.defaultProps = {
+  useFlexLayout: false,
 };
 
 export default PlayedCard;

@@ -46,12 +46,13 @@ export const ANIMATION_TIMINGS = {
   appLoadDelay: 500,
 };
 
-// Card positions for played cards in the center
+// Card positions for played cards in the center - scattered for better visibility
+// Values are in pixels, kept moderate to fit within play area at all screen sizes
 export const CARD_POSITIONS = [
-  { x: -50, y: 10, rotation: -8, zIndex: 1 },
-  { x: -18, y: -5, rotation: -3, zIndex: 2 },
-  { x: 18, y: -5, rotation: 3, zIndex: 3 },
-  { x: 50, y: 10, rotation: 8, zIndex: 4 },
+  { x: -55, y: 12, rotation: -10, zIndex: 1 },
+  { x: -18, y: -8, rotation: -3, zIndex: 2 },
+  { x: 18, y: -8, rotation: 3, zIndex: 3 },
+  { x: 55, y: 12, rotation: 10, zIndex: 4 },
 ];
 
 // Game phases

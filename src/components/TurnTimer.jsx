@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import PropTypes from "prop-types";
 
 const TURN_DURATION = 30;
-const TIMER_RADIUS = 14;
+const TIMER_RADIUS = 22;
 const CIRCUMFERENCE = 2 * Math.PI * TIMER_RADIUS;
 
 const getTimerStrokeColor = (isCritical, isLow) => {
@@ -73,33 +73,31 @@ const TurnTimer = ({ isActive, onTimeUp, isPaused }) => {
 
   return (
     <div className="turn-timer">
-      <div className="turn-timer-label">⏱ Timer</div>
+      <div className="turn-timer-label">⏱ TIMER</div>
       <div className="turn-timer-display">
         <svg
-          width="40"
-          height="40"
-          viewBox="0 0 40 40"
           className="turn-timer-ring"
+          viewBox="0 0 60 60"
         >
           <circle
-            cx="20"
-            cy="20"
-            r="16"
+            cx="30"
+            cy="30"
+            r="26"
             fill="var(--color-panel-dark)"
             stroke="var(--color-border-subtle)"
-            strokeWidth="2"
+            strokeWidth="3"
           />
           <circle
-            cx="20"
-            cy="20"
-            r="14"
+            cx="30"
+            cy="30"
+            r={TIMER_RADIUS}
             fill="none"
             stroke={getTimerStrokeColor(isCritical, isLow)}
-            strokeWidth="3"
+            strokeWidth="4"
             strokeLinecap="round"
             strokeDasharray={CIRCUMFERENCE}
             strokeDashoffset={strokeDashoffset}
-            transform="rotate(-90 20 20)"
+            transform="rotate(-90 30 30)"
             style={{ transition: "stroke-dashoffset 1s linear, stroke 0.3s ease" }}
           />
         </svg>
@@ -109,7 +107,7 @@ const TurnTimer = ({ isActive, onTimeUp, isPaused }) => {
             color: getTimerTextColor(isCritical, isLow),
           }}
         >
-          {timeLeft}
+          {timeLeft}s
         </span>
       </div>
     </div>

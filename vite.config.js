@@ -116,7 +116,6 @@ export default defineConfig(({ mode }) => ({
 
   // Performance optimizations
   optimizeDeps: {
-    include: ["react", "react-dom", "react-icons", "sonner"],
-    exclude: ["react-confetti"], // lazy loaded
+    include: ["react", "react-dom", "react-icons", "sonner", "react-confetti"],
   },
 }));

@@ -175,7 +175,6 @@ function AppContent() {
                 style={{
                   color: "var(--color-text-primary)",
                   fontSize: "clamp(10px, 2vw, 12px)",
-                  opacity: 0.8,
                 }}
               >
                 {ruleSets[selectedRuleSet].description}

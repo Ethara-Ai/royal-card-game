@@ -200,7 +200,7 @@ const useGameLogic = (selectedRuleSet = 0) => {
       }
 
       if (Object.keys(newPlayArea).length === 4) {
-        const isLastTrick = player.hand.length === 1;
+        const isLastTrick = player.hand.length === 0;
         safeSetTimeout(() => {
           evaluateTrick(newPlayArea, isLastTrick);
         }, ANIMATION_TIMINGS.cardPlayDelay);
@@ -250,7 +250,7 @@ const useGameLogic = (selectedRuleSet = 0) => {
 
       if (Object.keys(newPlayArea).length === 4) {
         const playerObj = players.find((p) => p.id === playerId);
-        const isLastTrick = playerObj.hand.length === 1;
+        const isLastTrick = playerObj.hand.length === 0;
         safeSetTimeout(() => {
           evaluateTrick(newPlayArea, isLastTrick);
         }, ANIMATION_TIMINGS.cardPlayDelay);

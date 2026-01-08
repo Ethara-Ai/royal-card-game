@@ -210,7 +210,7 @@ button {
   }
 }
 
-/* Played Card Styles */
+/* Played Card Styles - Absolute positioning (legacy) */
 .played-card {
   position: absolute;
   left: 50%;
@@ -221,6 +221,39 @@ button {
 
 .played-card.card-enter {
   animation: cardPlayToCenter 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Played Card Styles - Flex layout (side by side) */
+.played-card-flex {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.played-card-flex.card-enter-flex {
+  animation: cardEnterFlex 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes cardEnterFlex {
+  0% {
+    opacity: 0;
+    transform: translateY(40px) scale(0.5) rotate(0deg);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-5px) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Cards container flex layout */
+.played-cards-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(4px, 2vw, 12px);
 }
 
 .played-card.card-settled {
@@ -396,25 +429,26 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 8px 12px;
+  gap: 10px;
+  padding: 14px 20px;
   background: linear-gradient(
     180deg,
     var(--color-panel-light) 0%,
     var(--color-panel-base) 100%
   );
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border-gold);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg), var(--shadow-glow-gold);
+  min-width: 90px;
 }
 
 .turn-timer-label {
   font-family: var(--font-display);
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-text-secondary);
+  letter-spacing: 0.1em;
+  color: var(--color-text-primary);
 }
 
 .turn-timer-display {
@@ -422,27 +456,96 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 60px;
+  height: 60px;
 }
 
 .turn-timer-ring {
   position: absolute;
   top: 0;
   left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .turn-timer-text {
   font-family: var(--font-display);
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 700;
   z-index: 1;
+  color: var(--color-text-primary);
+}
+
+/* Large desktop screens */
+@media (min-width: 1200px) {
+  .turn-timer {
+    padding: 18px 28px;
+    gap: 12px;
+    min-width: 110px;
+  }
+
+  .turn-timer-label {
+    font-size: 14px;
+  }
+
+  .turn-timer-display {
+    width: 80px;
+    height: 80px;
+  }
+
+  .turn-timer-text {
+    font-size: 24px;
+  }
+}
+
+/* Tablet screens */
+@media (max-width: 1024px) {
+  .turn-timer {
+    padding: 12px 16px;
+    gap: 8px;
+    min-width: 80px;
+  }
+
+  .turn-timer-label {
+    font-size: 11px;
+  }
+
+  .turn-timer-display {
+    width: 50px;
+    height: 50px;
+  }
+
+  .turn-timer-text {
+    font-size: 16px;
+  }
 }
 
 @media (max-width: 640px) {
   .turn-timer {
+    padding: 8px 12px;
+    gap: 6px;
+    min-width: 70px;
+  }
+
+  .turn-timer-label {
+    font-size: 10px;
+  }
+
+  .turn-timer-display {
+    width: 44px;
+    height: 44px;
+  }
+
+  .turn-timer-text {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .turn-timer {
     padding: 6px 10px;
     gap: 4px;
+    min-width: 60px;
   }
 
   .turn-timer-label {
@@ -450,42 +553,12 @@ button {
   }
 
   .turn-timer-display {
-    width: 36px;
-    height: 36px;
-  }
-
-  .turn-timer-ring {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
   }
 
   .turn-timer-text {
     font-size: 12px;
-  }
-}
-
-@media (max-width: 480px) {
-  .turn-timer {
-    padding: 5px 8px;
-    gap: 3px;
-  }
-
-  .turn-timer-label {
-    font-size: 8px;
-  }
-
-  .turn-timer-display {
-    width: 32px;
-    height: 32px;
-  }
-
-  .turn-timer-ring {
-    width: 32px;
-    height: 32px;
-  }
-
-  .turn-timer-text {
-    font-size: 11px;
   }
 }
 
@@ -779,15 +852,68 @@ button {
 
 /* ===========================================
    TURN INSTRUCTION OVERLAY - THEME AWARE
-   Clean, modern design matching the UI
+   Full-screen blur with centered instruction
    =========================================== */
 
-.turn-instruction-overlay {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+/* Full-screen backdrop container */
+.turn-instruction-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.turn-instruction-backdrop.entering {
+  animation: backdropFadeIn 0.4s ease-out forwards;
+}
+
+.turn-instruction-backdrop.exiting {
+  animation: backdropFadeOut 0.3s ease-out forwards;
+}
+
+@keyframes backdropFadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes backdropFadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Blur overlay for the game */
+.turn-instruction-blur {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+[data-theme="light"] .turn-instruction-blur {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.turn-instruction-overlay {
+  position: relative;
+  z-index: 101;
   pointer-events: none;
 }
 
@@ -802,19 +928,17 @@ button {
   background: var(--color-panel-base);
   border: 1px solid var(--color-border-default);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-xl);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-xl), 0 0 40px rgba(0, 0, 0, 0.3);
 }
 
 [data-theme="light"] .turn-instruction-content {
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), 0 0 60px rgba(255, 255, 255, 0.3);
   border-color: var(--color-border-default);
 }
 
 [data-theme="dark"] .turn-instruction-content {
-  background: rgba(30, 32, 38, 0.95);
+  background: rgba(30, 32, 38, 0.98);
 }
 
 .turn-instruction-header {
@@ -858,7 +982,7 @@ button {
   font-size: clamp(0.8125rem, 2.5vw, 0.9375rem);
   color: var(--color-text-primary);
   line-height: 1.4;
-  opacity: 0.9;
+  font-weight: 500;
 }
 
 .turn-instruction-action {
@@ -877,47 +1001,218 @@ button {
 }
 
 .turn-instruction-dismiss {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   font-family: var(--font-body);
-  font-size: 0.6875rem;
-  font-weight: 500;
+  font-size: 0.75rem;
+  font-weight: 600;
   color: var(--color-gold-base);
-  margin-top: 0.375rem;
-  opacity: 0.8;
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(201, 162, 39, 0.15);
+  border-radius: var(--radius-full);
+  animation: dismissPulse 2s ease-in-out infinite;
+}
+
+.turn-instruction-dismiss-pulse {
+  width: 8px;
+  height: 8px;
+  background: var(--color-gold-base);
+  border-radius: 50%;
+  animation: pulseDot 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.7;
+  }
+}
+
+@keyframes dismissPulse {
+  0%, 100% {
+    background: rgba(201, 162, 39, 0.15);
+    box-shadow: 0 0 0 0 rgba(201, 162, 39, 0.4);
+  }
+  50% {
+    background: rgba(201, 162, 39, 0.25);
+    box-shadow: 0 0 0 4px rgba(201, 162, 39, 0.1);
+  }
 }
 
 [data-theme="light"] .turn-instruction-dismiss {
-  color: #b8860b;
+  color: #8b6914;
+  background: rgba(139, 105, 20, 0.12);
 }
 
-/* Animations */
-@keyframes instructionFadeIn {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.9);
+/* Card instruction pointer - points to user's hand */
+.turn-instruction-card-pointer {
+  position: absolute;
+  bottom: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 102;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  animation: pointerBounce 2s ease-in-out infinite;
+}
+
+.turn-instruction-pointer-content {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 1rem;
+  background: var(--color-gold-base);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg), 0 0 20px rgba(201, 162, 39, 0.4);
+}
+
+.turn-instruction-pointer-icon {
+  color: #1a1a1a;
+  font-size: 1rem;
+  animation: pointerTap 1.5s ease-in-out infinite;
+}
+
+@keyframes pointerTap {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
   }
-  100% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
+  50% {
+    transform: translateY(3px) rotate(-5deg);
   }
 }
 
-@keyframes instructionFadeOut {
-  0% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
+.turn-instruction-pointer-text {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  white-space: nowrap;
+}
+
+.turn-instruction-pointer-arrow {
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 12px solid var(--color-gold-base);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+@keyframes pointerBounce {
+  0%, 100% {
+    transform: translateX(-50%) translateY(0);
   }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.95);
+  50% {
+    transform: translateX(-50%) translateY(-8px);
   }
 }
 
-.turn-instruction-overlay.entering {
-  animation: instructionFadeIn 0.4s ease-out forwards;
+/* Responsive adjustments for card pointer */
+@media (max-width: 640px) {
+  .turn-instruction-card-pointer {
+    bottom: 18%;
+  }
+
+  .turn-instruction-pointer-content {
+    padding: 0.5rem 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .turn-instruction-pointer-icon {
+    font-size: 0.875rem;
+  }
+
+  .turn-instruction-pointer-text {
+    font-size: 0.75rem;
+  }
+
+  .turn-instruction-pointer-arrow {
+    border-left-width: 8px;
+    border-right-width: 8px;
+    border-top-width: 10px;
+  }
 }
 
-.turn-instruction-overlay.exiting {
-  animation: instructionFadeOut 0.3s ease-out forwards;
+@media (max-width: 480px) {
+  .turn-instruction-card-pointer {
+    bottom: 20%;
+  }
+
+  .turn-instruction-pointer-content {
+    padding: 0.4rem 0.625rem;
+  }
+
+  .turn-instruction-pointer-icon {
+    font-size: 0.75rem;
+}
+
+  .turn-instruction-pointer-text {
+    font-size: 0.6875rem;
+  }
+
+  .turn-instruction-content {
+    padding: 1rem 1.25rem;
+    max-width: 18rem;
+  }
+
+  .turn-instruction-dismiss {
+    font-size: 0.6875rem;
+    padding: 0.375rem 0.75rem;
+  }
+}
+
+/* Landscape mode adjustments */
+@media (max-height: 500px) and (orientation: landscape) {
+  .turn-instruction-card-pointer {
+    bottom: 12%;
+  }
+
+  .turn-instruction-content {
+    padding: 0.75rem 1rem;
+    gap: 0.375rem;
+  }
+
+  .turn-instruction-header {
+    padding: 0.25rem 0.5rem;
+  }
+
+  .turn-instruction-rule {
+    font-size: 1rem;
+    margin-top: 0.125rem;
+  }
+
+  .turn-instruction-description {
+    font-size: 0.75rem;
+}
+
+  .turn-instruction-action {
+    font-size: 0.625rem;
+    margin-top: 0.25rem;
+    padding-top: 0.375rem;
+  }
+
+  .turn-instruction-dismiss {
+    font-size: 0.625rem;
+    margin-top: 0.25rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .turn-instruction-pointer-content {
+    padding: 0.375rem 0.625rem;
+  }
+
+  .turn-instruction-pointer-text {
+    font-size: 0.625rem;
+  }
 }
 
 /* ===========================================

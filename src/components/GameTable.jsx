@@ -140,11 +140,12 @@ const PlayArea = ({
         top: "50%",
         left: "50%",
         transform: "translate(-50%, -50%)",
-        width: "300px",
-        height: "175px",
+        width: "clamp(140px, 55vw, 320px)",
+        height: "clamp(60px, 20vw, 160px)",
         backgroundColor: "transparent",
         border: getBorderStyle(playAreaCards.length, selectedCard),
         cursor: selectedCard ? "pointer" : "default",
+        overflow: "visible",
       }}
     >
       {playAreaCards.length === 0 ? (
@@ -164,13 +165,25 @@ const PlayArea = ({
           {selectedCard ? "Tap here to play" : "Select a card"}
         </div>
       ) : (
-        <div className="relative w-full h-full">
+        <div 
+          className="played-cards-container"
+          style={{ 
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "clamp(2px, 1.5vw, 10px)",
+            width: "100%",
+            height: "100%",
+            overflow: "visible",
+          }}
+        >
           {playAreaCards.map(([playerId, card], index) => (
             <PlayedCard
               key={`${playerId}-${card.id}`}
               card={card}
               position={cardPositions[index]}
               isWinner={trickWinner === playerId}
+              useFlexLayout={true}
             />
           ))}
         </div>
