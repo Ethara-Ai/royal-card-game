@@ -4,7 +4,8 @@ import Confetti from "react-confetti";
 
 import { useTheme, useWindowSize, useAppLoading, useGameLogic } from "./hooks";
 
-import { Header } from "./components/Header";
+import { Header, LandscapeMenu } from "./components/Header";
+import HowToPlayModal from "./components/HowToPlayModal";
 import {
   LoadingScreen,
   WaitingRoom,
@@ -32,6 +33,7 @@ function AppContent() {
     useAppLoading();
 
   const [selectedRuleSet, setSelectedRuleSet] = useState(0);
+  const [isLandscapeHelpOpen, setIsLandscapeHelpOpen] = useState(false);
 
   const {
     gameState,
@@ -122,6 +124,22 @@ function AppContent() {
           setSelectedRuleSet={setSelectedRuleSet}
           ruleSets={ruleSets}
           resetGame={resetGame}
+        />
+
+        <LandscapeMenu
+          theme={theme}
+          toggleTheme={toggleTheme}
+          ruleSets={ruleSets}
+          selectedRuleSet={selectedRuleSet}
+          setSelectedRuleSet={setSelectedRuleSet}
+          resetGame={resetGame}
+          onHelpClick={() => setIsLandscapeHelpOpen(true)}
+        />
+
+        <HowToPlayModal
+          isOpen={isLandscapeHelpOpen}
+          onClose={() => setIsLandscapeHelpOpen(false)}
+          ruleSetName={ruleSets[selectedRuleSet]?.name || "Highest Card Wins"}
         />
 
         {isGameActive && (

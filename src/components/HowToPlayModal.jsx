@@ -72,7 +72,7 @@ const HowToPlayModal = ({
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center z-50 p-3 sm:p-4"
+      className="modal-overlay fixed inset-0 flex items-center justify-center z-50 p-3 sm:p-4"
       style={{
         background: "var(--color-bg-overlay)",
         backdropFilter: "blur(8px)",
@@ -80,7 +80,7 @@ const HowToPlayModal = ({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg sm:max-w-xl md:max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bounce-in"
+        className="modal-content w-full max-w-lg sm:max-w-xl md:max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bounce-in"
         style={{
           background:
             "linear-gradient(180deg, var(--color-panel-light) 0%, var(--color-panel-base) 100%)",

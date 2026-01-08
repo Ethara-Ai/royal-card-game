@@ -32,8 +32,10 @@ const WaitingRoom = ({
 }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [dropdownAnimation, setDropdownAnimation] = useState(null);
+  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
 
   const isUsernameValid = (username || "").trim().length > 0;
+  const showError = hasAttemptedSubmit && !isUsernameValid;
 
   const handleInputChange = (e) => {
     const sanitized = sanitizeUsername(e.target.value, {
@@ -46,8 +48,11 @@ const WaitingRoom = ({
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === "Enter" && isUsernameValid) {
-      startGame();
+    if (e.key === "Enter") {
+      setHasAttemptedSubmit(true);
+      if (isUsernameValid) {
+        startGame();
+      }
     }
   };
 
@@ -85,6 +90,7 @@ const WaitingRoom = ({
 
   return (
     <div
+      className="waiting-room-container"
       style={{
         display: "flex",
         alignItems: "center",
@@ -97,7 +103,7 @@ const WaitingRoom = ({
       }}
     >
       <div
-        className="max-w-md p-4 sm:p-6 rounded-2xl bounce-in"
+        className="waiting-room-panel max-w-md p-4 sm:p-6 rounded-2xl bounce-in"
         style={{
           background:
             "linear-gradient(180deg, var(--color-panel-light) 0%, var(--color-panel-base) 100%)",
@@ -135,9 +141,9 @@ const WaitingRoom = ({
             className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base transition-all duration-200 focus:outline-none"
             style={{
               background: "var(--color-panel-dark)",
-              border: isUsernameValid
-                ? "1px solid var(--color-border-default)"
-                : "1px solid var(--color-accent-error)",
+              border: showError
+                ? "1px solid var(--color-accent-error)"
+                : "1px solid var(--color-border-default)",
               color: "var(--color-text-primary)",
               boxShadow: "inset 0 2px 4px rgba(0, 0, 0, 0.1)",
             }}
@@ -333,8 +339,13 @@ const WaitingRoom = ({
 
         {/* Start Game Button */}
         <button
-          onClick={startGame}
-          disabled={!isUsernameValid}
+          onClick={() => {
+            setHasAttemptedSubmit(true);
+            if (isUsernameValid) {
+              startGame();
+            }
+          }}
+          disabled={false}
           className="w-full px-3 sm:px-4 py-3 sm:py-3.5 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2 start-game-btn"
           style={{
             background: isUsernameValid

@@ -23,14 +23,14 @@ const WinnerModal = ({ players, scores, winner, resetGame }) => {
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center z-50 p-3 sm:p-4"
+      className="modal-overlay fixed inset-0 flex items-center justify-center z-50 p-3 sm:p-4"
       style={{
         background: "var(--color-bg-overlay)",
         backdropFilter: "blur(8px)",
       }}
     >
       <div
-        className="max-w-sm sm:max-w-md w-full p-4 sm:p-6 rounded-2xl bounce-in"
+        className="modal-content max-w-sm sm:max-w-md w-full p-4 sm:p-6 rounded-2xl bounce-in"
         style={{
           background:
             "linear-gradient(180deg, var(--color-panel-light) 0%, var(--color-panel-base) 100%)",

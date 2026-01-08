@@ -1542,8 +1542,267 @@ button {
   }
 }
 
+/* ===========================================
+   HIDDEN SCROLLBAR UTILITY
+   Clean scrollable elements without visible scrollbar
+   =========================================== */
+
+.modal-content,
+.waiting-room-panel,
+.settings-menu,
+.landscape-menu-panel {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.modal-content::-webkit-scrollbar,
+.waiting-room-panel::-webkit-scrollbar,
+.settings-menu::-webkit-scrollbar,
+.landscape-menu-panel::-webkit-scrollbar {
+  display: none;
+}
+
+/* ===========================================
+   LANDSCAPE HAMBURGER MENU
+   Only visible in landscape mode
+   =========================================== */
+
+.landscape-menu-container {
+  display: none;
+  position: fixed;
+  top: 8px;
+  right: 8px;
+  z-index: 100;
+}
+
+.landscape-menu-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(
+    180deg,
+    var(--color-panel-light) 0%,
+    var(--color-panel-base) 100%
+  );
+  border: 1px solid var(--color-border-gold);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md), var(--shadow-glow-gold);
+  color: var(--color-gold-light);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.landscape-menu-toggle:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-lg), var(--shadow-glow-gold);
+}
+
+.landscape-menu-toggle:active {
+  transform: scale(0.95);
+}
+
+.landscape-menu-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 200px;
+  max-height: calc(100vh - 60px);
+  max-height: calc(100dvh - 60px);
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  background: linear-gradient(
+    180deg,
+    var(--color-panel-light) 0%,
+    var(--color-panel-base) 100%
+  );
+  border: 1px solid var(--color-border-gold);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl), var(--shadow-glow-gold);
+  animation: menuSlideIn 0.2s ease-out;
+}
+
+.landscape-menu-panel::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes menuSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.landscape-menu-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-border-subtle);
+  background: var(--color-panel-dark);
+}
+
+.landscape-menu-crown {
+  color: var(--color-gold-base);
+  font-size: 14px;
+}
+
+.landscape-menu-title {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.landscape-menu-content {
+  padding: 8px;
+}
+
+.landscape-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.landscape-menu-item:hover {
+  background: var(--color-panel-hover);
+}
+
+.landscape-menu-icon {
+  color: var(--color-gold-light);
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.landscape-menu-divider {
+  height: 1px;
+  background: var(--color-border-subtle);
+  margin: 6px 0;
+}
+
+.landscape-menu-section {
+  padding: 4px 0;
+}
+
+.landscape-menu-section-title {
+  display: block;
+  padding: 4px 12px 6px;
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.landscape-menu-rules {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.landscape-menu-rule {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.landscape-menu-rule:hover {
+  background: var(--color-panel-hover);
+  color: var(--color-text-primary);
+}
+
+.landscape-menu-rule.active {
+  background: linear-gradient(
+    90deg,
+    rgba(201, 162, 39, 0.2) 0%,
+    transparent 100%
+  );
+  color: var(--color-text-gold);
+  font-weight: 600;
+}
+
+.landscape-menu-reset {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  background: linear-gradient(
+    135deg,
+    var(--color-gold-base) 0%,
+    var(--color-gold-dark) 100%
+  );
+  border: none;
+  border-radius: var(--radius-md);
+  color: #1a1a2e;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.landscape-menu-reset:hover {
+  transform: scale(1.02);
+  box-shadow: var(--shadow-md);
+}
+
+.landscape-menu-reset .landscape-menu-icon {
+  color: #1a1a2e;
+  font-size: 11px;
+}
+
 /* Landscape orientation adjustments for mobile */
 @media (max-height: 500px) and (orientation: landscape) {
+  .landscape-menu-container {
+    display: block;
+  }
+
+  .header-container {
+    display: none !important;
+  }
+
+  .game-info-banner {
+    display: none !important;
+  }
+
+  .main-content-area {
+    flex: 1 !important;
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+  }
+
   .game-table-area {
     min-height: 0 !important;
     padding: 5px 0 !important;
@@ -1608,5 +1867,319 @@ button {
 
   .user-hand-area {
     bottom: 15px !important;
+  }
+
+  .modal-overlay {
+    padding: 8px !important;
+  }
+
+  .modal-content {
+    max-height: calc(100vh - 16px) !important;
+    max-height: calc(100dvh - 16px) !important;
+    overflow-y: auto !important;
+    max-width: calc(100vw - 16px) !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  .modal-content::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .modal-content .p-4,
+  .modal-content .p-5,
+  .modal-content .p-6 {
+    padding: 10px !important;
+  }
+
+  .modal-content .sm\\:p-4,
+  .modal-content .sm\\:p-5,
+  .modal-content .sm\\:p-6 {
+    padding: 10px !important;
+  }
+
+  .modal-content .space-y-4 > * + *,
+  .modal-content .space-y-5 > * + * {
+    margin-top: 8px !important;
+  }
+
+  .modal-content .mb-4,
+  .modal-content .mb-6 {
+    margin-bottom: 8px !important;
+  }
+
+  .modal-content h2 {
+    font-size: 1rem !important;
+    margin-bottom: 8px !important;
+  }
+
+  .modal-content h3 {
+    font-size: 0.75rem !important;
+    margin-bottom: 6px !important;
+  }
+
+  .modal-content .text-4xl,
+  .modal-content .text-5xl {
+    font-size: 1.5rem !important;
+  }
+
+  .modal-content .grid {
+    gap: 6px !important;
+  }
+
+  .modal-content .rounded-2xl {
+    border-radius: 12px !important;
+  }
+
+  .settings-menu {
+    max-height: calc(100vh - 60px) !important;
+    max-height: calc(100dvh - 60px) !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  .settings-menu::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .waiting-room-container {
+    min-height: calc(100vh - 20px) !important;
+    min-height: calc(100dvh - 20px) !important;
+    padding: 8px !important;
+  }
+
+  .waiting-room-panel {
+    max-height: calc(100vh - 20px) !important;
+    max-height: calc(100dvh - 20px) !important;
+    overflow-y: auto !important;
+    padding: 12px !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  .waiting-room-panel::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .waiting-room-panel h2 {
+    font-size: 1rem !important;
+    margin-bottom: 8px !important;
+  }
+
+  .waiting-room-panel .mb-4,
+  .waiting-room-panel .mb-5,
+  .waiting-room-panel .mb-6 {
+    margin-bottom: 6px !important;
+  }
+
+  .waiting-room-panel .grid {
+    gap: 6px !important;
+  }
+
+  .waiting-room-panel .p-2,
+  .waiting-room-panel .p-4 {
+    padding: 6px !important;
+  }
+
+  .waiting-room-panel img {
+    width: 28px !important;
+    height: 28px !important;
+    margin-bottom: 4px !important;
+  }
+
+  .waiting-room-panel input {
+    padding: 8px 10px !important;
+    font-size: 13px !important;
+  }
+
+  .waiting-room-panel button {
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+  }
+
+  .turn-timer {
+    padding: 4px 8px !important;
+    gap: 2px !important;
+  }
+
+  .turn-timer-label {
+    font-size: 8px !important;
+  }
+
+  .turn-timer-display {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  .turn-timer-ring {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  .turn-timer-text {
+    font-size: 10px !important;
+  }
+
+  .turn-timer-container {
+    bottom: 4px !important;
+    right: 4px !important;
+  }
+
+  .turn-instruction-overlay {
+    padding: 8px !important;
+  }
+
+  .turn-instruction-content {
+    padding: 10px 14px !important;
+    gap: 4px !important;
+    max-width: 280px !important;
+  }
+
+  .turn-instruction-header {
+    padding: 4px 8px !important;
+    gap: 4px !important;
+  }
+
+  .turn-instruction-icon {
+    font-size: 10px !important;
+  }
+
+  .turn-instruction-label {
+    font-size: 9px !important;
+  }
+
+  .turn-instruction-rule {
+    font-size: 14px !important;
+    margin-top: 2px !important;
+  }
+
+  .turn-instruction-description {
+    font-size: 11px !important;
+  }
+
+  .turn-instruction-action {
+    font-size: 10px !important;
+    margin-top: 4px !important;
+    padding-top: 4px !important;
+  }
+
+  .turn-instruction-dismiss {
+    font-size: 9px !important;
+    margin-top: 2px !important;
+  }
+
+  .drag-hint {
+    bottom: 28% !important;
+  }
+
+  .drag-hint svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .drag-hint div > div:last-child {
+    font-size: 10px !important;
+    padding: 4px 8px !important;
+  }
+
+  .user-hand-panel {
+    padding: 4px 8px !important;
+  }
+
+  .user-hand-panel .player-header {
+    gap: 4px !important;
+    margin-bottom: 4px !important;
+  }
+
+  .user-hand-panel .player-avatar {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .user-hand-panel .player-header .font-semibold {
+    font-size: 10px !important;
+  }
+
+  .user-hand-panel .player-header div:last-child {
+    font-size: 9px !important;
+  }
+
+  .user-hand-panel .player-cards {
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
+  }
+
+  .opponent-panel {
+    padding: 4px 6px !important;
+    min-width: 70px !important;
+  }
+
+  .opponent-panel .font-semibold {
+    font-size: 9px !important;
+  }
+
+  .opponent-panel img {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  .opponent-panel .card-backs > div {
+    width: 10px !important;
+    height: 14px !important;
+  }
+
+  .play-area-text {
+    font-size: 11px !important;
+  }
+
+  .hand-card {
+    margin-left: -6px !important;
+  }
+
+  .hand-card .card-inner {
+    width: 28px !important;
+    height: 40px !important;
+    padding: 2px !important;
+    gap: 1px !important;
+    border-radius: 4px !important;
+  }
+
+  .hand-card .card-inner > div:first-child {
+    font-size: 10px !important;
+  }
+
+  .hand-card .card-inner > div:last-child {
+    font-size: 12px !important;
+  }
+
+  .played-card {
+    margin-left: -20px !important;
+    margin-top: -28px !important;
+  }
+
+  .played-card .card-face {
+    width: 32px !important;
+    height: 44px !important;
+    padding: 2px !important;
+    gap: 1px !important;
+    border-radius: 4px !important;
+  }
+
+  .played-card .card-face > div:first-child {
+    font-size: 10px !important;
+  }
+
+  .played-card .card-face > div:last-child {
+    font-size: 12px !important;
+  }
+
+  .play-area-drop {
+    width: 140px !important;
+    height: 80px !important;
+  }
+
+  .poker-table {
+    max-height: 280px !important;
+    max-width: 400px !important;
   }
 }
