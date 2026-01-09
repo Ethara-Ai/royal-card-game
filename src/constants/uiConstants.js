@@ -382,12 +382,15 @@ export const getClampValue = (dimension) =>
  * @returns {any} Responsive value
  */
 export const getResponsiveValue = (values, breakpoint) => {
-  if (breakpoint === "mobile" && values.mobile !== undefined)
+  if (breakpoint === "mobile" && values.mobile !== undefined) {
     return values.mobile;
-  if (breakpoint === "tablet" && values.tablet !== undefined)
+  }
+  if (breakpoint === "tablet" && values.tablet !== undefined) {
     return values.tablet;
-  if (breakpoint === "desktop" && values.desktop !== undefined)
+  }
+  if (breakpoint === "desktop" && values.desktop !== undefined) {
     return values.desktop;
+  }
   return values.mobile || values.tablet || values.desktop;
 };
 

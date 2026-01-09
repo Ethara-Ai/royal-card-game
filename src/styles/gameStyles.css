@@ -2844,11 +2844,7 @@ button {
     font-size: 0.8125rem;
   }
 
-<<<<<<< HEAD
-  .waiting-room-panel .py-2\\.5,
-=======
   .waiting-room-panel .py-2\.5,
->>>>>>> 82b628c (added prettier files)
   .waiting-room-panel .py-3 {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
