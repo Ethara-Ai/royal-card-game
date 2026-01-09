@@ -229,6 +229,24 @@ describe("PlayerPanel", () => {
       expect(cardCountDisplay).toHaveAttribute("title", "3 cards in hand");
     });
 
+    it("should have card-count-number class on the number element", () => {
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} />,
+      );
+      const cardCountNumber = container.querySelector(".card-count-number");
+      expect(cardCountNumber).toBeInTheDocument();
+      expect(cardCountNumber.textContent).toBe("3");
+    });
+
+    it("should have card-count-label class on the label element", () => {
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} />,
+      );
+      const cardCountLabel = container.querySelector(".card-count-label");
+      expect(cardCountLabel).toBeInTheDocument();
+      expect(cardCountLabel.textContent).toBe("cards");
+    });
+
     it("should not display card count when hand is empty", () => {
       const emptyHandProps = {
         ...defaultProps,

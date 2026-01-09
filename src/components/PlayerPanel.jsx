@@ -213,31 +213,25 @@ const PlayerPanel = ({
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                background:
-                  "linear-gradient(135deg, var(--color-gold-base) 0%, var(--color-gold-dark) 100%)",
                 borderRadius: "clamp(4px, 0.8vw, 6px)",
                 padding: "clamp(3px, 0.6vw, 5px) clamp(6px, 1vw, 10px)",
-                boxShadow:
-                  "0 2px 6px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25)",
-                border: "1px solid rgba(255, 255, 255, 0.2)",
                 minWidth: "clamp(24px, 4vw, 32px)",
               }}
               title={`${player.hand.length} cards in hand`}
             >
               <span
+                className="card-count-number"
                 style={{
-                  color: "#1a1a1a",
                   fontSize: "clamp(11px, 2.2vw, 15px)",
                   fontWeight: "800",
                   lineHeight: 1,
-                  textShadow: "0 1px 0 rgba(255, 255, 255, 0.3)",
                 }}
               >
                 {player.hand.length}
               </span>
               <span
+                className="card-count-label"
                 style={{
-                  color: "rgba(26, 26, 26, 0.7)",
                   fontSize: "clamp(6px, 1.2vw, 8px)",
                   fontWeight: "600",
                   textTransform: "uppercase",

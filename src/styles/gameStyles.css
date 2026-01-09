@@ -639,6 +639,10 @@ button {
   top: 10px;
   left: 10px;
   z-index: 30;
+  background: none;
+  overflow: visible;
+  border: none;
+  box-shadow: none;
 }
 
 /* Game table area */
@@ -700,9 +704,27 @@ button {
 
 /* Card count display styling */
 .opponent-panel .card-count-display {
+  background: linear-gradient(
+    135deg,
+    var(--color-gold-base) 0%,
+    var(--color-gold-dark) 100%
+  );
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   transition:
     transform 0.3s ease,
     box-shadow 0.3s ease;
+}
+
+.opponent-panel .card-count-number {
+  color: #1a1a1a;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.opponent-panel .card-count-label {
+  color: rgba(26, 26, 26, 0.7);
 }
 
 .opponent-panel:hover .card-count-display {
@@ -710,6 +732,36 @@ button {
   box-shadow:
     0 3px 10px rgba(201, 162, 39, 0.5),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Light mode card count display */
+[data-theme="light"] .opponent-panel .card-count-display {
+  background: linear-gradient(135deg, #f5e6c8 0%, #e8d4a8 100%);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(139, 105, 20, 0.3);
+}
+
+[data-theme="light"] .opponent-panel .card-count-number {
+  color: #5a4010;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+[data-theme="light"] .opponent-panel .card-count-label {
+  color: rgba(90, 64, 16, 0.75);
+}
+
+[data-theme="light"] .opponent-panel:hover .card-count-display {
+  box-shadow:
+    0 3px 12px rgba(139, 105, 20, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+[data-theme="light"] .opponent-panel.player-turn-indicator .card-count-display {
+  box-shadow:
+    0 2px 10px rgba(45, 128, 64, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 /* Active player card glow effect */
@@ -793,6 +845,10 @@ button {
 /* Expanded Panel - Matches Settings Panel */
 .leaderboard-expanded {
   animation: leaderboardSlideIn 0.25s ease-out;
+  background: none;
+  overflow: visible;
+  border: none;
+  box-shadow: none;
 }
 
 @keyframes leaderboardSlideIn {
@@ -813,6 +869,103 @@ button {
   box-shadow: var(--shadow-xl);
   min-width: 180px;
   padding: 12px 14px;
+  overflow: visible;
+}
+
+/* Light mode leaderboard panel - softer shadow that blends with background */
+[data-theme="light"] .leaderboard-panel {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(246, 243, 235, 0.95) 100%
+  );
+  border: 1px solid rgba(139, 105, 20, 0.2);
+  box-shadow:
+    0 4px 12px rgba(90, 102, 80, 0.15),
+    0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .leaderboard-toggle-btn {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(246, 243, 235, 0.9) 100%
+  );
+  border: 1px solid rgba(139, 105, 20, 0.25);
+  box-shadow: 0 2px 8px rgba(90, 102, 80, 0.12);
+}
+
+[data-theme="light"] .leaderboard-toggle-btn:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(250, 247, 240, 1) 100%
+  );
+  border-color: rgba(139, 105, 20, 0.4);
+  box-shadow: 0 4px 12px rgba(139, 105, 20, 0.2);
+}
+
+[data-theme="light"] .leaderboard-header-icon,
+[data-theme="light"] .leaderboard-toggle-icon {
+  color: var(--color-gold-dark);
+}
+
+[data-theme="light"] .leaderboard-title,
+[data-theme="light"] .leaderboard-toggle-label {
+  color: var(--color-text-primary);
+}
+
+[data-theme="light"] .leaderboard-close-btn {
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .leaderboard-close-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="light"] .leaderboard-rule-badge {
+  background: rgba(139, 105, 20, 0.1);
+  border: 1px solid rgba(139, 105, 20, 0.2);
+  color: var(--color-gold-dark);
+}
+
+[data-theme="light"] .leaderboard-player {
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid transparent;
+}
+
+[data-theme="light"] .leaderboard-player:hover {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: rgba(139, 105, 20, 0.15);
+}
+
+[data-theme="light"] .leaderboard-player-active {
+  background: rgba(139, 105, 20, 0.08);
+  border-color: rgba(139, 105, 20, 0.25);
+}
+
+[data-theme="light"] .leaderboard-player-name {
+  color: var(--color-text-primary);
+}
+
+[data-theme="light"] .leaderboard-player-score {
+  color: var(--color-gold-dark);
+}
+
+/* Leaderboard panel scrollbar - hide by default, show only when needed */
+.leaderboard-panel::-webkit-scrollbar {
+  display: none;
+}
+
+.leaderboard-panel::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+.leaderboard-panel {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .leaderboard-header {
@@ -2487,8 +2640,7 @@ button {
 .modal-content,
 .waiting-room-panel,
 .settings-menu,
-.landscape-menu-panel,
-.leaderboard-panel {
+.landscape-menu-panel {
   scrollbar-width: thin;
   scrollbar-color: var(--color-gold-base) var(--color-panel-dark);
 }
@@ -2497,8 +2649,7 @@ button {
 .modal-content::-webkit-scrollbar,
 .waiting-room-panel::-webkit-scrollbar,
 .settings-menu::-webkit-scrollbar,
-.landscape-menu-panel::-webkit-scrollbar,
-.leaderboard-panel::-webkit-scrollbar {
+.landscape-menu-panel::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
@@ -2506,8 +2657,7 @@ button {
 .modal-content::-webkit-scrollbar-track,
 .waiting-room-panel::-webkit-scrollbar-track,
 .settings-menu::-webkit-scrollbar-track,
-.landscape-menu-panel::-webkit-scrollbar-track,
-.leaderboard-panel::-webkit-scrollbar-track {
+.landscape-menu-panel::-webkit-scrollbar-track {
   background: var(--color-panel-dark);
   border-radius: 3px;
 }
@@ -2515,8 +2665,7 @@ button {
 .modal-content::-webkit-scrollbar-thumb,
 .waiting-room-panel::-webkit-scrollbar-thumb,
 .settings-menu::-webkit-scrollbar-thumb,
-.landscape-menu-panel::-webkit-scrollbar-thumb,
-.leaderboard-panel::-webkit-scrollbar-thumb {
+.landscape-menu-panel::-webkit-scrollbar-thumb {
   background: linear-gradient(
     180deg,
     var(--color-gold-base) 0%,
@@ -2529,8 +2678,7 @@ button {
 .modal-content::-webkit-scrollbar-thumb:hover,
 .waiting-room-panel::-webkit-scrollbar-thumb:hover,
 .settings-menu::-webkit-scrollbar-thumb:hover,
-.landscape-menu-panel::-webkit-scrollbar-thumb:hover,
-.leaderboard-panel::-webkit-scrollbar-thumb:hover {
+.landscape-menu-panel::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(
     180deg,
     var(--color-gold-light) 0%,
@@ -2541,8 +2689,7 @@ button {
 .modal-content::-webkit-scrollbar-corner,
 .waiting-room-panel::-webkit-scrollbar-corner,
 .settings-menu::-webkit-scrollbar-corner,
-.landscape-menu-panel::-webkit-scrollbar-corner,
-.leaderboard-panel::-webkit-scrollbar-corner {
+.landscape-menu-panel::-webkit-scrollbar-corner {
   background: var(--color-panel-dark);
 }
 
@@ -2550,24 +2697,21 @@ button {
 [data-theme="light"] .modal-content,
 [data-theme="light"] .waiting-room-panel,
 [data-theme="light"] .settings-menu,
-[data-theme="light"] .landscape-menu-panel,
-[data-theme="light"] .leaderboard-panel {
+[data-theme="light"] .landscape-menu-panel {
   scrollbar-color: var(--color-gold-dark) var(--color-panel-light);
 }
 
 [data-theme="light"] .modal-content::-webkit-scrollbar-track,
 [data-theme="light"] .waiting-room-panel::-webkit-scrollbar-track,
 [data-theme="light"] .settings-menu::-webkit-scrollbar-track,
-[data-theme="light"] .landscape-menu-panel::-webkit-scrollbar-track,
-[data-theme="light"] .leaderboard-panel::-webkit-scrollbar-track {
+[data-theme="light"] .landscape-menu-panel::-webkit-scrollbar-track {
   background: var(--color-panel-light);
 }
 
 [data-theme="light"] .modal-content::-webkit-scrollbar-thumb,
 [data-theme="light"] .waiting-room-panel::-webkit-scrollbar-thumb,
 [data-theme="light"] .settings-menu::-webkit-scrollbar-thumb,
-[data-theme="light"] .landscape-menu-panel::-webkit-scrollbar-thumb,
-[data-theme="light"] .leaderboard-panel::-webkit-scrollbar-thumb {
+[data-theme="light"] .landscape-menu-panel::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, var(--color-gold-dark) 0%, #8b6914 100%);
   border: 1px solid var(--color-panel-light);
 }
@@ -2575,8 +2719,7 @@ button {
 [data-theme="light"] .modal-content::-webkit-scrollbar-thumb:hover,
 [data-theme="light"] .waiting-room-panel::-webkit-scrollbar-thumb:hover,
 [data-theme="light"] .settings-menu::-webkit-scrollbar-thumb:hover,
-[data-theme="light"] .landscape-menu-panel::-webkit-scrollbar-thumb:hover,
-[data-theme="light"] .leaderboard-panel::-webkit-scrollbar-thumb:hover {
+[data-theme="light"] .landscape-menu-panel::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(
     180deg,
     var(--color-gold-base) 0%,
@@ -2587,8 +2730,7 @@ button {
 [data-theme="light"] .modal-content::-webkit-scrollbar-corner,
 [data-theme="light"] .waiting-room-panel::-webkit-scrollbar-corner,
 [data-theme="light"] .settings-menu::-webkit-scrollbar-corner,
-[data-theme="light"] .landscape-menu-panel::-webkit-scrollbar-corner,
-[data-theme="light"] .leaderboard-panel::-webkit-scrollbar-corner {
+[data-theme="light"] .landscape-menu-panel::-webkit-scrollbar-corner {
   background: var(--color-panel-light);
 }
 
