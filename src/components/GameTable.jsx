@@ -150,84 +150,80 @@ const getBorderStyle = (cardCount, selectedCard) => {
 /**
  * Play Area component - center area where cards are played
  */
-const PlayArea = memo(({
-  playAreaCards,
-  cardPositions,
-  trickWinner,
-  selectedCard,
-  onPlayCard,
-}) => {
-  const handleClick = useCallback(() => {
-    if (selectedCard && onPlayCard) {
-      onPlayCard();
-    }
-  }, [selectedCard, onPlayCard]);
+const PlayArea = memo(
+  ({ playAreaCards, cardPositions, trickWinner, selectedCard, onPlayCard }) => {
+    const handleClick = useCallback(() => {
+      if (selectedCard && onPlayCard) {
+        onPlayCard();
+      }
+    }, [selectedCard, onPlayCard]);
 
-  return (
-    <div
-      className={`play-area-drop absolute rounded-xl flex items-center justify-center ${selectedCard ? "play-area-ready" : ""}`}
-      onClick={handleClick}
-      role="button"
-      tabIndex={selectedCard ? 0 : -1}
-      aria-label={selectedCard ? "Tap to play selected card" : "Play area"}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          handleClick();
-        }
-      }}
-      style={{
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        width: "clamp(140px, 55vw, 320px)",
-        height: "clamp(60px, 20vw, 160px)",
-        backgroundColor: "transparent",
-        border: getBorderStyle(playAreaCards.length, selectedCard),
-        cursor: selectedCard ? "pointer" : "default",
-        overflow: "visible",
-      }}
-    >
-      {playAreaCards.length === 0 ? (
-        <div
-          className="text-sm font-medium text-center play-area-text"
-          style={{
-            color: selectedCard ? "#ffffff" : "var(--color-text-on-felt)",
-            textShadow: selectedCard
-              ? "0 0 12px rgba(255, 255, 255, 0.6), 0 2px 4px rgba(0, 0, 0, 0.4)"
-              : "none",
-            fontWeight: selectedCard ? 600 : 500,
-            letterSpacing: selectedCard ? "0.02em" : "normal",
-          }}
-        >
-          {selectedCard ? "Tap here to play" : "Select a card"}
-        </div>
-      ) : (
-        <div
-          className="played-cards-container"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "clamp(2px, 1.5vw, 10px)",
-            width: "100%",
-            height: "100%",
-            overflow: "visible",
-          }}
-        >
-          {playAreaCards.map(([playerId, card], index) => (
-            <PlayedCard
-              key={`${playerId}-${card.id}`}
-              card={card}
-              position={cardPositions[index]}
-              isWinner={trickWinner === playerId}
-              useFlexLayout={true}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-});
+    return (
+      <div
+        className={`play-area-drop absolute rounded-xl flex items-center justify-center ${selectedCard ? "play-area-ready" : ""}`}
+        onClick={handleClick}
+        role="button"
+        tabIndex={selectedCard ? 0 : -1}
+        aria-label={selectedCard ? "Tap to play selected card" : "Play area"}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            handleClick();
+          }
+        }}
+        style={{
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "clamp(140px, 55vw, 320px)",
+          height: "clamp(60px, 20vw, 160px)",
+          backgroundColor: "transparent",
+          border: getBorderStyle(playAreaCards.length, selectedCard),
+          cursor: selectedCard ? "pointer" : "default",
+          overflow: "visible",
+        }}
+      >
+        {playAreaCards.length === 0 ? (
+          <div
+            className="text-sm font-medium text-center play-area-text"
+            style={{
+              color: selectedCard ? "#ffffff" : "var(--color-text-on-felt)",
+              textShadow: selectedCard
+                ? "0 0 12px rgba(255, 255, 255, 0.6), 0 2px 4px rgba(0, 0, 0, 0.4)"
+                : "none",
+              fontWeight: selectedCard ? 600 : 500,
+              letterSpacing: selectedCard ? "0.02em" : "normal",
+            }}
+          >
+            {selectedCard ? "Tap here to play" : "Select a card"}
+          </div>
+        ) : (
+          <div
+            className="played-cards-container"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "clamp(2px, 1.5vw, 10px)",
+              width: "100%",
+              height: "100%",
+              overflow: "visible",
+            }}
+          >
+            {playAreaCards.map(([playerId, card], index) => (
+              <PlayedCard
+                key={`${playerId}-${card.id}`}
+                card={card}
+                position={cardPositions[index]}
+                isWinner={trickWinner === playerId}
+                useFlexLayout={true}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  },
+);
 
 PlayArea.propTypes = {
   playAreaCards: PropTypes.array.isRequired,
@@ -241,18 +237,18 @@ PlayArea.propTypes = {
  * Poker Table component - the felt table background
  */
 const PokerTable = memo(({ tableRef }) => (
-    <div
-      ref={tableRef}
-      className="poker-table absolute felt-gradient"
-      style={{
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        borderRadius: "50%",
-        boxShadow: "var(--shadow-table-rim)",
-      }}
-    />
-  ));
+  <div
+    ref={tableRef}
+    className="poker-table absolute felt-gradient"
+    style={{
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      borderRadius: "50%",
+      boxShadow: "var(--shadow-table-rim)",
+    }}
+  />
+));
 
 PokerTable.propTypes = {
   tableRef: PropTypes.oneOfType([
@@ -264,54 +260,56 @@ PokerTable.propTypes = {
 /**
  * Opponent Position component - wraps PlayerPanel with positioning
  */
-const OpponentPosition = memo(({
-  player,
-  index,
-  currentPlayer,
-  isDealing,
-  position,
-  topOffset,
-  leftOffset,
-  rightOffset,
-  players,
-  scores,
-  panelRef,
-}) => {
-  const positionStyles = {
-    top: {
-      top: topOffset || "15%",
-      left: "50%",
-      transform: "translateX(-50%)",
-    },
-    left: {
-      left: leftOffset || "5%",
-      top: "50%",
-      transform: "translateY(-50%)",
-    },
-    right: {
-      right: rightOffset || "5%",
-      top: "50%",
-      transform: "translateY(-50%)",
-    },
-  };
+const OpponentPosition = memo(
+  ({
+    player,
+    index,
+    currentPlayer,
+    isDealing,
+    position,
+    topOffset,
+    leftOffset,
+    rightOffset,
+    players,
+    scores,
+    panelRef,
+  }) => {
+    const positionStyles = {
+      top: {
+        top: topOffset || "15%",
+        left: "50%",
+        transform: "translateX(-50%)",
+      },
+      left: {
+        left: leftOffset || "5%",
+        top: "50%",
+        transform: "translateY(-50%)",
+      },
+      right: {
+        right: rightOffset || "5%",
+        top: "50%",
+        transform: "translateY(-50%)",
+      },
+    };
 
-  return (
-    <div
-      ref={panelRef}
-      className={`absolute opponent-${position}`}
-      style={{ ...positionStyles[position], zIndex: 10 }}
-    >
-      <PlayerPanel
-        player={player}
-        index={index}
-        currentPlayer={currentPlayer}
-        isDealing={isDealing}
-        players={players}
-        scores={scores}
-      />
-    </div>
-  );
-});
+    return (
+      <div
+        ref={panelRef}
+        className={`absolute opponent-${position}`}
+        style={{ ...positionStyles[position], zIndex: 10 }}
+      >
+        <PlayerPanel
+          player={player}
+          index={index}
+          currentPlayer={currentPlayer}
+          isDealing={isDealing}
+          players={players}
+          scores={scores}
+        />
+      </div>
+    );
+  },
+);
 
 OpponentPosition.propTypes = {
   player: PropTypes.object.isRequired,
@@ -334,160 +332,162 @@ OpponentPosition.propTypes = {
  * GameTable component - main game table with all player positions
  * Memoized for performance optimization
  */
-const GameTable = memo(({
-  players,
-  gameState,
-  playAreaCards,
-  cardPositions,
-  trickWinner,
-  dealingAnimation,
-  selectedCard,
-  handleCardSelect,
-  handlePlaySelectedCard,
-  ruleSetName = "Highest Card Wins",
-  ruleSetDescription = "The highest card value wins the trick",
-}) => {
-  const [instructionDismissed, setInstructionDismissed] = useState(false);
+const GameTable = memo(
+  ({
+    players,
+    gameState,
+    playAreaCards,
+    cardPositions,
+    trickWinner,
+    dealingAnimation,
+    selectedCard,
+    handleCardSelect,
+    handlePlaySelectedCard,
+    ruleSetName = "Highest Card Wins",
+    ruleSetDescription = "The highest card value wins the trick",
+  }) => {
+    const [instructionDismissed, setInstructionDismissed] = useState(false);
 
-  // Create refs for all positioned elements
-  const containerRef = useRef(null);
-  const tableRef = useRef(null);
-  const topPanelRef = useRef(null);
-  const leftPanelRef = useRef(null);
-  const rightPanelRef = useRef(null);
-  const userHandRef = useRef(null);
+    // Create refs for all positioned elements
+    const containerRef = useRef(null);
+    const tableRef = useRef(null);
+    const topPanelRef = useRef(null);
+    const leftPanelRef = useRef(null);
+    const rightPanelRef = useRef(null);
+    const userHandRef = useRef(null);
 
-  // Use refs for table bounds calculation
-  const refs = {
-    containerRef,
-    tableRef,
-    topPanelRef,
-    leftPanelRef,
-    rightPanelRef,
-    userHandRef,
-  };
+    // Use refs for table bounds calculation
+    const refs = {
+      containerRef,
+      tableRef,
+      topPanelRef,
+      leftPanelRef,
+      rightPanelRef,
+      userHandRef,
+    };
 
-  const { topOffset, bottomOffset, leftOffset, rightOffset } =
-    useTableBounds(refs);
+    const { topOffset, bottomOffset, leftOffset, rightOffset } =
+      useTableBounds(refs);
 
-  const isPlayerTurn =
-    gameState.phase === GAME_PHASES.PLAYING &&
-    gameState.currentPlayer === 0 &&
-    !dealingAnimation;
+    const isPlayerTurn =
+      gameState.phase === GAME_PHASES.PLAYING &&
+      gameState.currentPlayer === 0 &&
+      !dealingAnimation;
 
-  const shouldShowInstruction =
-    isPlayerTurn && playAreaCards.length === 0 && !instructionDismissed;
+    const shouldShowInstruction =
+      isPlayerTurn && playAreaCards.length === 0 && !instructionDismissed;
 
-  const shouldShowHint =
-    gameState.phase === GAME_PHASES.PLAYING &&
-    gameState.currentPlayer === 0 &&
-    playAreaCards.length === 0 &&
-    !dealingAnimation &&
-    instructionDismissed;
+    const shouldShowHint =
+      gameState.phase === GAME_PHASES.PLAYING &&
+      gameState.currentPlayer === 0 &&
+      playAreaCards.length === 0 &&
+      !dealingAnimation &&
+      instructionDismissed;
 
-  const handleInstructionDismiss = useCallback(() => {
-    setInstructionDismissed(true);
-  }, []);
-
-  const handleCardSelectWithDismiss = useCallback(
-    (card) => {
+    const handleInstructionDismiss = useCallback(() => {
       setInstructionDismissed(true);
-      handleCardSelect(card);
-    },
-    [handleCardSelect],
-  );
+    }, []);
 
-  // Get scores from gameState
-  const scores = gameState.scores || [];
+    const handleCardSelectWithDismiss = useCallback(
+      (card) => {
+        setInstructionDismissed(true);
+        handleCardSelect(card);
+      },
+      [handleCardSelect],
+    );
 
-  return (
-    <div
-      ref={containerRef}
-      className="game-table-area flex-1 relative"
-      style={{ minHeight: 0 }}
-    >
-      <PokerTable tableRef={tableRef} />
+    // Get scores from gameState
+    const scores = gameState.scores || [];
 
-      <PlayArea
-        playAreaCards={playAreaCards}
-        cardPositions={cardPositions}
-        trickWinner={trickWinner}
-        selectedCard={selectedCard}
-        onPlayCard={handlePlaySelectedCard}
-      />
-
-      <TurnInstructionOverlay
-        visible={shouldShowInstruction}
-        ruleSetName={ruleSetName}
-        ruleSetDescription={ruleSetDescription}
-        onDismiss={handleInstructionDismiss}
-      />
-
-      <DragHint
-        key={`hint-${gameState.phase}-${gameState.currentPlayer}`}
-        visible={shouldShowHint}
-        hasSelectedCard={!!selectedCard}
-      />
-
-      <OpponentPosition
-        player={players[2]}
-        index={2}
-        currentPlayer={gameState.currentPlayer}
-        isDealing={dealingAnimation}
-        position="top"
-        topOffset={topOffset}
-        players={players}
-        scores={scores}
-        panelRef={topPanelRef}
-      />
-
-      <OpponentPosition
-        player={players[1]}
-        index={1}
-        currentPlayer={gameState.currentPlayer}
-        isDealing={dealingAnimation}
-        position="left"
-        leftOffset={leftOffset}
-        players={players}
-        scores={scores}
-        panelRef={leftPanelRef}
-      />
-
-      <OpponentPosition
-        player={players[3]}
-        index={3}
-        currentPlayer={gameState.currentPlayer}
-        isDealing={dealingAnimation}
-        position="right"
-        rightOffset={rightOffset}
-        players={players}
-        scores={scores}
-        panelRef={rightPanelRef}
-      />
-
+    return (
       <div
-        ref={userHandRef}
-        className="absolute user-hand-area"
-        style={{
-          bottom: bottomOffset,
-          left: "50%",
-          transform: "translateX(-50%)",
-          zIndex: 10,
-        }}
+        ref={containerRef}
+        className="game-table-area flex-1 relative"
+        style={{ minHeight: 0 }}
       >
-        <UserHand
-          player={players[0]}
-          playerIndex={0}
-          currentPlayer={gameState.currentPlayer}
-          gamePhase={gameState.phase}
+        <PokerTable tableRef={tableRef} />
+
+        <PlayArea
+          playAreaCards={playAreaCards}
+          cardPositions={cardPositions}
+          trickWinner={trickWinner}
           selectedCard={selectedCard}
-          dealingAnimation={dealingAnimation}
-          onCardSelect={handleCardSelectWithDismiss}
+          onPlayCard={handlePlaySelectedCard}
         />
+
+        <TurnInstructionOverlay
+          visible={shouldShowInstruction}
+          ruleSetName={ruleSetName}
+          ruleSetDescription={ruleSetDescription}
+          onDismiss={handleInstructionDismiss}
+        />
+
+        <DragHint
+          key={`hint-${gameState.phase}-${gameState.currentPlayer}`}
+          visible={shouldShowHint}
+          hasSelectedCard={!!selectedCard}
+        />
+
+        <OpponentPosition
+          player={players[2]}
+          index={2}
+          currentPlayer={gameState.currentPlayer}
+          isDealing={dealingAnimation}
+          position="top"
+          topOffset={topOffset}
+          players={players}
+          scores={scores}
+          panelRef={topPanelRef}
+        />
+
+        <OpponentPosition
+          player={players[1]}
+          index={1}
+          currentPlayer={gameState.currentPlayer}
+          isDealing={dealingAnimation}
+          position="left"
+          leftOffset={leftOffset}
+          players={players}
+          scores={scores}
+          panelRef={leftPanelRef}
+        />
+
+        <OpponentPosition
+          player={players[3]}
+          index={3}
+          currentPlayer={gameState.currentPlayer}
+          isDealing={dealingAnimation}
+          position="right"
+          rightOffset={rightOffset}
+          players={players}
+          scores={scores}
+          panelRef={rightPanelRef}
+        />
+
+        <div
+          ref={userHandRef}
+          className="absolute user-hand-area"
+          style={{
+            bottom: bottomOffset,
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 10,
+          }}
+        >
+          <UserHand
+            player={players[0]}
+            playerIndex={0}
+            currentPlayer={gameState.currentPlayer}
+            gamePhase={gameState.phase}
+            selectedCard={selectedCard}
+            dealingAnimation={dealingAnimation}
+            onCardSelect={handleCardSelectWithDismiss}
+          />
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  },
+);
 
 GameTable.propTypes = {
   players: PropTypes.array.isRequired,

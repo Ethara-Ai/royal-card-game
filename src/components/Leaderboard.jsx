@@ -83,103 +83,99 @@ Avatar.propTypes = {
  * Leaderboard component - displays player rankings and scores
  * Memoized for performance optimization
  */
-const Leaderboard = memo(({
-  players,
-  scores,
-  currentPlayer,
-  trickWinner,
-  ruleSetName,
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
+const Leaderboard = memo(
+  ({ players, scores, currentPlayer, trickWinner, ruleSetName }) => {
+    const [isOpen, setIsOpen] = useState(false);
 
-  const toggleOpen = useCallback(() => {
-    setIsOpen((prev) => !prev);
-  }, []);
+    const toggleOpen = useCallback(() => {
+      setIsOpen((prev) => !prev);
+    }, []);
 
-  const sortedPlayers = useMemo(
-    () =>
-      [...players]
-        .map((player, idx) => ({
-          ...player,
-          score: scores[idx],
-          originalIndex: idx,
-        }))
-        .sort((a, b) => b.score - a.score),
-    [players, scores],
-  );
-
-  // Collapsed button state
-  if (!isOpen) {
-    return (
-      <div className="leaderboard-container">
-        <button
-          className="leaderboard-toggle-btn"
-          onClick={toggleOpen}
-          aria-label="Show leaderboard"
-          aria-expanded="false"
-        >
-          <FaTrophy className="leaderboard-toggle-icon" />
-          <span className="leaderboard-toggle-label">Scores</span>
-        </button>
-      </div>
+    const sortedPlayers = useMemo(
+      () =>
+        [...players]
+          .map((player, idx) => ({
+            ...player,
+            score: scores[idx],
+            originalIndex: idx,
+          }))
+          .sort((a, b) => b.score - a.score),
+      [players, scores],
     );
-  }
 
-  // Expanded panel state
-  return (
-    <div className="leaderboard-container leaderboard-expanded">
-      <div className="leaderboard-panel">
-        <div className="leaderboard-header">
-          <div className="leaderboard-header-title">
-            <FaTrophy className="leaderboard-header-icon" />
-            <span className="leaderboard-title">Leaderboard</span>
-          </div>
+    // Collapsed button state
+    if (!isOpen) {
+      return (
+        <div className="leaderboard-container">
           <button
-            className="leaderboard-close-btn"
+            className="leaderboard-toggle-btn"
             onClick={toggleOpen}
-            aria-label="Hide leaderboard"
+            aria-label="Show leaderboard"
+            aria-expanded="false"
           >
-            <FaTimes />
+            <FaTrophy className="leaderboard-toggle-icon" />
+            <span className="leaderboard-toggle-label">Scores</span>
           </button>
         </div>
+      );
+    }
 
-        <div className="leaderboard-rule-badge">{ruleSetName}</div>
+    // Expanded panel state
+    return (
+      <div className="leaderboard-container leaderboard-expanded">
+        <div className="leaderboard-panel">
+          <div className="leaderboard-header">
+            <div className="leaderboard-header-title">
+              <FaTrophy className="leaderboard-header-icon" />
+              <span className="leaderboard-title">Leaderboard</span>
+            </div>
+            <button
+              className="leaderboard-close-btn"
+              onClick={toggleOpen}
+              aria-label="Hide leaderboard"
+            >
+              <FaTimes />
+            </button>
+          </div>
 
-        <div className="leaderboard-players">
-          {sortedPlayers.map((player, index) => {
-            const score = scores[player.originalIndex];
-            const isCurrentPlayer = currentPlayer === player.originalIndex;
-            const isWinner = trickWinner === player.id;
+          <div className="leaderboard-rule-badge">{ruleSetName}</div>
 
-            return (
-              <div
-                key={player.id}
-                className={`leaderboard-player ${isCurrentPlayer ? "leaderboard-player-active" : ""} ${isWinner ? "leaderboard-player-winner" : ""}`}
-              >
-                <span className="leaderboard-rank" data-rank={index + 1}>
-                  {index + 1}
-                </span>
-                <Avatar
-                  name={player.name}
-                  size={40}
-                  className="leaderboard-avatar"
-                />
-                <span className="leaderboard-player-name">
-                  {getPlayerDisplayName(player)}
-                </span>
-                <span
-                  className={`leaderboard-player-score ${isWinner ? "score-update" : ""}`}
+          <div className="leaderboard-players">
+            {sortedPlayers.map((player, index) => {
+              const score = scores[player.originalIndex];
+              const isCurrentPlayer = currentPlayer === player.originalIndex;
+              const isWinner = trickWinner === player.id;
+
+              return (
+                <div
+                  key={player.id}
+                  className={`leaderboard-player ${isCurrentPlayer ? "leaderboard-player-active" : ""} ${isWinner ? "leaderboard-player-winner" : ""}`}
                 >
-                  {score}
-                </span>
-              </div>
-            );
-          })}
+                  <span className="leaderboard-rank" data-rank={index + 1}>
+                    {index + 1}
+                  </span>
+                  <Avatar
+                    name={player.name}
+                    size={40}
+                    className="leaderboard-avatar"
+                  />
+                  <span className="leaderboard-player-name">
+                    {getPlayerDisplayName(player)}
+                  </span>
+                  <span
+                    className={`leaderboard-player-score ${isWinner ? "score-update" : ""}`}
+                  >
+                    {score}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
-    </div>
-  );
-});
+    );
+  },
+);
 
 Leaderboard.propTypes = {
   players: PropTypes.arrayOf(

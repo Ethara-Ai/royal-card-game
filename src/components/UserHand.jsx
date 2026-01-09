@@ -97,62 +97,6 @@ const UserHand = memo(
   }) => {
     const isMyTurn = currentPlayer === playerIndex;
 
-    // Calculate player rank based on scores
-    const playerRank = useMemo(
-      () => calculatePlayerRank(players, scores, playerIndex),
-      [players, scores, playerIndex],
-    );
-
-    const playerScore = scores[playerIndex] || 0;
-
-    // Get rank indicator style based on position
-    const getRankIndicator = (rank) => {
-      const baseStyle = {
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontWeight: "700",
-        fontSize: "clamp(8px, 2vw, 10px)",
-        padding: "1px 4px",
-        borderRadius: "4px",
-        minWidth: "clamp(14px, 3vw, 18px)",
-        height: "clamp(13px, 2.8vw, 16px)",
-        lineHeight: 1,
-        flexShrink: 0,
-      };
-
-      switch (rank) {
-        case 1:
-          return {
-            ...baseStyle,
-            background: "linear-gradient(135deg, #FFD700 0%, #F4A020 100%)",
-            color: "#1a1a1a",
-            border: "1px solid rgba(255, 215, 0, 0.5)",
-          };
-        case 2:
-          return {
-            ...baseStyle,
-            background: "linear-gradient(135deg, #E0E0E0 0%, #A8A8A8 100%)",
-            color: "#1a1a1a",
-            border: "1px solid rgba(192, 192, 192, 0.5)",
-          };
-        case 3:
-          return {
-            ...baseStyle,
-            background: "linear-gradient(135deg, #D4A574 0%, #B8860B 100%)",
-            color: "#1a1a1a",
-            border: "1px solid rgba(205, 127, 50, 0.5)",
-          };
-        default:
-          return {
-            ...baseStyle,
-            background: "var(--color-panel-dark)",
-            color: "var(--color-text-muted)",
-            border: "1px solid var(--color-border-subtle)",
-          };
-      }
-    };
-
     return (
       <div
         className="player-panel user-hand-panel"

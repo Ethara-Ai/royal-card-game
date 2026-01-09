@@ -148,15 +148,6 @@ const PlayerPanel = memo(
       }
     }, []);
 
-    // Memoize card back pattern styles
-    const patternStyles = useMemo(
-      () => getPatternStyle(cardBackPattern, cardBackColor),
-      [cardBackPattern, cardBackColor],
-    );
-
-    // Memoize visible card count
-    const visibleCardCount = Math.min(player.hand.length, 5);
-
     return (
       <div
         className={`opponent-panel transition-all duration-300 ${
