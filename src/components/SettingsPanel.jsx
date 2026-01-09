@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import { FaCog, FaTimes, FaRedo } from "react-icons/fa";
-import { useCardCustomization } from "../../context";
+import { useCardCustomization } from "../context";
 import RuleSetSelector from "./RuleSetSelector";
 import CardColorPicker from "./CardColorPicker";
 import CardPatternPicker from "./CardPatternPicker";

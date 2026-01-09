@@ -24,7 +24,7 @@ const getDropdownAnimationClass = (animationState) => {
 const WaitingRoom = ({
   players,
   startGame,
-  username,
+  username = "",
   setUsername,
   ruleSets,
   selectedRuleSet,
@@ -47,7 +47,7 @@ const WaitingRoom = ({
     setUsername(sanitized);
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       setHasAttemptedSubmit(true);
       if (isUsernameValid) {
@@ -135,7 +135,7 @@ const WaitingRoom = ({
             type="text"
             value={username || ""}
             onChange={handleInputChange}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyDown}
             placeholder="Enter your name..."
             maxLength={20}
             className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base transition-all duration-200 focus:outline-none"
@@ -229,7 +229,7 @@ const WaitingRoom = ({
                       >
                         {/* Selection indicator */}
                         <div
-                          className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 transition-all duration-200"
+                          className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 transition-all duration-200"
                           style={{
                             background:
                               selectedRuleSet === index
@@ -404,10 +404,6 @@ WaitingRoom.propTypes = {
   ).isRequired,
   selectedRuleSet: PropTypes.number.isRequired,
   setSelectedRuleSet: PropTypes.func.isRequired,
-};
-
-WaitingRoom.defaultProps = {
-  username: "",
 };
 
 export default WaitingRoom;

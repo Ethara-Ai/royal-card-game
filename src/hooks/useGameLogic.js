@@ -85,6 +85,7 @@ const useGameLogic = (selectedRuleSet = 0) => {
 
   const dealCards = useCallback(() => {
     const newDeck = createDeck();
+    // Immutable update - create new player objects
     const newPlayers = basePlayers.map((player, index) => ({
       ...player,
       hand: newDeck.slice(
@@ -103,6 +104,7 @@ const useGameLogic = (selectedRuleSet = 0) => {
   );
 
   const getRandomCard = (hand) => {
+    if (!hand || hand.length === 0) return null;
     const randomIndex = Math.floor(Math.random() * hand.length);
     return hand[randomIndex];
   };
@@ -181,14 +183,28 @@ const useGameLogic = (selectedRuleSet = 0) => {
   const playAICard = useCallback(
     (playerIndex, currentPlayArea) => {
       const player = players[playerIndex];
-      if (player.hand.length === 0 || gameState.phase !== GAME_PHASES.PLAYING) {
+
+      // Safety check: ensure player exists and has cards
+      if (
+        !player ||
+        player.hand.length === 0 ||
+        gameState.phase !== GAME_PHASES.PLAYING
+      ) {
         return;
       }
 
       const randomCard = getRandomCard(player.hand);
-      const newPlayers = [...players];
-      newPlayers[playerIndex].hand = newPlayers[playerIndex].hand.filter(
-        (c) => c.id !== randomCard.id,
+
+      // Safety check: ensure we got a valid card
+      if (!randomCard) {
+        return;
+      }
+
+      // Immutable update - create new player objects with filtered hand
+      const newPlayers = players.map((p, idx) =>
+        idx === playerIndex
+          ? { ...p, hand: p.hand.filter((c) => c.id !== randomCard.id) }
+          : p,
       );
       setBasePlayers(newPlayers);
 
@@ -200,7 +216,8 @@ const useGameLogic = (selectedRuleSet = 0) => {
       }
 
       if (Object.keys(newPlayArea).length === 4) {
-        const isLastTrick = player.hand.length === 0;
+        // Check if this is the last trick using the updated hand length
+        const isLastTrick = player.hand.length - 1 === 0;
         safeSetTimeout(() => {
           evaluateTrick(newPlayArea, isLastTrick);
         }, ANIMATION_TIMINGS.cardPlayDelay);
@@ -228,11 +245,18 @@ const useGameLogic = (selectedRuleSet = 0) => {
       if (gameState.phase !== GAME_PHASES.PLAYING) return;
 
       const playerIndex = players.findIndex((p) => p.id === playerId);
-      if (playerIndex !== gameState.currentPlayer) return;
 
-      const newPlayers = [...players];
-      newPlayers[playerIndex].hand = newPlayers[playerIndex].hand.filter(
-        (c) => c.id !== card.id,
+      // Safety check: ensure player exists and it's their turn
+      if (playerIndex === -1 || playerIndex !== gameState.currentPlayer) return;
+
+      const player = players[playerIndex];
+      if (!player) return;
+
+      // Immutable update - create new player objects with filtered hand
+      const newPlayers = players.map((p, idx) =>
+        idx === playerIndex
+          ? { ...p, hand: p.hand.filter((c) => c.id !== card.id) }
+          : p,
       );
       setBasePlayers(newPlayers);
 
@@ -249,8 +273,8 @@ const useGameLogic = (selectedRuleSet = 0) => {
       }
 
       if (Object.keys(newPlayArea).length === 4) {
-        const playerObj = players.find((p) => p.id === playerId);
-        const isLastTrick = playerObj.hand.length === 0;
+        // Check if this is the last trick using the current hand length minus 1 (the card just played)
+        const isLastTrick = player.hand.length - 1 === 0;
         safeSetTimeout(() => {
           evaluateTrick(newPlayArea, isLastTrick);
         }, ANIMATION_TIMINGS.cardPlayDelay);
@@ -293,12 +317,19 @@ const useGameLogic = (selectedRuleSet = 0) => {
   }, [selectedCard, gameState.currentPlayer, playCard]);
 
   const autoPlayCard = useCallback(() => {
-    if (gameState.currentPlayer !== 0 || gameState.phase !== GAME_PHASES.PLAYING) return;
-    
+    if (
+      gameState.currentPlayer !== 0 ||
+      gameState.phase !== GAME_PHASES.PLAYING
+    ) {
+      return;
+    }
+
     const playerHand = players[0]?.hand;
     if (!playerHand || playerHand.length === 0) return;
 
     const randomCard = getRandomCard(playerHand);
+    if (!randomCard) return;
+
     toast.info("Time's up! Auto-playing a card...");
     playCard(randomCard, "player1");
   }, [gameState.currentPlayer, gameState.phase, players, playCard]);
@@ -315,7 +346,9 @@ const useGameLogic = (selectedRuleSet = 0) => {
       safeSetTimeout(() => {
         setDealingAnimation(false);
         setGameState((prev) => ({ ...prev, phase: GAME_PHASES.PLAYING }));
-        toast.info("Your turn! Tap a card to select, then tap the table to play");
+        toast.info(
+          "Your turn! Tap a card to select, then tap the table to play",
+        );
       }, ANIMATION_TIMINGS.dealingAnimation);
     }, ANIMATION_TIMINGS.dealingDelay);
   }, [gameState.phase, dealCards, safeSetTimeout]);
@@ -331,6 +364,7 @@ const useGameLogic = (selectedRuleSet = 0) => {
     setTrickWinner(null);
     setShowConfetti(false);
     setSelectedCard(null);
+    // Immutable reset of players
     const resetPlayers = basePlayers.map((p) => ({ ...p, hand: [], score: 0 }));
     setBasePlayers(resetPlayers);
     toast.info("Game reset! Ready for a new game?");

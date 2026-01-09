@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { Header } from "./Header";
+import Header from "./Header";
 import { CardCustomizationProvider } from "../context";
 
 // Helper to render with context
@@ -453,7 +453,8 @@ describe("Header", () => {
     it("should have responsive padding classes", () => {
       const { container } = renderWithContext(<Header {...defaultProps} />);
       const headerContainer = container.querySelector(".header-container");
-      expect(headerContainer).toHaveClass("p-3");
+      expect(headerContainer).toHaveClass("py-2");
+      expect(headerContainer).toHaveClass("px-3");
     });
 
     it("should have z-50 class for z-index", () => {

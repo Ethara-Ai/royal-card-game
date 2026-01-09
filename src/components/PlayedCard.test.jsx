@@ -134,21 +134,21 @@ describe("PlayedCard", () => {
   });
 
   describe("CSS classes", () => {
-    it("should have 'played-card' class", () => {
+    it("should have 'played-card-flex' class", () => {
       const { container } = render(<PlayedCard {...defaultProps} />);
-      expect(container.firstChild).toHaveClass("played-card");
+      expect(container.firstChild).toHaveClass("played-card-flex");
     });
 
-    it("should have 'card-enter' class initially (animating)", () => {
+    it("should have 'card-enter-flex' class initially (animating)", () => {
       const { container } = render(<PlayedCard {...defaultProps} />);
-      expect(container.firstChild).toHaveClass("card-enter");
+      expect(container.firstChild).toHaveClass("card-enter-flex");
     });
 
-    it("should transition to 'card-settled' class after animation", async () => {
+    it("should remove 'card-enter-flex' class after animation", async () => {
       const { container, rerender } = render(<PlayedCard {...defaultProps} />);
 
-      // Initially should have card-enter
-      expect(container.firstChild).toHaveClass("card-enter");
+      // Initially should have card-enter-flex
+      expect(container.firstChild).toHaveClass("card-enter-flex");
 
       // Advance timers past the 400ms animation delay
       vi.advanceTimersByTime(500);
@@ -156,9 +156,8 @@ describe("PlayedCard", () => {
       // Re-render to reflect state changes
       rerender(<PlayedCard {...defaultProps} />);
 
-      // Should now have card-settled
-      expect(container.firstChild).toHaveClass("card-settled");
-      expect(container.firstChild).not.toHaveClass("card-enter");
+      // Should no longer have card-enter-flex
+      expect(container.firstChild).not.toHaveClass("card-enter-flex");
     });
 
     it("should have 'winner-glow' class when isWinner is true", () => {
@@ -176,22 +175,16 @@ describe("PlayedCard", () => {
   });
 
   describe("positioning", () => {
-    it("should set --target-x CSS variable from position.x", () => {
+    it("should have absolute positioning by default", () => {
       const { container } = render(<PlayedCard {...defaultProps} />);
-      const style = container.firstChild.style;
-      expect(style.getPropertyValue("--target-x")).toBe("10px");
+      expect(container.firstChild.style.position).toBe("absolute");
     });
 
-    it("should set --target-y CSS variable from position.y", () => {
+    it("should apply transform with translate and rotate", () => {
       const { container } = render(<PlayedCard {...defaultProps} />);
-      const style = container.firstChild.style;
-      expect(style.getPropertyValue("--target-y")).toBe("20px");
-    });
-
-    it("should set --target-rotation CSS variable from position.rotation", () => {
-      const { container } = render(<PlayedCard {...defaultProps} />);
-      const style = container.firstChild.style;
-      expect(style.getPropertyValue("--target-rotation")).toBe("5deg");
+      const transform = container.firstChild.style.transform;
+      expect(transform).toContain("translate");
+      expect(transform).toContain("rotate");
     });
 
     it("should set z-index from position.zIndex", () => {
@@ -199,37 +192,31 @@ describe("PlayedCard", () => {
       expect(container.firstChild.style.zIndex).toBe("2");
     });
 
-    it("should handle negative x position", () => {
+    it("should handle negative x position in transform", () => {
       const negativeXProps = {
         ...defaultProps,
         position: { ...defaultProps.position, x: -50 },
       };
       const { container } = render(<PlayedCard {...negativeXProps} />);
-      expect(container.firstChild.style.getPropertyValue("--target-x")).toBe(
-        "-50px",
-      );
+      expect(container.firstChild.style.transform).toContain("-50px");
     });
 
-    it("should handle negative y position", () => {
+    it("should handle negative y position in transform", () => {
       const negativeYProps = {
         ...defaultProps,
         position: { ...defaultProps.position, y: -10 },
       };
       const { container } = render(<PlayedCard {...negativeYProps} />);
-      expect(container.firstChild.style.getPropertyValue("--target-y")).toBe(
-        "-10px",
-      );
+      expect(container.firstChild.style.transform).toContain("-10px");
     });
 
-    it("should handle negative rotation", () => {
+    it("should handle negative rotation in transform", () => {
       const negativeRotProps = {
         ...defaultProps,
         position: { ...defaultProps.position, rotation: -8 },
       };
       const { container } = render(<PlayedCard {...negativeRotProps} />);
-      expect(
-        container.firstChild.style.getPropertyValue("--target-rotation"),
-      ).toBe("-8deg");
+      expect(container.firstChild.style.transform).toContain("-8deg");
     });
 
     it("should handle zero values", () => {
@@ -238,15 +225,36 @@ describe("PlayedCard", () => {
         position: { x: 0, y: 0, rotation: 0, zIndex: 1 },
       };
       const { container } = render(<PlayedCard {...zeroProps} />);
-      expect(container.firstChild.style.getPropertyValue("--target-x")).toBe(
-        "0px",
+      const transform = container.firstChild.style.transform;
+      expect(transform).toContain("0px");
+      expect(transform).toContain("0deg");
+    });
+  });
+
+  describe("flex layout mode", () => {
+    it("should have relative positioning when useFlexLayout is true", () => {
+      const { container } = render(
+        <PlayedCard {...defaultProps} useFlexLayout={true} />,
       );
-      expect(container.firstChild.style.getPropertyValue("--target-y")).toBe(
-        "0px",
+      expect(container.firstChild.style.position).toBe("relative");
+    });
+
+    it("should apply reduced rotation when useFlexLayout is true", () => {
+      const props = {
+        ...defaultProps,
+        position: { x: 10, y: 20, rotation: 10, zIndex: 2 },
+        useFlexLayout: true,
+      };
+      const { container } = render(<PlayedCard {...props} />);
+      // Rotation should be halved (10 * 0.5 = 5)
+      expect(container.firstChild.style.transform).toContain("5deg");
+    });
+
+    it("should not include translate when useFlexLayout is true", () => {
+      const { container } = render(
+        <PlayedCard {...defaultProps} useFlexLayout={true} />,
       );
-      expect(
-        container.firstChild.style.getPropertyValue("--target-rotation"),
-      ).toBe("0deg");
+      expect(container.firstChild.style.transform).not.toContain("translate");
     });
   });
 
@@ -278,7 +286,7 @@ describe("PlayedCard", () => {
     it("should have border-radius", () => {
       const { container } = render(<PlayedCard {...defaultProps} />);
       const cardFace = container.querySelector(".card-face");
-      expect(cardFace.style.borderRadius).toBe("var(--radius-md)");
+      expect(cardFace.style.borderRadius).toBe("var(--radius-sm)");
     });
 
     it("should have box-shadow", () => {
@@ -291,7 +299,7 @@ describe("PlayedCard", () => {
   describe("animation lifecycle", () => {
     it("should start in animating state", () => {
       const { container } = render(<PlayedCard {...defaultProps} />);
-      expect(container.firstChild).toHaveClass("card-enter");
+      expect(container.firstChild).toHaveClass("card-enter-flex");
     });
 
     it("should transition after 400ms", async () => {
@@ -300,12 +308,12 @@ describe("PlayedCard", () => {
       // At 300ms, should still be animating
       vi.advanceTimersByTime(300);
       rerender(<PlayedCard {...defaultProps} />);
-      expect(container.firstChild).toHaveClass("card-enter");
+      expect(container.firstChild).toHaveClass("card-enter-flex");
 
-      // At 500ms, should be settled
+      // At 500ms, should be done animating
       vi.advanceTimersByTime(200);
       rerender(<PlayedCard {...defaultProps} />);
-      expect(container.firstChild).toHaveClass("card-settled");
+      expect(container.firstChild).not.toHaveClass("card-enter-flex");
     });
 
     it("should clean up timer on unmount", () => {
@@ -336,14 +344,14 @@ describe("PlayedCard", () => {
       const winnerProps = { ...defaultProps, isWinner: true };
       const { container, rerender } = render(<PlayedCard {...winnerProps} />);
 
-      // Initially has both card-enter and winner-glow
-      expect(container.firstChild).toHaveClass("card-enter");
+      // Initially has both card-enter-flex and winner-glow
+      expect(container.firstChild).toHaveClass("card-enter-flex");
       expect(container.firstChild).toHaveClass("winner-glow");
 
       // After animation settles
       vi.advanceTimersByTime(500);
       rerender(<PlayedCard {...winnerProps} />);
-      expect(container.firstChild).toHaveClass("card-settled");
+      expect(container.firstChild).not.toHaveClass("card-enter-flex");
       expect(container.firstChild).toHaveClass("winner-glow");
     });
   });
@@ -384,25 +392,20 @@ describe("PlayedCard", () => {
 
   describe("different positions", () => {
     const positions = [
-      { x: -50, y: 10, rotation: -8, zIndex: 1 },
-      { x: -18, y: -5, rotation: -3, zIndex: 2 },
-      { x: 18, y: -5, rotation: 3, zIndex: 3 },
-      { x: 50, y: 10, rotation: 8, zIndex: 4 },
+      { x: -55, y: 12, rotation: -10, zIndex: 1 },
+      { x: -18, y: -8, rotation: -3, zIndex: 2 },
+      { x: 18, y: -8, rotation: 3, zIndex: 3 },
+      { x: 55, y: 12, rotation: 10, zIndex: 4 },
     ];
 
     positions.forEach((position, index) => {
       it(`should render correctly at position ${index + 1}`, () => {
         const props = { ...defaultProps, position };
         const { container } = render(<PlayedCard {...props} />);
-        expect(container.firstChild.style.getPropertyValue("--target-x")).toBe(
-          `${position.x}px`,
-        );
-        expect(container.firstChild.style.getPropertyValue("--target-y")).toBe(
-          `${position.y}px`,
-        );
-        expect(
-          container.firstChild.style.getPropertyValue("--target-rotation"),
-        ).toBe(`${position.rotation}deg`);
+        const transform = container.firstChild.style.transform;
+        expect(transform).toContain(`${position.x}px`);
+        expect(transform).toContain(`${position.y}px`);
+        expect(transform).toContain(`${position.rotation}deg`);
         expect(container.firstChild.style.zIndex).toBe(`${position.zIndex}`);
       });
     });
@@ -415,12 +418,9 @@ describe("PlayedCard", () => {
         position: { x: 1000, y: 1000, rotation: 180, zIndex: 100 },
       };
       const { container } = render(<PlayedCard {...largeProps} />);
-      expect(container.firstChild.style.getPropertyValue("--target-x")).toBe(
-        "1000px",
-      );
-      expect(container.firstChild.style.getPropertyValue("--target-y")).toBe(
-        "1000px",
-      );
+      const transform = container.firstChild.style.transform;
+      expect(transform).toContain("1000px");
+      expect(transform).toContain("180deg");
     });
 
     it("should handle floating point position values", () => {
@@ -429,12 +429,23 @@ describe("PlayedCard", () => {
         position: { x: 10.5, y: 20.7, rotation: 5.3, zIndex: 2 },
       };
       const { container } = render(<PlayedCard {...floatProps} />);
-      expect(container.firstChild.style.getPropertyValue("--target-x")).toBe(
-        "10.5px",
+      const transform = container.firstChild.style.transform;
+      expect(transform).toContain("10.5px");
+      expect(transform).toContain("20.7px");
+    });
+  });
+
+  describe("transition styling", () => {
+    it("should have transition property set", () => {
+      const { container } = render(<PlayedCard {...defaultProps} />);
+      expect(container.firstChild.style.transition).toBe(
+        "transform 0.3s ease-out",
       );
-      expect(container.firstChild.style.getPropertyValue("--target-y")).toBe(
-        "20.7px",
-      );
+    });
+
+    it("should have flexShrink set to 0", () => {
+      const { container } = render(<PlayedCard {...defaultProps} />);
+      expect(container.firstChild.style.flexShrink).toBe("0");
     });
   });
 });

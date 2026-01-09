@@ -4,9 +4,10 @@ import Confetti from "react-confetti";
 
 import { useTheme, useWindowSize, useAppLoading, useGameLogic } from "./hooks";
 
-import { Header, LandscapeMenu } from "./components/Header";
-import HowToPlayModal from "./components/HowToPlayModal";
 import {
+  Header,
+  LandscapeMenu,
+  HowToPlayModal,
   LoadingScreen,
   WaitingRoom,
   Leaderboard,
@@ -146,7 +147,8 @@ function AppContent() {
           <div
             className="game-info-banner w-full text-center py-2 px-4"
             style={{
-              background: "linear-gradient(90deg, transparent 0%, var(--color-panel-base) 20%, var(--color-panel-base) 80%, transparent 100%)",
+              background:
+                "linear-gradient(90deg, transparent 0%, var(--color-panel-base) 20%, var(--color-panel-base) 80%, transparent 100%)",
               borderBottom: "1px solid var(--color-border-default)",
             }}
           >
@@ -157,7 +159,10 @@ function AppContent() {
                   color: "var(--color-gold-base)",
                   fontSize: "clamp(12px, 2.5vw, 14px)",
                   fontFamily: "var(--font-display)",
-                  textShadow: theme === "dark" ? "0 0 8px rgba(212, 175, 55, 0.3)" : "none",
+                  textShadow:
+                    theme === "dark"
+                      ? "0 0 8px rgba(212, 175, 55, 0.3)"
+                      : "none",
                 }}
               >
                 {ruleSets[selectedRuleSet].name}

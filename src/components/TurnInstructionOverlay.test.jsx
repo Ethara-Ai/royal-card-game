@@ -73,7 +73,9 @@ describe("TurnInstructionOverlay", () => {
         vi.advanceTimersByTime(300);
       });
 
-      expect(screen.getByText("Drag a card to play")).toBeInTheDocument();
+      expect(
+        screen.getByText("Tap a card to select, then tap the table to play"),
+      ).toBeInTheDocument();
     });
 
     it("should display dismiss hint", async () => {
@@ -83,7 +85,7 @@ describe("TurnInstructionOverlay", () => {
         vi.advanceTimersByTime(300);
       });
 
-      expect(screen.getByText("Click anywhere to dismiss")).toBeInTheDocument();
+      expect(screen.getByText("Tap anywhere to start")).toBeInTheDocument();
     });
 
     it("should use default values when props are not provided", async () => {
@@ -140,8 +142,8 @@ describe("TurnInstructionOverlay", () => {
     });
   });
 
-  describe("auto-dismiss", () => {
-    it("should auto-dismiss after 5 seconds", async () => {
+  describe("manual dismissal", () => {
+    it("should dismiss when backdrop is clicked", async () => {
       const onDismiss = vi.fn();
       render(
         <TurnInstructionOverlay {...defaultProps} onDismiss={onDismiss} />,
@@ -154,12 +156,11 @@ describe("TurnInstructionOverlay", () => {
 
       expect(screen.getByText("Your Turn")).toBeInTheDocument();
 
-      // Wait for auto-dismiss (5000ms + 300ms for animation)
-      act(() => {
-        vi.advanceTimersByTime(5000);
-      });
+      // Click the backdrop to dismiss
+      const backdrop = document.querySelector(".turn-instruction-backdrop");
+      fireEvent.click(backdrop);
 
-      // Should start exit animation and call onDismiss
+      // Wait for exit animation
       act(() => {
         vi.advanceTimersByTime(400);
       });
@@ -169,7 +170,7 @@ describe("TurnInstructionOverlay", () => {
   });
 
   describe("interaction dismissal", () => {
-    it("should dismiss on mousedown", async () => {
+    it("should dismiss on click", async () => {
       const onDismiss = vi.fn();
       render(
         <TurnInstructionOverlay {...defaultProps} onDismiss={onDismiss} />,
@@ -179,10 +180,8 @@ describe("TurnInstructionOverlay", () => {
         vi.advanceTimersByTime(300);
       });
 
-      expect(screen.getByText("Your Turn")).toBeInTheDocument();
-
-      // Simulate mousedown
-      fireEvent.mouseDown(document);
+      const backdrop = document.querySelector(".turn-instruction-backdrop");
+      fireEvent.click(backdrop);
 
       act(() => {
         vi.advanceTimersByTime(400);
@@ -191,7 +190,7 @@ describe("TurnInstructionOverlay", () => {
       expect(onDismiss).toHaveBeenCalled();
     });
 
-    it("should dismiss on touchstart", async () => {
+    it("should dismiss on touchEnd", async () => {
       const onDismiss = vi.fn();
       render(
         <TurnInstructionOverlay {...defaultProps} onDismiss={onDismiss} />,
@@ -201,10 +200,8 @@ describe("TurnInstructionOverlay", () => {
         vi.advanceTimersByTime(300);
       });
 
-      expect(screen.getByText("Your Turn")).toBeInTheDocument();
-
-      // Simulate touchstart
-      fireEvent.touchStart(document);
+      const backdrop = document.querySelector(".turn-instruction-backdrop");
+      fireEvent.touchEnd(backdrop);
 
       act(() => {
         vi.advanceTimersByTime(400);
@@ -213,7 +210,7 @@ describe("TurnInstructionOverlay", () => {
       expect(onDismiss).toHaveBeenCalled();
     });
 
-    it("should dismiss on dragstart", async () => {
+    it("should dismiss on keyboard Enter key", async () => {
       const onDismiss = vi.fn();
       render(
         <TurnInstructionOverlay {...defaultProps} onDismiss={onDismiss} />,
@@ -223,10 +220,28 @@ describe("TurnInstructionOverlay", () => {
         vi.advanceTimersByTime(300);
       });
 
-      expect(screen.getByText("Your Turn")).toBeInTheDocument();
+      const backdrop = document.querySelector(".turn-instruction-backdrop");
+      fireEvent.keyDown(backdrop, { key: "Enter" });
 
-      // Simulate dragstart
-      fireEvent.dragStart(document);
+      act(() => {
+        vi.advanceTimersByTime(400);
+      });
+
+      expect(onDismiss).toHaveBeenCalled();
+    });
+
+    it("should dismiss on keyboard Space key", async () => {
+      const onDismiss = vi.fn();
+      render(
+        <TurnInstructionOverlay {...defaultProps} onDismiss={onDismiss} />,
+      );
+
+      act(() => {
+        vi.advanceTimersByTime(300);
+      });
+
+      const backdrop = document.querySelector(".turn-instruction-backdrop");
+      fireEvent.keyDown(backdrop, { key: " " });
 
       act(() => {
         vi.advanceTimersByTime(400);
@@ -337,9 +352,6 @@ describe("TurnInstructionOverlay", () => {
       ).toBeInTheDocument();
       expect(
         container.querySelector(".turn-instruction-description"),
-      ).toBeInTheDocument();
-      expect(
-        container.querySelector(".turn-instruction-divider"),
       ).toBeInTheDocument();
       expect(
         container.querySelector(".turn-instruction-action"),
@@ -509,15 +521,15 @@ describe("TurnInstructionOverlay", () => {
       const icon = container.querySelector(".turn-instruction-icon");
       expect(icon).toHaveAttribute("aria-hidden", "true");
 
-      // Divider should be hidden
-      const divider = container.querySelector(".turn-instruction-divider");
-      expect(divider).toHaveAttribute("aria-hidden", "true");
+      // Blur overlay should be hidden from screen readers
+      const blur = container.querySelector(".turn-instruction-blur");
+      expect(blur).toHaveAttribute("aria-hidden", "true");
 
-      // Action icon should be hidden
-      const actionIcon = container.querySelector(
-        ".turn-instruction-action-icon",
+      // Pointer icon should be hidden from screen readers
+      const pointerSection = container.querySelector(
+        ".turn-instruction-card-pointer",
       );
-      expect(actionIcon).toHaveAttribute("aria-hidden", "true");
+      expect(pointerSection).toHaveAttribute("aria-hidden", "true");
     });
   });
 
@@ -563,7 +575,7 @@ describe("TurnInstructionOverlay", () => {
       expect(content).toBeInTheDocument();
     });
 
-    it("should have theme-aware divider", async () => {
+    it("should have theme-aware header section", async () => {
       const { container } = render(
         <TurnInstructionOverlay {...defaultProps} />,
       );
@@ -572,11 +584,11 @@ describe("TurnInstructionOverlay", () => {
         vi.advanceTimersByTime(300);
       });
 
-      const divider = container.querySelector(".turn-instruction-divider");
-      expect(divider).toBeInTheDocument();
+      const header = container.querySelector(".turn-instruction-header");
+      expect(header).toBeInTheDocument();
     });
 
-    it("should have theme-aware action icon container", async () => {
+    it("should have theme-aware card pointer section", async () => {
       const { container } = render(
         <TurnInstructionOverlay {...defaultProps} />,
       );
@@ -585,10 +597,10 @@ describe("TurnInstructionOverlay", () => {
         vi.advanceTimersByTime(300);
       });
 
-      const actionIcon = container.querySelector(
-        ".turn-instruction-action-icon",
+      const cardPointer = container.querySelector(
+        ".turn-instruction-card-pointer",
       );
-      expect(actionIcon).toBeInTheDocument();
+      expect(cardPointer).toBeInTheDocument();
     });
   });
 });

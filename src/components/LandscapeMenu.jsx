@@ -9,7 +9,7 @@ import {
   FaRedo,
   FaCrown,
 } from "react-icons/fa";
-import { useCardCustomization } from "../../context";
+import { useCardCustomization } from "../context";
 import CardColorPicker from "./CardColorPicker";
 import CardPatternPicker from "./CardPatternPicker";
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
-import { cardPatterns, getPatternStyle } from "../../utils/patterns";
+import { cardPatterns, getPatternStyle } from "../utils/patterns";
 
 /**
  * Card pattern picker component for selecting card back patterns

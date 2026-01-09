@@ -187,7 +187,7 @@ describe("GameTable", () => {
       const { container } = renderWithContext(
         <GameTable {...propsWithCards} />,
       );
-      const playedCards = container.querySelectorAll(".played-card");
+      const playedCards = container.querySelectorAll(".played-card-flex");
       expect(playedCards.length).toBe(2);
     });
   });
@@ -316,19 +316,18 @@ describe("GameTable", () => {
         ...defaultProps,
         playAreaCards: [
           ["player1", { id: "hearts-5", suit: "hearts", rank: 5, value: 5 }],
-          ["player2", { id: "clubs-10", suit: "clubs", rank: 10, value: 10 }],
+          ["player2", { id: "clubs-3", suit: "clubs", rank: 3, value: 3 }],
         ],
         cardPositions: [
-          { x: -50, y: 10, rotation: -8, zIndex: 1 },
-          { x: -18, y: -5, rotation: -3, zIndex: 2 },
+          { x: -55, y: 12, rotation: -10, zIndex: 1 },
+          { x: -18, y: -8, rotation: -3, zIndex: 2 },
         ],
-        trickWinner: "player2",
+        trickWinner: "player1",
       };
-
       const { container } = renderWithContext(
         <GameTable {...propsWithWinner} />,
       );
-      const playedCards = container.querySelectorAll(".played-card");
+      const playedCards = container.querySelectorAll(".played-card-flex");
       expect(playedCards.length).toBe(2);
     });
   });
@@ -460,12 +459,12 @@ describe("GameTable", () => {
   });
 
   describe("player positions", () => {
-    it("should position top opponent at 15% from top", () => {
+    it("should position top opponent at 18% from top", () => {
       const { container } = renderWithContext(<GameTable {...defaultProps} />);
       const opponentTop = container
         .querySelector(".opponent-top")
         .closest("div[style]");
-      expect(opponentTop.style.top).toBe("15%");
+      expect(opponentTop.style.top).toBe("18%");
     });
 
     it("should position user hand at bottom", () => {
@@ -473,7 +472,7 @@ describe("GameTable", () => {
       const userHandArea = container
         .querySelector(".user-hand-area")
         .closest("div[style]");
-      expect(userHandArea.style.bottom).toBe("15%");
+      expect(userHandArea.style.bottom).toBe("18%");
     });
   });
 
@@ -514,17 +513,17 @@ describe("GameTable", () => {
           ],
         ],
         cardPositions: [
-          { x: -50, y: 10, rotation: -8, zIndex: 1 },
-          { x: -18, y: -5, rotation: -3, zIndex: 2 },
-          { x: 18, y: -5, rotation: 3, zIndex: 3 },
-          { x: 50, y: 10, rotation: 8, zIndex: 4 },
+          { x: -55, y: 12, rotation: -10, zIndex: 1 },
+          { x: -18, y: -8, rotation: -3, zIndex: 2 },
+          { x: 18, y: -8, rotation: 3, zIndex: 3 },
+          { x: 55, y: 12, rotation: 10, zIndex: 4 },
         ],
       };
 
       const { container } = renderWithContext(
         <GameTable {...allCardsPlayedProps} />,
       );
-      const playedCards = container.querySelectorAll(".played-card");
+      const playedCards = container.querySelectorAll(".played-card-flex");
       expect(playedCards.length).toBe(4);
     });
 

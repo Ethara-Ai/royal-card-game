@@ -4,7 +4,7 @@ import HeaderBranding from "./HeaderBranding";
 import ThemeToggle from "./ThemeToggle";
 import SettingsPanel from "./SettingsPanel";
 import HelpButton from "./HelpButton";
-import HowToPlayModal from "../HowToPlayModal";
+import HowToPlayModal from "./HowToPlayModal";
 
 /**
  * Header component - Main application header

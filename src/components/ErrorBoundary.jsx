@@ -350,12 +350,4 @@ ErrorBoundary.propTypes = {
   showDetails: PropTypes.bool,
 };
 
-ErrorBoundary.defaultProps = {
-  fallback: null,
-  componentName: "Unknown",
-  onError: null,
-  onReset: null,
-  showDetails: false,
-};
-
 export default ErrorBoundary;
