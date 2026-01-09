@@ -1,6 +1,8 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import PropTypes from "prop-types";
 import { getPlayerDisplayName } from "../utils/playerUtils";
+
+const DESKTOP_BREAKPOINT = 1024;
 
 const Leaderboard = ({
   players,
@@ -10,10 +12,32 @@ const Leaderboard = ({
   ruleSetName,
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isDesktop, setIsDesktop] = useState(
+    typeof window !== "undefined"
+      ? window.innerWidth >= DESKTOP_BREAKPOINT
+      : false,
+  );
+
+  // Listen for window resize to determine if we're on desktop
+  useEffect(() => {
+    const handleResize = () => {
+      const desktop = window.innerWidth >= DESKTOP_BREAKPOINT;
+      setIsDesktop(desktop);
+    };
+
+    // Set initial state
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const toggleCollapse = useCallback(() => {
-    setIsCollapsed((prev) => !prev);
-  }, []);
+    // Only allow collapsing on mobile
+    if (!isDesktop) {
+      setIsCollapsed((prev) => !prev);
+    }
+  }, [isDesktop]);
 
   const sortedPlayers = useMemo(
     () =>
@@ -27,7 +51,8 @@ const Leaderboard = ({
     [players, scores],
   );
 
-  if (isCollapsed) {
+  // On mobile, show collapsed state if isCollapsed is true
+  if (isCollapsed && !isDesktop) {
     return (
       <div className="leaderboard-container score-sidebar collapsed">
         <button
@@ -56,26 +81,31 @@ const Leaderboard = ({
   }
 
   return (
-    <div className="leaderboard-container score-sidebar expanded">
+    <div
+      className={`leaderboard-container score-sidebar expanded ${isDesktop ? "desktop-always-visible" : ""}`}
+    >
       <div className="leaderboard-panel">
         <div className="leaderboard-header">
           <span className="leaderboard-title">{ruleSetName}</span>
-          <button
-            className="leaderboard-close-btn"
-            onClick={toggleCollapse}
-            aria-label="Hide leaderboard"
-      >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+          {/* Only show close button on mobile */}
+          {!isDesktop && (
+            <button
+              className="leaderboard-close-btn"
+              onClick={toggleCollapse}
+              aria-label="Hide leaderboard"
             >
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-          </button>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+          )}
         </div>
         <div className="leaderboard-players">
           {sortedPlayers.map((player, index) => {
@@ -88,8 +118,8 @@ const Leaderboard = ({
                 style={{
                   background: "var(--color-panel-dark)",
                   border: isCurrentPlayer
-                      ? "1px solid var(--color-border-gold)"
-                      : "1px solid transparent",
+                    ? "1px solid var(--color-border-gold)"
+                    : "1px solid transparent",
                 }}
               >
                 <div className="leaderboard-rank">#{index + 1}</div>

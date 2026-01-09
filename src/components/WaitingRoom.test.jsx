@@ -637,18 +637,20 @@ describe("WaitingRoom", () => {
   });
 
   describe("responsive styling", () => {
-    it("should have responsive padding classes", () => {
+    it("should have waiting-room-panel with responsive styles", () => {
       const { container } = render(<WaitingRoom {...defaultProps} />);
-      const responsiveElement = container.querySelector(".p-4");
-      expect(
-        responsiveElement || container.querySelector(".p-3"),
-      ).toBeInTheDocument();
+      const panel = container.querySelector(".waiting-room-panel");
+      expect(panel).toBeInTheDocument();
+      // Panel should have inline styles for responsive sizing
+      expect(panel).toHaveAttribute("style");
     });
 
-    it("should have responsive text classes", () => {
+    it("should have game-title heading with responsive styles", () => {
       const { container } = render(<WaitingRoom {...defaultProps} />);
-      const responsiveText = container.querySelector(".text-xl");
-      expect(responsiveText).toBeInTheDocument();
+      const title = container.querySelector(".game-title");
+      expect(title).toBeInTheDocument();
+      // Title should have inline styles for responsive font sizing
+      expect(title).toHaveAttribute("style");
     });
   });
 });

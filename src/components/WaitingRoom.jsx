@@ -97,13 +97,14 @@ const WaitingRoom = ({
         justifyContent: "center",
         width: "100%",
         height: "100%",
-        minHeight: "calc(100vh - 120px)",
-        padding: "1rem",
+        minHeight: "calc(100dvh - 120px)",
+        padding: "clamp(0.5rem, 2vh, 1rem)",
         boxSizing: "border-box",
+        overflow: "auto",
       }}
     >
       <div
-        className="waiting-room-panel max-w-md p-4 sm:p-6 rounded-2xl bounce-in"
+        className="waiting-room-panel max-w-md rounded-2xl bounce-in"
         style={{
           background:
             "linear-gradient(180deg, var(--color-panel-light) 0%, var(--color-panel-base) 100%)",
@@ -111,21 +112,32 @@ const WaitingRoom = ({
           boxShadow: "var(--shadow-xl)",
           width: "100%",
           maxWidth: "28rem",
+          padding: "clamp(1rem, 2.5vh, 1.5rem) clamp(1.25rem, 3vw, 1.5rem)",
+          maxHeight: "calc(100dvh - 100px)",
+          overflowY: "auto",
         }}
       >
         <h2
-          className="text-xl sm:text-2xl font-semibold text-center mb-4 sm:mb-6 game-title"
-          style={{ color: "var(--color-text-gold)" }}
+          className="font-semibold text-center game-title"
+          style={{
+            color: "var(--color-text-gold)",
+            fontSize: "clamp(1.375rem, 3vh, 1.5rem)",
+            marginBottom: "clamp(0.75rem, 2vh, 1.5rem)",
+          }}
         >
           Waiting Room
         </h2>
 
         {/* Username Input Field */}
-        <div className="mb-4 sm:mb-5">
+        <div style={{ marginBottom: "clamp(0.75rem, 1.5vh, 1.25rem)" }}>
           <label
             htmlFor="username-input"
-            className="block text-xs font-medium uppercase tracking-wider mb-2"
-            style={{ color: "var(--color-text-gold)" }}
+            className="block font-medium uppercase tracking-wider"
+            style={{
+              color: "var(--color-text-gold)",
+              fontSize: "clamp(0.75rem, 1.4vh, 0.8125rem)",
+              marginBottom: "clamp(0.375rem, 0.8vh, 0.5rem)",
+            }}
           >
             Your Name{" "}
             <span style={{ color: "var(--color-accent-error)" }}>*</span>
@@ -138,7 +150,7 @@ const WaitingRoom = ({
             onKeyDown={handleKeyDown}
             placeholder="Enter your name..."
             maxLength={20}
-            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base transition-all duration-200 focus:outline-none"
+            className="w-full rounded-lg transition-all duration-200 focus:outline-none"
             style={{
               background: "var(--color-panel-dark)",
               border: showError
@@ -146,21 +158,32 @@ const WaitingRoom = ({
                 : "1px solid var(--color-border-default)",
               color: "var(--color-text-primary)",
               boxShadow: "inset 0 2px 4px rgba(0, 0, 0, 0.1)",
+              padding:
+                "clamp(0.625rem, 1.4vh, 0.75rem) clamp(0.75rem, 1.5vw, 1rem)",
+              fontSize: "clamp(0.9375rem, 1.8vh, 1rem)",
             }}
           />
           <p
-            className="text-xs mt-1.5"
-            style={{ color: "var(--color-text-primary)" }}
+            style={{
+              color: "var(--color-text-primary)",
+              fontSize: "clamp(0.75rem, 1.3vh, 0.8125rem)",
+              marginTop: "clamp(0.25rem, 0.5vh, 0.375rem)",
+              lineHeight: "1.4",
+            }}
           >
             This name will appear in scoreboards and victory messages
           </p>
         </div>
 
         {/* Game Rule Selection - Custom Dropdown */}
-        <div className="mb-4 sm:mb-5">
+        <div style={{ marginBottom: "clamp(0.75rem, 1.5vh, 1.25rem)" }}>
           <label
-            className="block text-xs font-medium uppercase tracking-wider mb-2"
-            style={{ color: "var(--color-text-gold)" }}
+            className="block font-medium uppercase tracking-wider"
+            style={{
+              color: "var(--color-text-gold)",
+              fontSize: "clamp(0.75rem, 1.4vh, 0.8125rem)",
+              marginBottom: "clamp(0.375rem, 0.8vh, 0.5rem)",
+            }}
           >
             Select Game Mode
           </label>
@@ -170,24 +193,32 @@ const WaitingRoom = ({
               id="rule-set-select"
               type="button"
               onClick={handleToggleDropdown}
-              className="w-full rounded-lg overflow-hidden flex items-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 cursor-pointer transition-all duration-200 hover:brightness-110"
+              className="w-full rounded-lg overflow-hidden flex items-center gap-2 cursor-pointer transition-all duration-200 hover:brightness-110"
               style={{
                 background: "var(--color-panel-dark)",
                 border: "1px solid var(--color-border-default)",
                 boxShadow: "inset 0 2px 4px rgba(0, 0, 0, 0.1)",
+                padding:
+                  "clamp(0.625rem, 1.4vh, 0.75rem) clamp(0.75rem, 1.5vw, 1rem)",
               }}
               aria-haspopup="listbox"
               aria-expanded={showDropdown}
             >
               <span
-                className="text-sm font-medium flex-1 text-left"
-                style={{ color: "var(--color-text-primary)" }}
+                className="font-medium flex-1 text-left"
+                style={{
+                  color: "var(--color-text-primary)",
+                  fontSize: "clamp(0.9375rem, 1.8vh, 1rem)",
+                }}
               >
                 {currentRuleSet?.name || "Select a rule set"}
               </span>
               <FaChevronDown
                 className={`transition-transform duration-200 ${showDropdown ? "rotate-180" : ""}`}
-                style={{ color: "var(--color-text-muted)", fontSize: "12px" }}
+                style={{
+                  color: "var(--color-text-muted)",
+                  fontSize: "clamp(0.625rem, 1.1vh, 0.75rem)",
+                }}
               />
             </button>
 
@@ -247,25 +278,32 @@ const WaitingRoom = ({
                         >
                           {selectedRuleSet === index && (
                             <FaCheck
-                              style={{ color: "#1a1a2e", fontSize: "10px" }}
+                              style={{
+                                color: "#1a1a2e",
+                                fontSize: "clamp(0.5rem, 1vh, 0.625rem)",
+                              }}
                             />
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div
-                            className="font-semibold text-sm transition-colors duration-200"
+                            className="font-semibold transition-colors duration-200"
                             style={{
                               color:
                                 selectedRuleSet === index
                                   ? "var(--color-text-gold)"
                                   : "var(--color-text-primary)",
+                              fontSize: "clamp(0.8125rem, 1.5vh, 0.9375rem)",
                             }}
                           >
                             {rule.name}
                           </div>
                           <div
-                            className="text-xs mt-1 leading-relaxed"
-                            style={{ color: "var(--color-text-primary)" }}
+                            className="mt-1 leading-relaxed"
+                            style={{
+                              color: "var(--color-text-primary)",
+                              fontSize: "clamp(0.75rem, 1.3vh, 0.8125rem)",
+                            }}
                           >
                             {rule.description}
                           </div>
@@ -280,24 +318,30 @@ const WaitingRoom = ({
           {/* Current rule description shown below dropdown when closed */}
           {!showDropdown && currentRuleSet && (
             <p
-              className="text-xs mt-1.5 flex items-center gap-1.5"
-              style={{ color: "var(--color-text-primary)" }}
+              style={{
+                color: "var(--color-text-primary)",
+                fontSize: "clamp(0.75rem, 1.3vh, 0.8125rem)",
+                marginTop: "clamp(0.25rem, 0.5vh, 0.375rem)",
+                lineHeight: "1.4",
+              }}
             >
-              <span
-                className="inline-block w-1.5 h-1.5 rounded-full"
-                style={{ background: "var(--color-gold-base)" }}
-              />
               {currentRuleSet.description}
             </p>
           )}
         </div>
 
         {/* Players Grid */}
-        <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-4 sm:mb-6">
+        <div
+          className="grid grid-cols-2"
+          style={{
+            gap: "clamp(0.5rem, 1.2vh, 0.75rem)",
+            marginBottom: "clamp(0.75rem, 1.5vh, 1.5rem)",
+          }}
+        >
           {players.map((player, index) => (
             <div
               key={player.id}
-              className="p-2 sm:p-4 rounded-xl transition-all duration-500 hover:scale-105"
+              className="rounded-xl transition-all duration-500 hover:scale-105"
               style={{
                 background: "var(--color-panel-dark)",
                 border:
@@ -306,29 +350,46 @@ const WaitingRoom = ({
                     : "1px solid var(--color-border-subtle)",
                 boxShadow:
                   index === 0 ? "0 0 12px rgba(201, 162, 39, 0.1)" : "none",
+                padding: "clamp(0.5rem, 1.2vh, 1rem)",
               }}
             >
               <div className="text-center">
                 <img
                   src={`https://robohash.org/${player.name}?set=set4&size=48x48`}
                   alt={player.name}
-                  className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 rounded-lg pixel-art"
-                  style={{ background: "var(--color-bg-elevated)" }}
+                  className="mx-auto rounded-lg pixel-art"
+                  style={{
+                    background: "var(--color-bg-elevated)",
+                    width: "clamp(2.5rem, 5vh, 3rem)",
+                    height: "clamp(2.5rem, 5vh, 3rem)",
+                    marginBottom: "clamp(0.375rem, 0.8vh, 0.5rem)",
+                  }}
                 />
                 <div
-                  className="font-semibold text-xs sm:text-sm truncate"
-                  style={{ color: "var(--color-text-primary)" }}
+                  className="font-medium truncate"
+                  style={{
+                    color: "var(--color-text-primary)",
+                    fontSize: "clamp(0.8125rem, 1.5vh, 0.9375rem)",
+                  }}
                 >
                   {getPlayerDisplayName(player)}
                 </div>
                 <div
-                  className="text-xs flex items-center justify-center gap-1 mt-1"
-                  style={{ color: "var(--color-accent-success)" }}
+                  className="flex items-center justify-center gap-1 font-normal"
+                  style={{
+                    color: "var(--color-accent-success)",
+                    fontSize: "clamp(0.75rem, 1.3vh, 0.8125rem)",
+                    marginTop: "clamp(0.1875rem, 0.4vh, 0.25rem)",
+                  }}
                 >
                   {index === 0 ? (
-                    <FaUser className="text-xs" />
+                    <FaUser
+                      style={{ fontSize: "clamp(0.625rem, 1.1vh, 0.75rem)" }}
+                    />
                   ) : (
-                    <FaRobot className="text-xs" />
+                    <FaRobot
+                      style={{ fontSize: "clamp(0.625rem, 1.1vh, 0.75rem)" }}
+                    />
                   )}
                   Ready
                 </div>
@@ -346,7 +407,7 @@ const WaitingRoom = ({
             }
           }}
           disabled={false}
-          className="w-full px-3 sm:px-4 py-3 sm:py-3.5 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2 start-game-btn"
+          className="w-full rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2 start-game-btn"
           style={{
             background: isUsernameValid
               ? "linear-gradient(135deg, var(--color-felt-light) 0%, var(--color-felt-base) 100%)"
@@ -361,6 +422,9 @@ const WaitingRoom = ({
             border: isUsernameValid
               ? "1px solid rgba(255, 255, 255, 0.1)"
               : "1px solid var(--color-border-subtle)",
+            padding:
+              "clamp(0.625rem, 1.4vh, 0.875rem) clamp(0.75rem, 1.5vw, 1rem)",
+            fontSize: "clamp(0.9375rem, 1.8vh, 1rem)",
           }}
           onMouseEnter={(e) => {
             if (isUsernameValid) {

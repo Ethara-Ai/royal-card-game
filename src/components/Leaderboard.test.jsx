@@ -3,11 +3,32 @@
  * Tests rendering, player sorting, scores, and current player highlighting
  */
 
-import { describe, it, expect, vi, afterEach } from "vitest";
+import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import Leaderboard from "./Leaderboard";
 
 describe("Leaderboard", () => {
+  // Mock window.innerWidth to simulate mobile view (below 1024px breakpoint)
+  const originalInnerWidth = window.innerWidth;
+
+  beforeEach(() => {
+    // Set mobile width by default for tests
+    Object.defineProperty(window, "innerWidth", {
+      writable: true,
+      configurable: true,
+      value: 768,
+    });
+  });
+
+  afterEach(() => {
+    // Restore original window width
+    Object.defineProperty(window, "innerWidth", {
+      writable: true,
+      configurable: true,
+      value: originalInnerWidth,
+    });
+  });
+
   const defaultProps = {
     players: [
       { id: "player1", name: "You", hand: [], score: 0, isActive: true },
@@ -28,10 +49,6 @@ describe("Leaderboard", () => {
     });
     fireEvent.click(expandButton);
   };
-
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
 
   describe("collapsed state", () => {
     it("should render in collapsed state by default", () => {
@@ -552,6 +569,65 @@ describe("Leaderboard", () => {
       });
       fireEvent.click(collapseButton);
       expect(container.querySelector(".collapsed")).toBeInTheDocument();
+    });
+  });
+
+  describe("desktop always-visible behavior", () => {
+    it("should show expanded leaderboard by default on desktop", () => {
+      // Set desktop width
+      Object.defineProperty(window, "innerWidth", {
+        writable: true,
+        configurable: true,
+        value: 1024,
+      });
+
+      const { container } = render(<Leaderboard {...defaultProps} />);
+      const expanded = container.querySelector(".expanded");
+      expect(expanded).toBeInTheDocument();
+    });
+
+    it("should have desktop-always-visible class on desktop", () => {
+      // Set desktop width
+      Object.defineProperty(window, "innerWidth", {
+        writable: true,
+        configurable: true,
+        value: 1280,
+      });
+
+      const { container } = render(<Leaderboard {...defaultProps} />);
+      const desktopVisible = container.querySelector(".desktop-always-visible");
+      expect(desktopVisible).toBeInTheDocument();
+    });
+
+    it("should not show close button on desktop", () => {
+      // Set desktop width
+      Object.defineProperty(window, "innerWidth", {
+        writable: true,
+        configurable: true,
+        value: 1024,
+      });
+
+      render(<Leaderboard {...defaultProps} />);
+      const closeButton = screen.queryByRole("button", {
+        name: /hide leaderboard/i,
+      });
+      expect(closeButton).not.toBeInTheDocument();
+    });
+
+    it("should show all player scores on desktop without interaction", () => {
+      // Set desktop width
+      Object.defineProperty(window, "innerWidth", {
+        writable: true,
+        configurable: true,
+        value: 1024,
+      });
+
+      render(<Leaderboard {...defaultProps} />);
+      // Should see all scores without needing to expand
+      expect(screen.getByText("5")).toBeInTheDocument();
+      expect(screen.getByText("4")).toBeInTheDocument();
+      expect(screen.getByText("3")).toBeInTheDocument();
+      expect(screen.getByText("2")).toBeInTheDocument();
     });
   });
 });
