@@ -103,7 +103,7 @@ class ErrorBoundary extends Component {
           alignItems: "center",
           justifyContent: "center",
           padding: "2rem",
-          background: "var(--color-bg-base, #1a1a2e)",
+          background: "var(--color-bg-base, #0a0a0a)",
         }}
       >
         <div
@@ -112,8 +112,8 @@ class ErrorBoundary extends Component {
             width: "100%",
             padding: "2rem",
             borderRadius: "1rem",
-            background: "var(--color-panel-base, #16213e)",
-            border: "1px solid var(--color-border-default, #0f3460)",
+            background: "var(--color-panel-base, #242424)",
+            border: "1px solid var(--color-border-default, #3a3a3a)",
             boxShadow: "0 10px 40px rgba(0, 0, 0, 0.3)",
           }}
         >
@@ -206,14 +206,14 @@ class ErrorBoundary extends Component {
                 fontSize: "0.95rem",
                 fontWeight: "600",
                 borderRadius: "0.5rem",
-                border: "1px solid var(--color-border-default, #0f3460)",
+                border: "1px solid var(--color-border-default, #3a3a3a)",
                 cursor: "pointer",
                 background: "transparent",
                 color: "var(--color-text-primary, #ffffff)",
                 transition: "all 0.2s",
               }}
               onMouseEnter={(e) => {
-                e.target.style.background = "var(--color-panel-dark, #0f1729)";
+                e.target.style.background = "var(--color-panel-dark, #1c1c1c)";
               }}
               onMouseLeave={(e) => {
                 e.target.style.background = "transparent";
@@ -230,8 +230,8 @@ class ErrorBoundary extends Component {
                 marginTop: "1.5rem",
                 padding: "1rem",
                 borderRadius: "0.5rem",
-                background: "var(--color-panel-dark, #0f1729)",
-                border: "1px solid var(--color-border-subtle, #1a2744)",
+                background: "var(--color-panel-dark, #1c1c1c)",
+                border: "1px solid var(--color-border-subtle, #2e2e2e)",
               }}
             >
               <summary

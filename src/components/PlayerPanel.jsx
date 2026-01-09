@@ -45,21 +45,21 @@ const PlayerPanel = ({
         return {
           ...baseStyle,
           background: "linear-gradient(135deg, #FFD700 0%, #F4A020 100%)",
-          color: "#1a1a2e",
+          color: "#1a1a1a",
           border: "1px solid rgba(255, 215, 0, 0.5)",
         };
       case 2:
         return {
           ...baseStyle,
           background: "linear-gradient(135deg, #E0E0E0 0%, #A8A8A8 100%)",
-          color: "#1a1a2e",
+          color: "#1a1a1a",
           border: "1px solid rgba(192, 192, 192, 0.5)",
         };
       case 3:
         return {
           ...baseStyle,
           background: "linear-gradient(135deg, #D4A574 0%, #B8860B 100%)",
-          color: "#1a1a2e",
+          color: "#1a1a1a",
           border: "1px solid rgba(205, 127, 50, 0.5)",
         };
       default:
@@ -150,28 +150,107 @@ const PlayerPanel = ({
         </div>
       </div>
 
-      {/* Card Backs Row */}
-      <div className="card-backs flex gap-0.5 justify-center">
-        {Array.from({ length: Math.min(player.hand.length, 5) }, (_, i) => {
-          const patternStyles = getPatternStyle(cardBackPattern, cardBackColor);
-          return (
+      {/* Card Backs Row - Compact Deck Display */}
+      <div className="card-backs flex justify-center items-center">
+        <div
+          className="card-deck-container"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "clamp(6px, 1.5vw, 10px)",
+          }}
+        >
+          {/* Stacked Card Deck Visual */}
+          <div
+            style={{
+              position: "relative",
+              width: "clamp(28px, 5vw, 36px)",
+              height: "clamp(36px, 6.5vw, 48px)",
+            }}
+          >
+            {/* Show max 4 cards for the stack effect */}
+            {Array.from({ length: Math.min(player.hand.length, 4) }, (_, i) => {
+              const patternStyles = getPatternStyle(
+                cardBackPattern,
+                cardBackColor,
+              );
+              const stackOffset = i * 2; // 2px offset per card
+              const isTopCard = i === Math.min(player.hand.length, 4) - 1;
+
+              return (
+                <div
+                  key={i}
+                  className={`card-stack-item ${isDealing ? "card-deal-in" : ""}`}
+                  style={{
+                    position: "absolute",
+                    left: `${stackOffset}px`,
+                    top: `${stackOffset}px`,
+                    backgroundColor: cardBackColor,
+                    backgroundImage: patternStyles.backgroundImage,
+                    backgroundSize: patternStyles.backgroundSize,
+                    animationDelay: `${i * 0.1}s`,
+                    width: "clamp(22px, 4vw, 28px)",
+                    height: "clamp(30px, 5.5vw, 40px)",
+                    borderRadius: "clamp(2px, 0.4vw, 3px)",
+                    border: "1px solid var(--color-border-default)",
+                    boxShadow: isTopCard
+                      ? "0 2px 6px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15)"
+                      : "0 1px 2px rgba(0, 0, 0, 0.2)",
+                    zIndex: i,
+                    transition: "all 0.3s ease",
+                  }}
+                />
+              );
+            })}
+          </div>
+
+          {/* Card Count Display */}
+          {player.hand.length > 0 && (
             <div
-              key={i}
-              className={`transition-all duration-300 ${isDealing ? "card-deal-in" : ""}`}
+              className="card-count-display"
               style={{
-                backgroundColor: cardBackColor,
-                backgroundImage: patternStyles.backgroundImage,
-                backgroundSize: patternStyles.backgroundSize,
-                animationDelay: `${i * 0.1}s`,
-                width: "clamp(14px, 3vw, 20px)",
-                height: "clamp(20px, 4.2vw, 28px)",
-                borderRadius: "2px",
-                border: "1px solid var(--color-border-default)",
-                boxShadow: "var(--shadow-sm)",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                background:
+                  "linear-gradient(135deg, var(--color-gold-base) 0%, var(--color-gold-dark) 100%)",
+                borderRadius: "clamp(4px, 0.8vw, 6px)",
+                padding: "clamp(3px, 0.6vw, 5px) clamp(6px, 1vw, 10px)",
+                boxShadow:
+                  "0 2px 6px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25)",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+                minWidth: "clamp(24px, 4vw, 32px)",
               }}
-            />
-          );
-        })}
+              title={`${player.hand.length} cards in hand`}
+            >
+              <span
+                style={{
+                  color: "#1a1a1a",
+                  fontSize: "clamp(11px, 2.2vw, 15px)",
+                  fontWeight: "800",
+                  lineHeight: 1,
+                  textShadow: "0 1px 0 rgba(255, 255, 255, 0.3)",
+                }}
+              >
+                {player.hand.length}
+              </span>
+              <span
+                style={{
+                  color: "rgba(26, 26, 26, 0.7)",
+                  fontSize: "clamp(6px, 1.2vw, 8px)",
+                  fontWeight: "600",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.02em",
+                  lineHeight: 1,
+                  marginTop: "1px",
+                }}
+              >
+                cards
+              </span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

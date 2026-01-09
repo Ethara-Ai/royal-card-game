@@ -47,21 +47,21 @@ const UserHand = ({
         return {
           ...baseStyle,
           background: "linear-gradient(135deg, #FFD700 0%, #F4A020 100%)",
-          color: "#1a1a2e",
+          color: "#1a1a1a",
           border: "1px solid rgba(255, 215, 0, 0.5)",
         };
       case 2:
         return {
           ...baseStyle,
           background: "linear-gradient(135deg, #E0E0E0 0%, #A8A8A8 100%)",
-          color: "#1a1a2e",
+          color: "#1a1a1a",
           border: "1px solid rgba(192, 192, 192, 0.5)",
         };
       case 3:
         return {
           ...baseStyle,
           background: "linear-gradient(135deg, #D4A574 0%, #B8860B 100%)",
-          color: "#1a1a2e",
+          color: "#1a1a1a",
           border: "1px solid rgba(205, 127, 50, 0.5)",
         };
       default:

@@ -77,21 +77,21 @@
   --font-display: "Cormorant Garamond", Georgia, serif;
   --font-body: "Outfit", system-ui, sans-serif;
 
-  --color-bg-deep: #080a0e;
-  --color-bg-base: #0c0f14;
-  --color-bg-surface: #12161e;
-  --color-bg-elevated: #1a1f2a;
-  --color-bg-overlay: rgba(8, 10, 14, 0.9);
+  --color-bg-deep: #050505;
+  --color-bg-base: #0a0a0a;
+  --color-bg-surface: #121212;
+  --color-bg-elevated: #1a1a1a;
+  --color-bg-overlay: rgba(5, 5, 5, 0.9);
 
   --color-felt-dark: #0a3328;
   --color-felt-base: #0f4a3a;
   --color-felt-light: #15624d;
   --color-felt-highlight: #1a7a60;
 
-  --color-panel-dark: #1e2436;
-  --color-panel-base: #262e42;
-  --color-panel-light: #303a52;
-  --color-panel-hover: #3a4662;
+  --color-panel-dark: #1c1c1c;
+  --color-panel-base: #242424;
+  --color-panel-light: #2e2e2e;
+  --color-panel-hover: #3a3a3a;
 
   --color-gold-dark: #8b6914;
   --color-gold-base: #c9a227;
@@ -108,13 +108,13 @@
   --color-text-secondary: #d1d1d6;
   --color-text-muted: #8e8e93;
   --color-text-gold: #f0d060;
-  --color-text-inverse: #0c0f14;
+  --color-text-inverse: #0a0a0a;
   --color-text-on-felt: rgba(255, 255, 255, 0.9);
   --color-text-on-felt-muted: rgba(255, 255, 255, 0.65);
 
-  --color-border-subtle: rgba(255, 255, 255, 0.08);
-  --color-border-default: rgba(255, 255, 255, 0.15);
-  --color-border-strong: rgba(255, 255, 255, 0.25);
+  --color-border-subtle: rgba(255, 255, 255, 0.1);
+  --color-border-default: rgba(255, 255, 255, 0.18);
+  --color-border-strong: rgba(255, 255, 255, 0.28);
   --color-border-gold: rgba(201, 162, 39, 0.5);
 
   --color-card-white: #ffffff;

@@ -667,15 +667,78 @@ button {
   max-width: 100%;
 }
 
-/* Base card backs styling for opponent panels */
+/* Base card backs styling for opponent panels - Compact Deck Layout */
 .opponent-panel .card-backs {
   display: flex !important;
-  gap: 2px;
+  justify-content: center;
+  align-items: center;
+  padding: clamp(4px, 0.8vw, 8px) 0;
 }
 
-.opponent-panel .card-backs > div {
-  min-width: 12px;
-  min-height: 17px;
+.opponent-panel .card-deck-container {
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 1.5vw, 10px);
+}
+
+/* Card stack styling */
+.opponent-panel .card-stack-item {
+  transition:
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.3s ease,
+    filter 0.3s ease;
+}
+
+/* Hover effect - lift the top card */
+.opponent-panel:hover .card-stack-item:last-child {
+  transform: translateY(-2px);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+  filter: brightness(1.08);
+}
+
+/* Card count display styling */
+.opponent-panel .card-count-display {
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.opponent-panel:hover .card-count-display {
+  transform: scale(1.05);
+  box-shadow:
+    0 3px 10px rgba(201, 162, 39, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Active player card glow effect */
+.opponent-panel.player-turn-indicator .card-stack-item {
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.4),
+    0 0 15px rgba(52, 199, 89, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.opponent-panel.player-turn-indicator .card-count-display {
+  box-shadow:
+    0 2px 10px rgba(52, 199, 89, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+/* Subtle pulse animation for active player's cards */
+@keyframes cardPulse {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.1);
+  }
+}
+
+.opponent-panel.player-turn-indicator .card-stack-item:last-child {
+  animation: cardPulse 2s ease-in-out infinite;
 }
 
 /* Game Banner - Aligned with Leaderboard */
@@ -1109,7 +1172,7 @@ button {
 }
 
 [data-theme="dark"] .turn-instruction-content {
-  background: rgba(30, 32, 38, 0.98);
+  background: rgba(30, 30, 30, 0.98);
 }
 
 .turn-instruction-header {
@@ -1485,9 +1548,22 @@ button {
     padding: 6px 8px !important;
   }
 
-  .opponent-panel .card-backs > div {
-    width: 16px !important;
-    height: 22px !important;
+  .opponent-panel .card-stack-item {
+    width: 24px !important;
+    height: 34px !important;
+  }
+
+  .opponent-panel .card-count-display {
+    padding: 4px 8px !important;
+    min-width: 28px !important;
+  }
+
+  .opponent-panel .card-count-display span:first-child {
+    font-size: 13px !important;
+  }
+
+  .opponent-panel .card-count-display span:last-child {
+    font-size: 7px !important;
   }
 
   .play-area-drop {
@@ -1507,9 +1583,22 @@ button {
     padding: 5px 7px !important;
   }
 
-  .opponent-panel .card-backs > div {
-    width: 14px !important;
-    height: 20px !important;
+  .opponent-panel .card-stack-item {
+    width: 22px !important;
+    height: 32px !important;
+  }
+
+  .opponent-panel .card-count-display {
+    padding: 3px 7px !important;
+    min-width: 26px !important;
+  }
+
+  .opponent-panel .card-count-display span:first-child {
+    font-size: 12px !important;
+  }
+
+  .opponent-panel .card-count-display span:last-child {
+    font-size: 6px !important;
   }
 
   .hand-card .card-inner {
@@ -1633,13 +1722,22 @@ button {
     padding: 4px 6px !important;
   }
 
-  .opponent-panel .card-backs {
-    gap: 1px !important;
+  .opponent-panel .card-stack-item {
+    width: 20px !important;
+    height: 28px !important;
   }
 
-  .opponent-panel .card-backs > div {
-    width: 13px !important;
-    height: 18px !important;
+  .opponent-panel .card-count-display {
+    padding: 3px 6px !important;
+    min-width: 24px !important;
+  }
+
+  .opponent-panel .card-count-display span:first-child {
+    font-size: 11px !important;
+  }
+
+  .opponent-panel .card-count-display span:last-child {
+    font-size: 6px !important;
   }
 
   .hand-card .card-inner {
@@ -1724,13 +1822,22 @@ button {
     padding: 4px 6px !important;
   }
 
-  .opponent-panel .card-backs {
-    gap: 1px !important;
+  .opponent-panel .card-stack-item {
+    width: 20px !important;
+    height: 28px !important;
   }
 
-  .opponent-panel .card-backs > div {
-    width: 13px !important;
-    height: 18px !important;
+  .opponent-panel .card-count-display {
+    padding: 3px 6px !important;
+    min-width: 24px !important;
+  }
+
+  .opponent-panel .card-count-display span:first-child {
+    font-size: 11px !important;
+  }
+
+  .opponent-panel .card-count-display span:last-child {
+    font-size: 6px !important;
   }
 
   .hand-card .card-inner {
@@ -1801,14 +1908,26 @@ button {
     padding: 3px 5px !important;
   }
 
-  .opponent-panel .card-backs {
-    display: flex !important;
-    gap: 1px !important;
+  .opponent-panel .card-deck-container {
+    gap: 5px !important;
   }
 
-  .opponent-panel .card-backs > div {
-    width: 11px !important;
-    height: 16px !important;
+  .opponent-panel .card-stack-item {
+    width: 18px !important;
+    height: 26px !important;
+  }
+
+  .opponent-panel .card-count-display {
+    padding: 2px 5px !important;
+    min-width: 22px !important;
+  }
+
+  .opponent-panel .card-count-display span:first-child {
+    font-size: 10px !important;
+  }
+
+  .opponent-panel .card-count-display span:last-child {
+    font-size: 5px !important;
   }
 
   .opponent-panel .text-xs {
@@ -1951,14 +2070,27 @@ button {
     font-size: 8px !important;
   }
 
-  .opponent-panel .card-backs {
-    display: flex !important;
-    gap: 1px !important;
+  .opponent-panel .card-deck-container {
+    gap: 4px !important;
   }
 
-  .opponent-panel .card-backs > div {
-    width: 10px !important;
-    height: 14px !important;
+  .opponent-panel .card-stack-item {
+    width: 16px !important;
+    height: 22px !important;
+  }
+
+  .opponent-panel .card-count-display {
+    padding: 2px 4px !important;
+    min-width: 20px !important;
+    border-radius: 3px !important;
+  }
+
+  .opponent-panel .card-count-display span:first-child {
+    font-size: 9px !important;
+  }
+
+  .opponent-panel .card-count-display span:last-child {
+    font-size: 5px !important;
   }
 
   .hand-card .card-inner {
@@ -2112,14 +2244,27 @@ button {
     padding: 2px 3px !important;
   }
 
-  .opponent-panel .card-backs {
-    display: flex !important;
-    gap: 1px !important;
+  .opponent-panel .card-deck-container {
+    gap: 3px !important;
   }
 
-  .opponent-panel .card-backs > div {
-    width: 8px !important;
-    height: 11px !important;
+  .opponent-panel .card-stack-item {
+    width: 14px !important;
+    height: 20px !important;
+  }
+
+  .opponent-panel .card-count-display {
+    padding: 2px 3px !important;
+    min-width: 18px !important;
+    border-radius: 3px !important;
+  }
+
+  .opponent-panel .card-count-display span:first-child {
+    font-size: 8px !important;
+  }
+
+  .opponent-panel .card-count-display span:last-child {
+    display: none !important;
   }
 
   .hand-card .card-inner {
@@ -2672,7 +2817,7 @@ button {
   );
   border: none;
   border-radius: var(--radius-md);
-  color: #1a1a2e;
+  color: #1a1a1a;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
@@ -2685,7 +2830,7 @@ button {
 }
 
 .landscape-menu-reset .landscape-menu-icon {
-  color: #1a1a2e;
+  color: #1a1a1a;
   font-size: 11px;
 }
 
@@ -2724,14 +2869,26 @@ button {
     max-width: 100px !important;
   }
 
-  .opponent-panel .card-backs {
-    display: flex !important;
-    gap: 1px !important;
+  .opponent-panel .card-deck-container {
+    gap: 4px !important;
   }
 
-  .opponent-panel .card-backs > div {
-    width: 11px !important;
-    height: 16px !important;
+  .opponent-panel .card-stack-item {
+    width: 16px !important;
+    height: 22px !important;
+  }
+
+  .opponent-panel .card-count-display {
+    padding: 2px 4px !important;
+    min-width: 20px !important;
+  }
+
+  .opponent-panel .card-count-display span:first-child {
+    font-size: 9px !important;
+  }
+
+  .opponent-panel .card-count-display span:last-child {
+    font-size: 5px !important;
   }
 
   .opponent-left {
@@ -3058,14 +3215,26 @@ button {
     min-width: 70px !important;
   }
 
-  .opponent-panel .card-backs {
-    display: flex !important;
-    gap: 1px !important;
+  .opponent-panel .card-deck-container {
+    gap: 3px !important;
   }
 
-  .opponent-panel .card-backs > div {
-    width: 10px !important;
-    height: 14px !important;
+  .opponent-panel .card-stack-item {
+    width: 14px !important;
+    height: 20px !important;
+  }
+
+  .opponent-panel .card-count-display {
+    padding: 2px 3px !important;
+    min-width: 18px !important;
+  }
+
+  .opponent-panel .card-count-display span:first-child {
+    font-size: 8px !important;
+  }
+
+  .opponent-panel .card-count-display span:last-child {
+    display: none !important;
   }
 
   .opponent-panel .font-semibold {

@@ -294,7 +294,7 @@ const WaitingRoom = ({
                             {selectedRuleSet === index && (
                               <FaCheck
                                 style={{
-                                  color: "#1a1a2e",
+                                  color: "#1a1a1a",
                                   fontSize: "clamp(0.5rem, 1vh, 0.625rem)",
                                 }}
                               />

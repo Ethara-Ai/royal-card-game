@@ -1,6 +1,6 @@
 /**
  * Unit tests for PlayerPanel component
- * Tests rendering, player display, card backs, and current player highlighting
+ * Tests rendering, player display, card deck stack, card count, and current player highlighting
  */
 
 import { describe, it, expect, vi, afterEach } from "vitest";
@@ -109,17 +109,17 @@ describe("PlayerPanel", () => {
     });
   });
 
-  describe("card backs", () => {
-    it("should render card backs for cards in hand", () => {
+  describe("card deck stack", () => {
+    it("should render card stack items for cards in hand", () => {
       const { container } = renderWithContext(
         <PlayerPanel {...defaultProps} />,
       );
-      const cardBacks = container.querySelectorAll(".card-backs > div");
-      // Should show up to 5 card backs (minimum of hand size and 5)
-      expect(cardBacks.length).toBe(3);
+      const cardStackItems = container.querySelectorAll(".card-stack-item");
+      // Should show cards in hand (3 cards)
+      expect(cardStackItems.length).toBe(3);
     });
 
-    it("should limit card backs to maximum of 5", () => {
+    it("should limit card stack items to maximum of 4", () => {
       const manyCardsProps = {
         ...defaultProps,
         player: {
@@ -138,22 +138,22 @@ describe("PlayerPanel", () => {
       const { container } = renderWithContext(
         <PlayerPanel {...manyCardsProps} />,
       );
-      const cardBacks = container.querySelectorAll(".card-backs > div");
-      expect(cardBacks.length).toBe(5);
+      const cardStackItems = container.querySelectorAll(".card-stack-item");
+      expect(cardStackItems.length).toBe(4);
     });
 
     it("should apply card back color from context", () => {
       const { container } = renderWithContext(
         <PlayerPanel {...defaultProps} />,
       );
-      const cardBacks = container.querySelectorAll(".card-backs > div");
+      const cardStackItems = container.querySelectorAll(".card-stack-item");
       // Default color from context is #145a4a = rgb(20, 90, 74)
-      cardBacks.forEach((cardBack) => {
-        expect(cardBack.style.backgroundColor).toBe("rgb(20, 90, 74)");
+      cardStackItems.forEach((cardItem) => {
+        expect(cardItem.style.backgroundColor).toBe("rgb(20, 90, 74)");
       });
     });
 
-    it("should render no card backs when hand is empty", () => {
+    it("should render no card stack items when hand is empty", () => {
       const emptyHandProps = {
         ...defaultProps,
         player: {
@@ -164,18 +164,117 @@ describe("PlayerPanel", () => {
       const { container } = renderWithContext(
         <PlayerPanel {...emptyHandProps} />,
       );
-      const cardBacks = container.querySelectorAll(".card-backs > div");
-      expect(cardBacks.length).toBe(0);
+      const cardStackItems = container.querySelectorAll(".card-stack-item");
+      expect(cardStackItems.length).toBe(0);
     });
 
-    it("should have animation delay for each card", () => {
+    it("should have animation delay for each card in stack", () => {
       const { container } = renderWithContext(
         <PlayerPanel {...defaultProps} />,
       );
-      const cardBacks = container.querySelectorAll(".card-backs > div");
-      cardBacks.forEach((cardBack, index) => {
-        expect(cardBack.style.animationDelay).toBe(`${index * 0.1}s`);
+      const cardStackItems = container.querySelectorAll(".card-stack-item");
+      cardStackItems.forEach((cardItem, index) => {
+        expect(cardItem.style.animationDelay).toBe(`${index * 0.1}s`);
       });
+    });
+
+    it("should have stacked positioning with offset", () => {
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} />,
+      );
+      const cardStackItems = container.querySelectorAll(".card-stack-item");
+      cardStackItems.forEach((cardItem, index) => {
+        const expectedOffset = index * 2;
+        expect(cardItem.style.left).toBe(`${expectedOffset}px`);
+        expect(cardItem.style.top).toBe(`${expectedOffset}px`);
+      });
+    });
+
+    it("should have increasing z-index for stacked cards", () => {
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} />,
+      );
+      const cardStackItems = container.querySelectorAll(".card-stack-item");
+      cardStackItems.forEach((cardItem, index) => {
+        expect(cardItem.style.zIndex).toBe(String(index));
+      });
+    });
+  });
+
+  describe("card count display", () => {
+    it("should display card count when player has cards", () => {
+      renderWithContext(<PlayerPanel {...defaultProps} />);
+      // Player has 3 cards
+      expect(screen.getByText("3")).toBeInTheDocument();
+    });
+
+    it("should display 'cards' label", () => {
+      renderWithContext(<PlayerPanel {...defaultProps} />);
+      expect(screen.getByText("cards")).toBeInTheDocument();
+    });
+
+    it("should have card count display container", () => {
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} />,
+      );
+      const cardCountDisplay = container.querySelector(".card-count-display");
+      expect(cardCountDisplay).toBeInTheDocument();
+    });
+
+    it("should have tooltip with card count", () => {
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} />,
+      );
+      const cardCountDisplay = container.querySelector(".card-count-display");
+      expect(cardCountDisplay).toHaveAttribute("title", "3 cards in hand");
+    });
+
+    it("should not display card count when hand is empty", () => {
+      const emptyHandProps = {
+        ...defaultProps,
+        player: {
+          ...defaultProps.player,
+          hand: [],
+        },
+      };
+      const { container } = renderWithContext(
+        <PlayerPanel {...emptyHandProps} />,
+      );
+      const cardCountDisplay = container.querySelector(".card-count-display");
+      expect(cardCountDisplay).not.toBeInTheDocument();
+    });
+
+    it("should show correct count for 7 cards", () => {
+      const sevenCardsProps = {
+        ...defaultProps,
+        player: {
+          ...defaultProps.player,
+          hand: [
+            { id: "h1", suit: "hearts", rank: 1, value: 14 },
+            { id: "h2", suit: "hearts", rank: 2, value: 2 },
+            { id: "h3", suit: "hearts", rank: 3, value: 3 },
+            { id: "h4", suit: "hearts", rank: 4, value: 4 },
+            { id: "h5", suit: "hearts", rank: 5, value: 5 },
+            { id: "h6", suit: "hearts", rank: 6, value: 6 },
+            { id: "h7", suit: "hearts", rank: 7, value: 7 },
+          ],
+        },
+      };
+      renderWithContext(<PlayerPanel {...sevenCardsProps} />);
+      expect(screen.getByText("7")).toBeInTheDocument();
+      expect(screen.getByTitle("7 cards in hand")).toBeInTheDocument();
+    });
+
+    it("should show correct count for single card", () => {
+      const singleCardProps = {
+        ...defaultProps,
+        player: {
+          ...defaultProps.player,
+          hand: [{ id: "h1", suit: "hearts", rank: 5, value: 5 }],
+        },
+      };
+      renderWithContext(<PlayerPanel {...singleCardProps} />);
+      expect(screen.getByText("1")).toBeInTheDocument();
     });
   });
 
@@ -206,13 +305,13 @@ describe("PlayerPanel", () => {
   });
 
   describe("dealing animation", () => {
-    it("should have card-deal-in class on card backs when isDealing is true", () => {
+    it("should have card-deal-in class on card stack items when isDealing is true", () => {
       const { container } = renderWithContext(
         <PlayerPanel {...defaultProps} isDealing={true} />,
       );
-      const cardBacks = container.querySelectorAll(".card-backs > div");
-      cardBacks.forEach((cardBack) => {
-        expect(cardBack).toHaveClass("card-deal-in");
+      const cardStackItems = container.querySelectorAll(".card-stack-item");
+      cardStackItems.forEach((cardItem) => {
+        expect(cardItem).toHaveClass("card-deal-in");
       });
     });
 
@@ -220,9 +319,9 @@ describe("PlayerPanel", () => {
       const { container } = renderWithContext(
         <PlayerPanel {...defaultProps} isDealing={false} />,
       );
-      const cardBacks = container.querySelectorAll(".card-backs > div");
-      cardBacks.forEach((cardBack) => {
-        expect(cardBack).not.toHaveClass("card-deal-in");
+      const cardStackItems = container.querySelectorAll(".card-stack-item");
+      cardStackItems.forEach((cardItem) => {
+        expect(cardItem).not.toHaveClass("card-deal-in");
       });
     });
   });
@@ -266,6 +365,14 @@ describe("PlayerPanel", () => {
       );
       const cardBacksContainer = container.querySelector(".card-backs");
       expect(cardBacksContainer).toBeInTheDocument();
+    });
+
+    it("should have card-deck-container", () => {
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} />,
+      );
+      const deckContainer = container.querySelector(".card-deck-container");
+      expect(deckContainer).toBeInTheDocument();
     });
   });
 
@@ -332,12 +439,12 @@ describe("PlayerPanel", () => {
   });
 
   describe("card back patterns", () => {
-    it("should render card backs with pattern from context", () => {
+    it("should render card stack items with pattern from context", () => {
       const { container } = renderWithContext(
         <PlayerPanel {...defaultProps} />,
       );
-      const cardBacks = container.querySelectorAll(".card-backs > div");
-      expect(cardBacks.length).toBeGreaterThan(0);
+      const cardStackItems = container.querySelectorAll(".card-stack-item");
+      expect(cardStackItems.length).toBeGreaterThan(0);
     });
   });
 
@@ -380,11 +487,11 @@ describe("PlayerPanel", () => {
       const { container } = renderWithContext(
         <PlayerPanel {...singleCardProps} />,
       );
-      const cardBacks = container.querySelectorAll(".card-backs > div");
-      expect(cardBacks.length).toBe(1);
+      const cardStackItems = container.querySelectorAll(".card-stack-item");
+      expect(cardStackItems.length).toBe(1);
     });
 
-    it("should display correct card backs for many cards", () => {
+    it("should display correct card count for many cards while limiting stack visuals", () => {
       const manyCardsProps = {
         ...defaultProps,
         player: {
@@ -405,9 +512,35 @@ describe("PlayerPanel", () => {
       );
       // Should render the player panel correctly with many cards
       expect(screen.getByText("Alex")).toBeInTheDocument();
-      // Card backs should still be limited to 5 max
-      const cardBacks = container.querySelectorAll(".card-backs > div");
-      expect(cardBacks.length).toBeLessThanOrEqual(5);
+      // Card stack should be limited to 4 max
+      const cardStackItems = container.querySelectorAll(".card-stack-item");
+      expect(cardStackItems.length).toBe(4);
+      // But card count should show actual count of 7
+      expect(screen.getByText("7")).toBeInTheDocument();
+    });
+
+    it("should display correct card count even when stack is limited", () => {
+      const tenCardsProps = {
+        ...defaultProps,
+        player: {
+          ...defaultProps.player,
+          hand: Array.from({ length: 10 }, (_, i) => ({
+            id: `h${i + 1}`,
+            suit: "hearts",
+            rank: i + 1,
+            value: i + 1,
+          })),
+        },
+      };
+      const { container } = renderWithContext(
+        <PlayerPanel {...tenCardsProps} />,
+      );
+      // Card count should show 10
+      expect(screen.getByText("10")).toBeInTheDocument();
+      expect(screen.getByTitle("10 cards in hand")).toBeInTheDocument();
+      // But stack items should be limited to 4
+      const cardStackItems = container.querySelectorAll(".card-stack-item");
+      expect(cardStackItems.length).toBe(4);
     });
   });
 
@@ -416,6 +549,14 @@ describe("PlayerPanel", () => {
       renderWithContext(<PlayerPanel {...defaultProps} />);
       const image = screen.getByRole("img");
       expect(image).toHaveAttribute("alt", "Alex");
+    });
+
+    it("should have title attribute on card count for accessibility", () => {
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} />,
+      );
+      const cardCountDisplay = container.querySelector(".card-count-display");
+      expect(cardCountDisplay).toHaveAttribute("title");
     });
   });
 
@@ -442,6 +583,30 @@ describe("PlayerPanel", () => {
       );
       const minWidthElement = container.querySelector(".min-w-0");
       expect(minWidthElement).toBeInTheDocument();
+    });
+  });
+
+  describe("card deck container structure", () => {
+    it("should have proper container hierarchy", () => {
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} />,
+      );
+      const cardBacks = container.querySelector(".card-backs");
+      const deckContainer = cardBacks.querySelector(".card-deck-container");
+      expect(deckContainer).toBeInTheDocument();
+    });
+
+    it("should contain both card stack and count display", () => {
+      const { container } = renderWithContext(
+        <PlayerPanel {...defaultProps} />,
+      );
+      const deckContainer = container.querySelector(".card-deck-container");
+      const cardStackItems = deckContainer.querySelectorAll(".card-stack-item");
+      const cardCountDisplay = deckContainer.querySelector(
+        ".card-count-display",
+      );
+      expect(cardStackItems.length).toBeGreaterThan(0);
+      expect(cardCountDisplay).toBeInTheDocument();
     });
   });
 });
