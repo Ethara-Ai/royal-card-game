@@ -1,11 +1,10 @@
 # Royal Card Game
 
-> **Version:** 1.0.0 | **Status:** Production Ready | **Last Updated:** January 2026
+> **Version:** 1.0.0 | **Last Updated:** January 2026
 
 A beautiful, responsive multiplayer card game built with React and Vite. Play classic trick-taking card games against AI opponents with customizable rules, themes, and card designs.
 
-![Production Ready](https://img.shields.io/badge/Status-Production_Ready-brightgreen)
-![Version](https://img.shields.io/badge/Version-1.0.0-blue)
+
 ![React](https://img.shields.io/badge/React-19.2.3-61DAFB?logo=react)
 ![Vite](https://img.shields.io/badge/Vite-7.3.1-646CFF?logo=vite)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.1.18-38B2AC?logo=tailwind-css)

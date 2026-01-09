@@ -2219,6 +2219,8 @@ button {
   /* Parent clips everything including scrollbar */
   overflow: hidden;
   /* border-radius is set via Tailwind class rounded-2xl */
+  /* iOS safe area support */
+  padding-top: env(safe-area-inset-top, 0);
 }
 
 .modal-wrapper > .modal-content {
@@ -2227,6 +2229,49 @@ button {
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
+  /* iOS smooth scrolling */
+  -webkit-overflow-scrolling: touch;
+  /* Prevent content from going under sticky elements on iOS */
+  scroll-padding-top: 70px;
+  scroll-padding-bottom: 80px;
+}
+
+/* iOS-specific fixes for modal */
+@supports (-webkit-touch-callout: none) {
+  .modal-wrapper {
+    /* Ensure modal doesn't get cropped on iOS */
+    max-height: calc(
+      90vh - env(safe-area-inset-top, 0) - env(safe-area-inset-bottom, 0)
+    );
+  }
+
+  .modal-wrapper > .modal-content {
+    /* Hide scrollbar on iOS to prevent overlap with interactive elements */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .modal-wrapper > .modal-content::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  /* Ensure sticky header stays above content on iOS */
+  .modal-content > .sticky.top-0,
+  .modal-content .sticky.top-0 {
+    position: -webkit-sticky;
+    position: sticky;
+    z-index: 20;
+  }
+
+  /* Ensure sticky footer stays above content on iOS */
+  .modal-content > .sticky.bottom-0,
+  .modal-content .sticky.bottom-0 {
+    position: -webkit-sticky;
+    position: sticky;
+    z-index: 20;
+  }
 }
 
 /* ===========================================
@@ -2242,6 +2287,27 @@ button {
 .modal-wrapper,
 .waiting-room-wrapper {
   padding: 4px;
+  /* iOS safe area padding for left/right */
+  padding-left: max(4px, env(safe-area-inset-left, 4px));
+  padding-right: max(4px, env(safe-area-inset-right, 4px));
+}
+
+/* Ensure sticky elements in modal have proper spacing on iOS */
+.modal-content > div.sticky,
+.modal-wrapper .sticky {
+  /* Add extra padding to keep interactive elements away from edges */
+  padding-left: max(1rem, env(safe-area-inset-left, 1rem));
+  padding-right: max(1rem, env(safe-area-inset-right, 1rem));
+}
+
+/* iOS modal overlay fix - ensure proper centering */
+@supports (-webkit-touch-callout: none) {
+  .modal-overlay {
+    padding-top: env(safe-area-inset-top, 12px);
+    padding-bottom: env(safe-area-inset-bottom, 12px);
+    padding-left: env(safe-area-inset-left, 12px);
+    padding-right: env(safe-area-inset-right, 12px);
+  }
 }
 
 /* Settings menu needs padding for its scaled reset button */

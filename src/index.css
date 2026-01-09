@@ -1717,11 +1717,16 @@ html {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
   overscroll-behavior: none;
+  /* iOS viewport height fix */
+  height: -webkit-fill-available;
 }
 
 body {
   overscroll-behavior: none;
   touch-action: manipulation;
+  /* iOS viewport height fix */
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
 }
 
 .main-content-area {
@@ -1745,6 +1750,56 @@ body {
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
     padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* iOS-specific modal and scrolling fixes */
+@supports (-webkit-touch-callout: none) {
+  /* Fix for iOS Safari 100vh issue */
+  .modal-overlay {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    padding-top: max(12px, env(safe-area-inset-top));
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+
+  /* Hide scrollbar in modals on iOS to prevent overlap */
+  .modal-content {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal-content::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+    background: transparent;
+  }
+
+  /* Ensure sticky elements work properly on iOS */
+  .modal-content .sticky {
+    position: -webkit-sticky;
+    position: sticky;
+  }
+
+  /* Prevent content cropping on iOS */
+  .modal-wrapper {
+    max-height: calc(
+      90vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)
+    );
+  }
+
+  /* iOS safe area for modal header */
+  .modal-content > .sticky.top-0,
+  .modal-content .sticky.top-0 {
+    padding-top: max(1rem, env(safe-area-inset-top, 1rem));
+  }
+
+  /* iOS safe area for modal footer */
+  .modal-content > .sticky.bottom-0,
+  .modal-content .sticky.bottom-0 {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom, 1rem));
   }
 }
 

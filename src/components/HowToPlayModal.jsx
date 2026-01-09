@@ -87,17 +87,31 @@ const HowToPlayModal = ({
             "linear-gradient(180deg, var(--color-panel-light) 0%, var(--color-panel-base) 100%)",
           border: "1px solid var(--color-border-default)",
           boxShadow: "var(--shadow-xl)",
+          maxHeight:
+            "calc(90vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px))",
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Child container: handles scrolling inside the clipped area */}
-        <div className="modal-content w-full h-full max-h-[90vh] overflow-y-auto overflow-x-hidden">
-          {/* Header */}
+        <div
+          className="modal-content w-full h-full max-h-[90vh] overflow-y-auto overflow-x-hidden"
+          style={{
+            WebkitOverflowScrolling: "touch",
+            maxHeight:
+              "calc(90vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px))",
+          }}
+        >
+          {/* Header - iOS safe sticky positioning */}
           <div
-            className="sticky top-0 flex items-center justify-between p-4 sm:p-5 border-b z-10"
+            className="sticky top-0 flex items-center justify-between p-4 sm:p-5 border-b"
             style={{
               background: "var(--color-panel-base)",
               borderColor: "var(--color-border-subtle)",
+              zIndex: 30,
+              position: "sticky",
+              WebkitPosition: "sticky",
+              marginRight: "0",
+              paddingRight: "max(1rem, env(safe-area-inset-right, 1rem))",
             }}
           >
             <div className="flex items-center gap-2 sm:gap-3">
@@ -296,12 +310,17 @@ const HowToPlayModal = ({
             </div>
           </div>
 
-          {/* Footer */}
+          {/* Footer - iOS safe sticky positioning */}
           <div
             className="sticky bottom-0 p-4 sm:p-5 border-t"
             style={{
               background: "var(--color-panel-base)",
               borderColor: "var(--color-border-subtle)",
+              zIndex: 30,
+              position: "sticky",
+              WebkitPosition: "sticky",
+              paddingBottom:
+                "max(1rem, calc(1rem + env(safe-area-inset-bottom, 0px)))",
             }}
           >
             <button

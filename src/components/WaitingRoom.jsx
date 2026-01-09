@@ -99,8 +99,13 @@ const WaitingRoom = ({
         height: "100%",
         minHeight: "calc(100dvh - 120px)",
         padding: "clamp(0.5rem, 2vh, 1rem)",
+        paddingTop:
+          "max(clamp(0.5rem, 2vh, 1rem), env(safe-area-inset-top, 0px))",
+        paddingBottom:
+          "max(clamp(0.5rem, 2vh, 1rem), env(safe-area-inset-bottom, 0px))",
         boxSizing: "border-box",
         overflow: "auto",
+        WebkitOverflowScrolling: "touch",
       }}
     >
       {/* Parent container: clips content with border-radius + overflow:hidden */}
@@ -113,7 +118,8 @@ const WaitingRoom = ({
           boxShadow: "var(--shadow-xl)",
           width: "100%",
           maxWidth: "24rem",
-          maxHeight: "calc(100dvh - 100px)",
+          maxHeight:
+            "calc(100dvh - 100px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px))",
         }}
       >
         {/* Child container: handles scrolling inside the clipped area */}
@@ -121,7 +127,9 @@ const WaitingRoom = ({
           className="waiting-room-panel w-full h-full overflow-y-auto overflow-x-hidden"
           style={{
             padding: "clamp(1rem, 2.5vh, 1.5rem) clamp(1.25rem, 3vw, 1.5rem)",
-            maxHeight: "calc(100dvh - 100px)",
+            maxHeight:
+              "calc(100dvh - 100px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px))",
+            WebkitOverflowScrolling: "touch",
           }}
         >
           <h2
