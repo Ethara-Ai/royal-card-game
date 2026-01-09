@@ -199,9 +199,10 @@ export const gameReducer = (state, action) => {
           ...state.playArea,
           [action.payload.playerId]: action.payload.card,
         },
-        leadPlayerId: Object.keys(state.playArea).length === 0
-          ? action.payload.playerId
-          : state.leadPlayerId,
+        leadPlayerId:
+          Object.keys(state.playArea).length === 0
+            ? action.payload.playerId
+            : state.leadPlayerId,
       };
 
     case GAME_ACTIONS.CLEAR_PLAY_AREA:
@@ -229,7 +230,7 @@ export const gameReducer = (state, action) => {
           scores: state.gameState.scores.map((score, idx) =>
             idx === action.payload.playerIndex
               ? score + action.payload.points
-              : score
+              : score,
           ),
         },
       };
@@ -344,61 +345,61 @@ export const gameActions = {
 
   setCurrentPlayer: (playerIndex) => ({
     type: GAME_ACTIONS.SET_CURRENT_PLAYER,
-    payload: playerIndex
+    payload: playerIndex,
   }),
   nextPlayer: () => ({ type: GAME_ACTIONS.NEXT_PLAYER }),
 
   playCard: (playerId, card) => ({
     type: GAME_ACTIONS.PLAY_CARD,
-    payload: { playerId, card }
+    payload: { playerId, card },
   }),
   clearPlayArea: () => ({ type: GAME_ACTIONS.CLEAR_PLAY_AREA }),
   setLeadPlayer: (playerId) => ({
     type: GAME_ACTIONS.SET_LEAD_PLAYER,
-    payload: playerId
+    payload: playerId,
   }),
 
   updateScore: (playerIndex, points) => ({
     type: GAME_ACTIONS.UPDATE_SCORE,
-    payload: { playerIndex, points }
+    payload: { playerIndex, points },
   }),
   updateScores: (scores) => ({
     type: GAME_ACTIONS.UPDATE_SCORES,
-    payload: scores
+    payload: scores,
   }),
 
   setTrickWinner: (playerId) => ({
     type: GAME_ACTIONS.SET_TRICK_WINNER,
-    payload: playerId
+    payload: playerId,
   }),
   clearTrickWinner: () => ({ type: GAME_ACTIONS.CLEAR_TRICK_WINNER }),
 
   setDealingAnimation: (isDealing) => ({
     type: GAME_ACTIONS.SET_DEALING_ANIMATION,
-    payload: isDealing
+    payload: isDealing,
   }),
   setDraggedCard: (card) => ({
     type: GAME_ACTIONS.SET_DRAGGED_CARD,
-    payload: card
+    payload: card,
   }),
   clearDraggedCard: () => ({ type: GAME_ACTIONS.CLEAR_DRAGGED_CARD }),
   setShowWinnerModal: (show) => ({
     type: GAME_ACTIONS.SET_SHOW_WINNER_MODAL,
-    payload: show
+    payload: show,
   }),
   setShowConfetti: (show) => ({
     type: GAME_ACTIONS.SET_SHOW_CONFETTI,
-    payload: show
+    payload: show,
   }),
 
   setTouchStartPos: (pos) => ({
     type: GAME_ACTIONS.SET_TOUCH_START_POS,
-    payload: pos
+    payload: pos,
   }),
   clearTouchStartPos: () => ({ type: GAME_ACTIONS.CLEAR_TOUCH_START_POS }),
   setIsDragging: (isDragging) => ({
     type: GAME_ACTIONS.SET_IS_DRAGGING,
-    payload: isDragging
+    payload: isDragging,
   }),
 };
 

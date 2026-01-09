@@ -40,9 +40,7 @@ describe("DragHint", () => {
         vi.advanceTimersByTime(500);
       });
 
-      expect(
-        screen.getByText("Tap a card to select it"),
-      ).toBeInTheDocument();
+      expect(screen.getByText("Tap a card to select it")).toBeInTheDocument();
     });
   });
 

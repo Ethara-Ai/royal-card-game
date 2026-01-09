@@ -75,10 +75,7 @@ const TurnTimer = ({ isActive, onTimeUp, isPaused }) => {
     <div className="turn-timer">
       <div className="turn-timer-label">⏱ TIMER</div>
       <div className="turn-timer-display">
-        <svg
-          className="turn-timer-ring"
-          viewBox="0 0 60 60"
-        >
+        <svg className="turn-timer-ring" viewBox="0 0 60 60">
           <circle
             cx="30"
             cy="30"
@@ -98,7 +95,9 @@ const TurnTimer = ({ isActive, onTimeUp, isPaused }) => {
             strokeDasharray={CIRCUMFERENCE}
             strokeDashoffset={strokeDashoffset}
             transform="rotate(-90 30 30)"
-            style={{ transition: "stroke-dashoffset 1s linear, stroke 0.3s ease" }}
+            style={{
+              transition: "stroke-dashoffset 1s linear, stroke 0.3s ease",
+            }}
           />
         </svg>
         <span

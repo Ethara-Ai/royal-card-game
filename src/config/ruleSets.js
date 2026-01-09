@@ -75,7 +75,8 @@ const findHighestCard = (cardEntries) => {
  * @param {string} suit - Suit to filter by
  * @returns {Array} Filtered card entries
  */
-const filterBySuit = (cardEntries, suit) => cardEntries.filter(([, card]) => card.suit === suit);
+const filterBySuit = (cardEntries, suit) =>
+  cardEntries.filter(([, card]) => card.suit === suit);
 
 /**
  * Gets the default winner (first player or leadPlayerId)

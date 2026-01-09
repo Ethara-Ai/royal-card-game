@@ -3,15 +3,15 @@
  * Handles player state, username, and player-related operations
  */
 
-import { useState, useMemo, useCallback } from 'react';
-import { INITIAL_PLAYERS } from '../../constants';
+import { useState, useMemo, useCallback } from "react";
+import { INITIAL_PLAYERS } from "../../constants";
 
 /**
  * Custom hook for managing player state
  * @param {string} initialUsername - Initial username for player1
  * @returns {Object} Player state and management functions
  */
-export const usePlayers = (initialUsername = '') => {
+export const usePlayers = (initialUsername = "") => {
   const [username, setUsername] = useState(initialUsername);
   const [basePlayers, setBasePlayers] = useState(INITIAL_PLAYERS);
 
@@ -19,7 +19,7 @@ export const usePlayers = (initialUsername = '') => {
   const players = useMemo(
     () =>
       basePlayers.map((player) =>
-        player.id === 'player1' && username.trim()
+        player.id === "player1" && username.trim()
           ? { ...player, name: username.trim() }
           : player,
       ),
@@ -95,14 +95,17 @@ export const usePlayers = (initialUsername = '') => {
   /**
    * Deal cards to all players
    */
-  const dealCardsToPlayers = useCallback((deck, cardsPerPlayer) => {
-    const newPlayers = basePlayers.map((player, index) => ({
-      ...player,
-      hand: deck.slice(index * cardsPerPlayer, (index + 1) * cardsPerPlayer),
-      score: 0,
-    }));
-    setBasePlayers(newPlayers);
-  }, [basePlayers]);
+  const dealCardsToPlayers = useCallback(
+    (deck, cardsPerPlayer) => {
+      const newPlayers = basePlayers.map((player, index) => ({
+        ...player,
+        hand: deck.slice(index * cardsPerPlayer, (index + 1) * cardsPerPlayer),
+        score: 0,
+      }));
+      setBasePlayers(newPlayers);
+    },
+    [basePlayers],
+  );
 
   /**
    * Get player by ID
@@ -115,10 +118,7 @@ export const usePlayers = (initialUsername = '') => {
   /**
    * Get player by index
    */
-  const getPlayerByIndex = useCallback(
-    (index) => players[index],
-    [players],
-  );
+  const getPlayerByIndex = useCallback((index) => players[index], [players]);
 
   /**
    * Get player index by ID

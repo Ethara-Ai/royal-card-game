@@ -1,0 +1,55 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# Cache directories
+.cache/
+.vite/
+.turbo/
+
+# Coverage reports
+coverage/
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Environment files
+.env
+.env.*
+
+# Generated files
+*.min.js
+*.min.css
+
+# Public assets (already minified or shouldn't be formatted)
+public/
+
+# Documentation builds
+docs/_build/
+
+# Test snapshots
+**/__snapshots__/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Infrastructure (CloudFormation, Terraform, etc.)
+infrastructure/

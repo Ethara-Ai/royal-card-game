@@ -91,34 +91,34 @@ const TurnInstructionOverlay = ({
       <div className="turn-instruction-blur" aria-hidden="true" />
 
       {/* Main instruction content */}
-    <div
-      className={`turn-instruction-overlay ${animationClass}`}
-      role="status"
-      aria-live="polite"
-      aria-label={`Your turn. ${ruleSetName || "Highest Card Wins"}. ${ruleSetDescription || "Play your highest value card to win the trick"}`}
-    >
-      <div className="turn-instruction-content">
-        <div className="turn-instruction-header">
-          <FaLightbulb className="turn-instruction-icon" aria-hidden="true" />
-          <span className="turn-instruction-label">Your Turn</span>
-        </div>
+      <div
+        className={`turn-instruction-overlay ${animationClass}`}
+        role="status"
+        aria-live="polite"
+        aria-label={`Your turn. ${ruleSetName || "Highest Card Wins"}. ${ruleSetDescription || "Play your highest value card to win the trick"}`}
+      >
+        <div className="turn-instruction-content">
+          <div className="turn-instruction-header">
+            <FaLightbulb className="turn-instruction-icon" aria-hidden="true" />
+            <span className="turn-instruction-label">Your Turn</span>
+          </div>
 
-        <div className="turn-instruction-rule">
-          {ruleSetName || "Highest Card Wins"}
-        </div>
+          <div className="turn-instruction-rule">
+            {ruleSetName || "Highest Card Wins"}
+          </div>
 
-        <div className="turn-instruction-description">
-          {ruleSetDescription ||
-            "Play your highest value card to win the trick"}
-        </div>
+          <div className="turn-instruction-description">
+            {ruleSetDescription ||
+              "Play your highest value card to win the trick"}
+          </div>
 
-        <div className="turn-instruction-action">
-          <span>Tap a card to select, then tap the table to play</span>
-        </div>
+          <div className="turn-instruction-action">
+            <span>Tap a card to select, then tap the table to play</span>
+          </div>
 
-        <div className="turn-instruction-dismiss">
+          <div className="turn-instruction-dismiss">
             <span className="turn-instruction-dismiss-pulse" />
-          Tap anywhere to start
+            Tap anywhere to start
           </div>
         </div>
       </div>
@@ -127,7 +127,9 @@ const TurnInstructionOverlay = ({
       <div className="turn-instruction-card-pointer" aria-hidden="true">
         <div className="turn-instruction-pointer-content">
           <FaHandPointer className="turn-instruction-pointer-icon" />
-          <span className="turn-instruction-pointer-text">Select a card from your hand</span>
+          <span className="turn-instruction-pointer-text">
+            Select a card from your hand
+          </span>
         </div>
         <div className="turn-instruction-pointer-arrow" />
       </div>

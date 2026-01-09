@@ -11,7 +11,10 @@
   position: relative;
   display: inline-block;
   cursor: pointer;
-  transition: transform 0.2s ease, filter 0.2s ease, z-index 0s;
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease,
+    z-index 0s;
   transform-origin: center bottom;
   user-select: none;
   -webkit-user-select: none;
@@ -21,7 +24,8 @@
 
 /* Apply rotation and offset using CSS variables */
 .handCard {
-  transform: translateY(var(--card-y-offset, 0)) rotate(var(--card-rotation, 0deg));
+  transform: translateY(var(--card-y-offset, 0))
+    rotate(var(--card-rotation, 0deg));
 }
 
 /* ============================================================================
@@ -86,7 +90,8 @@
 }
 
 .playable:hover {
-  transform: translateY(calc(var(--card-y-offset, 0) - 8px)) rotate(var(--card-rotation, 0deg));
+  transform: translateY(calc(var(--card-y-offset, 0) - 8px))
+    rotate(var(--card-rotation, 0deg));
   filter: brightness(1.05);
   z-index: 1000 !important;
 }
@@ -136,13 +141,15 @@
   }
   100% {
     opacity: 1;
-    transform: translateY(var(--card-y-offset, 0)) rotate(var(--card-rotation, 0deg)) scale(1);
+    transform: translateY(var(--card-y-offset, 0))
+      rotate(var(--card-rotation, 0deg)) scale(1);
   }
 }
 
 /* Hover animation for playable cards */
 @keyframes cardHoverPulse {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow:
       0 3px 8px rgba(0, 0, 0, 0.15),
       0 1px 3px rgba(0, 0, 0, 0.1);
@@ -211,7 +218,8 @@
   }
 
   .playable:hover {
-    transform: translateY(calc(var(--card-y-offset, 0) - 6px)) rotate(var(--card-rotation, 0deg));
+    transform: translateY(calc(var(--card-y-offset, 0) - 6px))
+      rotate(var(--card-rotation, 0deg));
   }
 }
 
@@ -266,7 +274,8 @@
   }
 
   .playable:hover {
-    transform: translateY(var(--card-y-offset, 0)) rotate(var(--card-rotation, 0deg));
+    transform: translateY(var(--card-y-offset, 0))
+      rotate(var(--card-rotation, 0deg));
     filter: none;
   }
 
@@ -290,11 +299,13 @@
   .cardDealIn {
     animation: none;
     opacity: 1;
-    transform: translateY(var(--card-y-offset, 0)) rotate(var(--card-rotation, 0deg)) scale(1);
+    transform: translateY(var(--card-y-offset, 0))
+      rotate(var(--card-rotation, 0deg)) scale(1);
   }
 
   .playable:hover {
-    transform: translateY(var(--card-y-offset, 0)) rotate(var(--card-rotation, 0deg));
+    transform: translateY(var(--card-y-offset, 0))
+      rotate(var(--card-rotation, 0deg));
   }
 }
 

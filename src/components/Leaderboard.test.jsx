@@ -3,7 +3,11 @@
  * Tests rendering, player sorting, scores, and current player highlighting
  */
 
+<<<<<<< HEAD
 import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
+=======
+import { describe, it, expect, afterEach, beforeEach } from "vitest";
+>>>>>>> 82b628c (added prettier files)
 import { render, screen, fireEvent } from "@testing-library/react";
 import Leaderboard from "./Leaderboard";
 

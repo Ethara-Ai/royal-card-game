@@ -33,7 +33,7 @@ describe("ThemeToggle", () => {
   describe("dark mode", () => {
     it("should show sun icon in dark mode", () => {
       const { container } = render(
-        <ThemeToggle {...defaultProps} theme="dark" />
+        <ThemeToggle {...defaultProps} theme="dark" />,
       );
       const svg = container.querySelector("svg");
       expect(svg).toBeInTheDocument();
@@ -54,7 +54,7 @@ describe("ThemeToggle", () => {
 
     it("should apply gold color to sun icon in dark mode", () => {
       const { container } = render(
-        <ThemeToggle {...defaultProps} theme="dark" />
+        <ThemeToggle {...defaultProps} theme="dark" />,
       );
       const svg = container.querySelector("svg");
       expect(svg).toHaveStyle({ color: "var(--color-gold-light)" });
@@ -64,7 +64,7 @@ describe("ThemeToggle", () => {
   describe("light mode", () => {
     it("should show moon icon in light mode", () => {
       const { container } = render(
-        <ThemeToggle {...defaultProps} theme="light" />
+        <ThemeToggle {...defaultProps} theme="light" />,
       );
       const svg = container.querySelector("svg");
       expect(svg).toBeInTheDocument();
@@ -85,7 +85,7 @@ describe("ThemeToggle", () => {
 
     it("should apply secondary text color to moon icon in light mode", () => {
       const { container } = render(
-        <ThemeToggle {...defaultProps} theme="light" />
+        <ThemeToggle {...defaultProps} theme="light" />,
       );
       const svg = container.querySelector("svg");
       expect(svg).toHaveStyle({ color: "var(--color-text-secondary)" });
@@ -212,7 +212,7 @@ describe("ThemeToggle", () => {
     it("should handle undefined theme gracefully", () => {
       // Should default to showing dark mode behavior
       const { container } = render(
-        <ThemeToggle theme={undefined} onToggle={vi.fn()} />
+        <ThemeToggle theme={undefined} onToggle={vi.fn()} />,
       );
       expect(container.querySelector("button")).toBeInTheDocument();
     });

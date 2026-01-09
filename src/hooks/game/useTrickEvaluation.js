@@ -3,11 +3,11 @@
  * Handles trick evaluation, winner determination, and play area management
  */
 
-import { useState, useCallback } from 'react';
-import { toast } from 'sonner';
-import { GAME_PHASES, ANIMATION_TIMINGS } from '../../constants';
-import ruleSets from '../../config/ruleSets';
-import { getPlayerDisplayName } from '../../utils/playerUtils';
+import { useState, useCallback } from "react";
+import { toast } from "sonner";
+import { GAME_PHASES, ANIMATION_TIMINGS } from "../../constants";
+import ruleSets from "../../config/ruleSets";
+import { getPlayerDisplayName } from "../../utils/playerUtils";
 
 /**
  * Custom hook for managing trick evaluation
@@ -60,19 +60,28 @@ export const useTrickEvaluation = ({
    * Gets the number of cards in play area
    * @returns {number} Count of cards in play area
    */
-  const getPlayAreaCardCount = useCallback(() => Object.keys(playArea).length, [playArea]);
+  const getPlayAreaCardCount = useCallback(
+    () => Object.keys(playArea).length,
+    [playArea],
+  );
 
   /**
    * Checks if play area is full (4 cards)
    * @returns {boolean} True if 4 cards are played
    */
-  const isPlayAreaFull = useCallback(() => Object.keys(playArea).length === 4, [playArea]);
+  const isPlayAreaFull = useCallback(
+    () => Object.keys(playArea).length === 4,
+    [playArea],
+  );
 
   /**
    * Gets cards in play area as entries
    * @returns {Array} Array of [playerId, card] pairs
    */
-  const getPlayAreaCards = useCallback(() => Object.entries(playArea), [playArea]);
+  const getPlayAreaCards = useCallback(
+    () => Object.entries(playArea),
+    [playArea],
+  );
 
   /**
    * Gets the lead suit for the current trick
@@ -113,7 +122,8 @@ export const useTrickEvaluation = ({
    * @returns {Promise} Promise that resolves when evaluation completes
    */
   const evaluateTrick = useCallback(
-    (trickCards, isLastTrick, setGamePhase, setCurrentPlayer, updateScores) => new Promise((resolve) => {
+    (trickCards, isLastTrick, setGamePhase, setCurrentPlayer, updateScores) =>
+      new Promise((resolve) => {
         // Use provided cards or current play area
         const cardsToEvaluate = trickCards || playArea;
 

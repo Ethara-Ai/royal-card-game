@@ -3,8 +3,8 @@
  * Handles deck creation, shuffling, and card operations
  */
 
-import { useCallback } from 'react';
-import { SUITS } from '../../constants';
+import { useCallback } from "react";
+import { SUITS } from "../../constants";
 
 /**
  * Custom hook for managing card deck operations
@@ -106,7 +106,10 @@ export const useCardDeck = () => {
    * @param {string} suit - Suit to filter by
    * @returns {Array} Cards of the specified suit
    */
-  const getCardsBySuit = useCallback((cards, suit) => cards.filter((card) => card.suit === suit), []);
+  const getCardsBySuit = useCallback(
+    (cards, suit) => cards.filter((card) => card.suit === suit),
+    [],
+  );
 
   /**
    * Gets cards by rank from a collection
@@ -114,26 +117,36 @@ export const useCardDeck = () => {
    * @param {number} rank - Rank to filter by
    * @returns {Array} Cards of the specified rank
    */
-  const getCardsByRank = useCallback((cards, rank) => cards.filter((card) => card.rank === rank), []);
+  const getCardsByRank = useCallback(
+    (cards, rank) => cards.filter((card) => card.rank === rank),
+    [],
+  );
 
   /**
    * Sorts cards by value (descending)
    * @param {Array} cards - Array of card objects
    * @returns {Array} Sorted cards
    */
-  const sortCardsByValue = useCallback((cards) => [...cards].sort((a, b) => b.value - a.value), []);
+  const sortCardsByValue = useCallback(
+    (cards) => [...cards].sort((a, b) => b.value - a.value),
+    [],
+  );
 
   /**
    * Sorts cards by suit and then by value
    * @param {Array} cards - Array of card objects
    * @returns {Array} Sorted cards
    */
-  const sortCardsBySuitAndValue = useCallback((cards) => [...cards].sort((a, b) => {
-      if (a.suit !== b.suit) {
-        return SUITS.indexOf(a.suit) - SUITS.indexOf(b.suit);
-      }
-      return b.value - a.value;
-    }), []);
+  const sortCardsBySuitAndValue = useCallback(
+    (cards) =>
+      [...cards].sort((a, b) => {
+        if (a.suit !== b.suit) {
+          return SUITS.indexOf(a.suit) - SUITS.indexOf(b.suit);
+        }
+        return b.value - a.value;
+      }),
+    [],
+  );
 
   /**
    * Finds a card by its ID
@@ -141,7 +154,10 @@ export const useCardDeck = () => {
    * @param {string} cardId - Card ID to find
    * @returns {Object|undefined} Found card or undefined
    */
-  const findCardById = useCallback((cards, cardId) => cards.find((card) => card.id === cardId), []);
+  const findCardById = useCallback(
+    (cards, cardId) => cards.find((card) => card.id === cardId),
+    [],
+  );
 
   /**
    * Removes a card from a collection
@@ -149,7 +165,10 @@ export const useCardDeck = () => {
    * @param {string} cardId - Card ID to remove
    * @returns {Array} New array without the card
    */
-  const removeCard = useCallback((cards, cardId) => cards.filter((card) => card.id !== cardId), []);
+  const removeCard = useCallback(
+    (cards, cardId) => cards.filter((card) => card.id !== cardId),
+    [],
+  );
 
   /**
    * Gets the highest card by value
@@ -159,7 +178,7 @@ export const useCardDeck = () => {
   const getHighestCard = useCallback((cards) => {
     if (!cards || cards.length === 0) return null;
     return cards.reduce((highest, card) =>
-      card.value > highest.value ? card : highest
+      card.value > highest.value ? card : highest,
     );
   }, []);
 
@@ -171,7 +190,7 @@ export const useCardDeck = () => {
   const getLowestCard = useCallback((cards) => {
     if (!cards || cards.length === 0) return null;
     return cards.reduce((lowest, card) =>
-      card.value < lowest.value ? card : lowest
+      card.value < lowest.value ? card : lowest,
     );
   }, []);
 
@@ -181,7 +200,10 @@ export const useCardDeck = () => {
    * @param {string} cardId - Card ID to check
    * @returns {boolean} True if card exists
    */
-  const hasCard = useCallback((cards, cardId) => cards.some((card) => card.id === cardId), []);
+  const hasCard = useCallback(
+    (cards, cardId) => cards.some((card) => card.id === cardId),
+    [],
+  );
 
   /**
    * Gets card display name (e.g., "Ace of Spades")
@@ -190,10 +212,10 @@ export const useCardDeck = () => {
    */
   const getCardName = useCallback((card) => {
     const rankNames = {
-      1: 'Ace',
-      11: 'Jack',
-      12: 'Queen',
-      13: 'King',
+      1: "Ace",
+      11: "Jack",
+      12: "Queen",
+      13: "King",
     };
 
     const rankName = rankNames[card.rank] || card.rank.toString();

@@ -25,8 +25,8 @@ const PlayedCard = ({ card, position, isWinner, useFlexLayout = false }) => {
       className={`played-card-flex ${isAnimating ? "card-enter-flex" : ""} ${isWinner ? "winner-glow" : ""}`}
       style={{
         position: useFlexLayout ? "relative" : "absolute",
-        transform: useFlexLayout 
-          ? `rotate(${flexRotation}deg)` 
+        transform: useFlexLayout
+          ? `rotate(${flexRotation}deg)`
           : `translate(${position.x}px, ${position.y}px) rotate(${position.rotation}deg)`,
         zIndex: position.zIndex,
         transition: "transform 0.3s ease-out",

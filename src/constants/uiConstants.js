@@ -224,9 +224,21 @@ export const SPACING = {
 export const POSITIONING = {
   // Opponent positions relative to table
   opponents: {
-    top: { top: "15%", left: "50%", transform: "translateX(-50%) translateY(-50%)" },
-    left: { left: "clamp(2%, 3%, 5%)", top: "50%", transform: "translateY(-50%)" },
-    right: { right: "clamp(2%, 3%, 5%)", top: "50%", transform: "translateY(-50%)" },
+    top: {
+      top: "15%",
+      left: "50%",
+      transform: "translateX(-50%) translateY(-50%)",
+    },
+    left: {
+      left: "clamp(2%, 3%, 5%)",
+      top: "50%",
+      transform: "translateY(-50%)",
+    },
+    right: {
+      right: "clamp(2%, 3%, 5%)",
+      top: "50%",
+      transform: "translateY(-50%)",
+    },
   },
 
   // User hand position
@@ -360,7 +372,8 @@ export const CONFETTI = {
  * @param {Object} dimension - Dimension object with min, ideal, max
  * @returns {string} CSS clamp() value
  */
-export const getClampValue = (dimension) => `clamp(${dimension.min}px, ${dimension.ideal}, ${dimension.max}px)`;
+export const getClampValue = (dimension) =>
+  `clamp(${dimension.min}px, ${dimension.ideal}, ${dimension.max}px)`;
 
 /**
  * Get responsive value based on breakpoint
@@ -369,9 +382,12 @@ export const getClampValue = (dimension) => `clamp(${dimension.min}px, ${dimensi
  * @returns {any} Responsive value
  */
 export const getResponsiveValue = (values, breakpoint) => {
-  if (breakpoint === "mobile" && values.mobile !== undefined) return values.mobile;
-  if (breakpoint === "tablet" && values.tablet !== undefined) return values.tablet;
-  if (breakpoint === "desktop" && values.desktop !== undefined) return values.desktop;
+  if (breakpoint === "mobile" && values.mobile !== undefined)
+    return values.mobile;
+  if (breakpoint === "tablet" && values.tablet !== undefined)
+    return values.tablet;
+  if (breakpoint === "desktop" && values.desktop !== undefined)
+    return values.desktop;
   return values.mobile || values.tablet || values.desktop;
 };
 

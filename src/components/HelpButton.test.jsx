@@ -172,7 +172,9 @@ describe("HelpButton", () => {
 
     it("should be accessible by role", () => {
       render(<HelpButton {...defaultProps} />);
-      expect(screen.getByRole("button", { name: /how to play/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /how to play/i }),
+      ).toBeInTheDocument();
     });
   });
 
