@@ -317,21 +317,20 @@ describe("UserHand", () => {
       expect(nameElement).toBeInTheDocument();
     });
 
-    it("should display score when hand is empty", () => {
+    it("should display card count when hand is empty", () => {
       const emptyHandProps = {
         ...defaultProps,
         player: {
           ...defaultProps.player,
           hand: [],
         },
-        scores: [5, 3, 2, 1],
       };
       render(<UserHand {...emptyHandProps} />);
-      // Should display score from scores array (index 0 = 5)
-      expect(screen.getByText(/• 5pt/)).toBeInTheDocument();
+      // Should display card count (0)
+      expect(screen.getByText("0")).toBeInTheDocument();
     });
 
-    it("should display score for player with many cards", () => {
+    it("should display card count for player with many cards", () => {
       const manyCardsProps = {
         ...defaultProps,
         player: {
@@ -349,11 +348,10 @@ describe("UserHand", () => {
             { id: "h11", suit: "hearts", rank: 11, value: 11 },
           ],
         },
-        scores: [10, 5, 3, 1],
       };
       render(<UserHand {...manyCardsProps} />);
-      // Should display score (10 points)
-      expect(screen.getByText(/• 10pt/)).toBeInTheDocument();
+      // Should display card count (10 cards)
+      expect(screen.getByText("10")).toBeInTheDocument();
     });
   });
 

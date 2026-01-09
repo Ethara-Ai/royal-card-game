@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useRef, useLayoutEffect, memo } from "react";
 import PropTypes from "prop-types";
 import PlayerPanel from "./PlayerPanel";
 import PlayedCard from "./PlayedCard";
@@ -7,7 +7,12 @@ import DragHint from "./DragHint";
 import TurnInstructionOverlay from "./TurnInstructionOverlay";
 import { GAME_PHASES } from "../constants";
 
-const useTableBounds = () => {
+/**
+ * Custom hook for calculating table bounds using refs instead of DOM queries
+ * @param {Object} refs - Object containing refs to key elements
+ * @returns {Object} Calculated bounds for positioning elements
+ */
+const useTableBounds = (refs) => {
   const [bounds, setBounds] = useState({
     topOffset: "15%",
     bottomOffset: "16%",
@@ -15,18 +20,14 @@ const useTableBounds = () => {
     rightOffset: "5%",
   });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const calculateBounds = () => {
-      const container = document.querySelector(".game-table-area");
-      const table = document.querySelector(".poker-table");
-      const topPanel = document.querySelector(".opponent-top .opponent-panel");
-      const userHand = document.querySelector(".user-hand-panel");
-      const leftPanel = document.querySelector(
-        ".opponent-left .opponent-panel",
-      );
-      const rightPanel = document.querySelector(
-        ".opponent-right .opponent-panel",
-      );
+      const container = refs.containerRef.current;
+      const table = refs.tableRef.current;
+      const topPanel = refs.topPanelRef.current;
+      const userHand = refs.userHandRef.current;
+      const leftPanel = refs.leftPanelRef.current;
+      const rightPanel = refs.rightPanelRef.current;
 
       if (!container || !table) return;
 
@@ -102,12 +103,13 @@ const useTableBounds = () => {
       });
     };
 
+    // Initial calculation with a small delay to ensure elements are rendered
     const timer = setTimeout(calculateBounds, 150);
-    const resizeTimerRef = { current: null };
+    let resizeTimer = null;
 
     const handleResize = () => {
-      clearTimeout(resizeTimerRef.current);
-      resizeTimerRef.current = setTimeout(calculateBounds, 100);
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(calculateBounds, 100);
     };
 
     const handleOrientationChange = () => {
@@ -126,39 +128,53 @@ const useTableBounds = () => {
 
     return () => {
       clearTimeout(timer);
-      clearTimeout(resizeTimerRef.current);
+      clearTimeout(resizeTimer);
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("orientationchange", handleOrientationChange);
       mediaQuery?.removeEventListener?.("change", handleOrientationChange);
     };
-  }, []);
+  }, [refs]);
 
   return bounds;
 };
 
+/**
+ * Get border style for play area based on state
+ */
 const getBorderStyle = (cardCount, selectedCard) => {
   if (cardCount > 0) return "none";
   if (selectedCard) return "2px solid var(--color-gold-base)";
   return "2px dashed var(--color-text-on-felt-muted)";
 };
 
-const PlayArea = ({
+/**
+ * Play Area component - center area where cards are played
+ */
+const PlayArea = memo(({
   playAreaCards,
   cardPositions,
   trickWinner,
   selectedCard,
   onPlayCard,
 }) => {
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     if (selectedCard && onPlayCard) {
       onPlayCard();
     }
-  };
+  }, [selectedCard, onPlayCard]);
 
   return (
     <div
       className={`play-area-drop absolute rounded-xl flex items-center justify-center ${selectedCard ? "play-area-ready" : ""}`}
       onClick={handleClick}
+      role="button"
+      tabIndex={selectedCard ? 0 : -1}
+      aria-label={selectedCard ? "Tap to play selected card" : "Play area"}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          handleClick();
+        }
+      }}
       style={{
         top: "50%",
         left: "50%",
@@ -211,7 +227,7 @@ const PlayArea = ({
       )}
     </div>
   );
-};
+});
 
 PlayArea.propTypes = {
   playAreaCards: PropTypes.array.isRequired,
@@ -221,20 +237,34 @@ PlayArea.propTypes = {
   onPlayCard: PropTypes.func.isRequired,
 };
 
-const PokerTable = () => (
-  <div
-    className="poker-table absolute felt-gradient"
-    style={{
-      top: "50%",
-      left: "50%",
-      transform: "translate(-50%, -50%)",
-      borderRadius: "50%",
-      boxShadow: "var(--shadow-table-rim)",
-    }}
-  />
-);
+/**
+ * Poker Table component - the felt table background
+ */
+const PokerTable = memo(({ tableRef }) => (
+    <div
+      ref={tableRef}
+      className="poker-table absolute felt-gradient"
+      style={{
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        borderRadius: "50%",
+        boxShadow: "var(--shadow-table-rim)",
+      }}
+    />
+  ));
 
-const OpponentPosition = ({
+PokerTable.propTypes = {
+  tableRef: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
+  ]),
+};
+
+/**
+ * Opponent Position component - wraps PlayerPanel with positioning
+ */
+const OpponentPosition = memo(({
   player,
   index,
   currentPlayer,
@@ -245,6 +275,7 @@ const OpponentPosition = ({
   rightOffset,
   players,
   scores,
+  panelRef,
 }) => {
   const positionStyles = {
     top: {
@@ -266,6 +297,7 @@ const OpponentPosition = ({
 
   return (
     <div
+      ref={panelRef}
       className={`absolute opponent-${position}`}
       style={{ ...positionStyles[position], zIndex: 10 }}
     >
@@ -279,7 +311,7 @@ const OpponentPosition = ({
       />
     </div>
   );
-};
+});
 
 OpponentPosition.propTypes = {
   player: PropTypes.object.isRequired,
@@ -292,9 +324,17 @@ OpponentPosition.propTypes = {
   rightOffset: PropTypes.string,
   players: PropTypes.array.isRequired,
   scores: PropTypes.array.isRequired,
+  panelRef: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.shape({ current: PropTypes.any }),
+  ]),
 };
 
-const GameTable = ({
+/**
+ * GameTable component - main game table with all player positions
+ * Memoized for performance optimization
+ */
+const GameTable = memo(({
   players,
   gameState,
   playAreaCards,
@@ -306,10 +346,29 @@ const GameTable = ({
   handlePlaySelectedCard,
   ruleSetName = "Highest Card Wins",
   ruleSetDescription = "The highest card value wins the trick",
-  scores = [],
 }) => {
   const [instructionDismissed, setInstructionDismissed] = useState(false);
-  const { topOffset, bottomOffset, leftOffset, rightOffset } = useTableBounds();
+
+  // Create refs for all positioned elements
+  const containerRef = useRef(null);
+  const tableRef = useRef(null);
+  const topPanelRef = useRef(null);
+  const leftPanelRef = useRef(null);
+  const rightPanelRef = useRef(null);
+  const userHandRef = useRef(null);
+
+  // Use refs for table bounds calculation
+  const refs = {
+    containerRef,
+    tableRef,
+    topPanelRef,
+    leftPanelRef,
+    rightPanelRef,
+    userHandRef,
+  };
+
+  const { topOffset, bottomOffset, leftOffset, rightOffset } =
+    useTableBounds(refs);
 
   const isPlayerTurn =
     gameState.phase === GAME_PHASES.PLAYING &&
@@ -338,9 +397,16 @@ const GameTable = ({
     [handleCardSelect],
   );
 
+  // Get scores from gameState
+  const scores = gameState.scores || [];
+
   return (
-    <div className="game-table-area flex-1 relative" style={{ minHeight: 0 }}>
-      <PokerTable />
+    <div
+      ref={containerRef}
+      className="game-table-area flex-1 relative"
+      style={{ minHeight: 0 }}
+    >
+      <PokerTable tableRef={tableRef} />
 
       <PlayArea
         playAreaCards={playAreaCards}
@@ -372,6 +438,7 @@ const GameTable = ({
         topOffset={topOffset}
         players={players}
         scores={scores}
+        panelRef={topPanelRef}
       />
 
       <OpponentPosition
@@ -383,6 +450,7 @@ const GameTable = ({
         leftOffset={leftOffset}
         players={players}
         scores={scores}
+        panelRef={leftPanelRef}
       />
 
       <OpponentPosition
@@ -394,9 +462,11 @@ const GameTable = ({
         rightOffset={rightOffset}
         players={players}
         scores={scores}
+        panelRef={rightPanelRef}
       />
 
       <div
+        ref={userHandRef}
         className="absolute user-hand-area"
         style={{
           bottom: bottomOffset,
@@ -413,19 +483,18 @@ const GameTable = ({
           selectedCard={selectedCard}
           dealingAnimation={dealingAnimation}
           onCardSelect={handleCardSelectWithDismiss}
-          players={players}
-          scores={scores}
         />
       </div>
     </div>
   );
-};
+});
 
 GameTable.propTypes = {
   players: PropTypes.array.isRequired,
   gameState: PropTypes.shape({
     phase: PropTypes.string.isRequired,
     currentPlayer: PropTypes.number.isRequired,
+    scores: PropTypes.array,
   }).isRequired,
   playAreaCards: PropTypes.array.isRequired,
   cardPositions: PropTypes.array.isRequired,
@@ -436,7 +505,6 @@ GameTable.propTypes = {
   handlePlaySelectedCard: PropTypes.func.isRequired,
   ruleSetName: PropTypes.string,
   ruleSetDescription: PropTypes.string,
-  scores: PropTypes.array,
 };
 
 export default GameTable;

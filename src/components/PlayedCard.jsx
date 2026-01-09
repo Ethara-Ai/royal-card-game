@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import PropTypes from "prop-types";
 import {
   getSuitIcon,
@@ -6,7 +6,12 @@ import {
   getCardColor,
 } from "../utils/cardHelpers";
 
-const PlayedCard = ({ card, position, isWinner, useFlexLayout = false }) => {
+const PlayedCard = memo(({
+  card,
+  position,
+  isWinner,
+  useFlexLayout = false,
+}) => {
   const rank = getRankDisplay(card.rank);
   const suit = getSuitIcon(card.suit);
   const color = getCardColor(card.suit);
@@ -75,7 +80,7 @@ const PlayedCard = ({ card, position, isWinner, useFlexLayout = false }) => {
       </div>
     </div>
   );
-};
+});
 
 PlayedCard.propTypes = {
   card: PropTypes.shape({

@@ -323,7 +323,10 @@ export const gameReducer = (state, action) => {
     // ------------------------------------------------------------------------
 
     default:
-      console.warn(`Unknown action type: ${action.type}`);
+      // Only log warnings in development mode
+      if (import.meta.env?.DEV) {
+        console.warn(`Unknown action type: ${action.type}`);
+      }
       return state;
   }
 };

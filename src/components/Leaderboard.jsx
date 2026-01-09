@@ -1,9 +1,89 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, memo } from "react";
 import PropTypes from "prop-types";
 import { FaTrophy, FaTimes } from "react-icons/fa";
 import { getPlayerDisplayName } from "../utils/playerUtils";
 
-const Leaderboard = ({
+/**
+ * Avatar component with fallback support
+ * Shows initials if the external avatar service fails
+ */
+const Avatar = memo(({ name, size = 40, className = "" }) => {
+  const [hasError, setHasError] = useState(false);
+
+  const handleError = useCallback(() => {
+    setHasError(true);
+  }, []);
+
+  // Generate initials from name
+  const initials = useMemo(() => {
+    if (!name) return "?";
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) {
+      return parts[0].substring(0, 2).toUpperCase();
+    }
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }, [name]);
+
+  // Generate a consistent color based on name
+  const backgroundColor = useMemo(() => {
+    if (!name) return "#6b7280";
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const hue = Math.abs(hash % 360);
+    return `hsl(${hue}, 45%, 45%)`;
+  }, [name]);
+
+  const sizeValue = typeof size === "number" ? `${size}px` : size;
+  const numericSize = typeof size === "number" ? size : 40;
+
+  if (hasError) {
+    return (
+      <div
+        className={`rounded-lg flex items-center justify-center shrink-0 ${className}`}
+        style={{
+          width: sizeValue,
+          height: sizeValue,
+          backgroundColor,
+          color: "#ffffff",
+          fontSize: `${numericSize * 0.4}px`,
+          fontWeight: 700,
+          textTransform: "uppercase",
+        }}
+        aria-label={name}
+      >
+        {initials}
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={`https://robohash.org/${encodeURIComponent(name)}?set=set4&size=${numericSize}x${numericSize}`}
+      alt={name}
+      className={`rounded-lg pixel-art shrink-0 ${className}`}
+      onError={handleError}
+      loading="lazy"
+      style={{
+        width: sizeValue,
+        height: sizeValue,
+      }}
+    />
+  );
+});
+
+Avatar.propTypes = {
+  name: PropTypes.string.isRequired,
+  size: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  className: PropTypes.string,
+};
+
+/**
+ * Leaderboard component - displays player rankings and scores
+ * Memoized for performance optimization
+ */
+const Leaderboard = memo(({
   players,
   scores,
   currentPlayer,
@@ -79,9 +159,9 @@ const Leaderboard = ({
                 <span className="leaderboard-rank" data-rank={index + 1}>
                   {index + 1}
                 </span>
-                <img
-                  src={`https://robohash.org/${player.name}?set=set4&size=40x40`}
-                  alt={player.name}
+                <Avatar
+                  name={player.name}
+                  size={40}
                   className="leaderboard-avatar"
                 />
                 <span className="leaderboard-player-name">
@@ -99,7 +179,7 @@ const Leaderboard = ({
       </div>
     </div>
   );
-};
+});
 
 Leaderboard.propTypes = {
   players: PropTypes.arrayOf(

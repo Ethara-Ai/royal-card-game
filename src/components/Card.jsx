@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import PropTypes from "prop-types";
 import {
   getSuitIcon,
@@ -6,7 +6,7 @@ import {
   getCardColor,
 } from "../utils/cardHelpers";
 
-const Card = ({
+const Card = memo(({
   card,
   index,
   totalCards,
@@ -97,7 +97,7 @@ const Card = ({
       </div>
     </div>
   );
-};
+});
 
 Card.propTypes = {
   card: PropTypes.shape({

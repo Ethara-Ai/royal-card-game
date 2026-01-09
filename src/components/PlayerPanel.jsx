@@ -1,11 +1,93 @@
-import { useMemo } from "react";
+import { useMemo, memo, useState, useCallback } from "react";
 import PropTypes from "prop-types";
 import { getPatternStyle } from "../utils/patterns";
 import { useCardCustomization } from "../context";
 import { getPlayerDisplayName } from "../utils/playerUtils";
 import { calculatePlayerRank } from "../utils/rankUtils";
 
-const PlayerPanel = ({
+/**
+ * Avatar component with fallback support
+ * Shows initials if the external avatar service fails
+ */
+const Avatar = memo(({ name, size = 30 }) => {
+  const [hasError, setHasError] = useState(false);
+
+  const handleError = useCallback(() => {
+    setHasError(true);
+  }, []);
+
+  // Generate initials from name
+  const initials = useMemo(() => {
+    if (!name) return "?";
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) {
+      return parts[0].substring(0, 2).toUpperCase();
+    }
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }, [name]);
+
+  // Generate a consistent color based on name
+  const backgroundColor = useMemo(() => {
+    if (!name) return "#6b7280";
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const hue = Math.abs(hash % 360);
+    return `hsl(${hue}, 45%, 45%)`;
+  }, [name]);
+
+  const sizeValue = typeof size === "number" ? `${size}px` : size;
+
+  if (hasError) {
+    return (
+      <div
+        className="rounded-lg flex items-center justify-center shrink-0"
+        style={{
+          width: sizeValue,
+          height: sizeValue,
+          backgroundColor,
+          color: "#ffffff",
+          fontSize: `calc(${sizeValue} * 0.4)`,
+          fontWeight: 700,
+          textTransform: "uppercase",
+          boxShadow: "var(--shadow-sm)",
+        }}
+        aria-label={name}
+      >
+        {initials}
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={`https://robohash.org/${encodeURIComponent(name)}?set=set4&size=${size}x${size}`}
+      alt={name}
+      className="rounded-lg pixel-art shrink-0"
+      onError={handleError}
+      loading="lazy"
+      style={{
+        backgroundColor: "var(--color-panel-dark)",
+        padding: "2px",
+        width: sizeValue,
+        height: sizeValue,
+        boxShadow: "var(--shadow-sm)",
+      }}
+    />
+  );
+});
+
+Avatar.propTypes = {
+  name: PropTypes.string.isRequired,
+  size: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+};
+
+/**
+ * PlayerPanel component - displays opponent player info and cards
+ * Memoized for performance optimization
+ */
+const PlayerPanel = memo(({
   player,
   index,
   currentPlayer,
@@ -25,7 +107,7 @@ const PlayerPanel = ({
   const isPlaying = currentPlayer === index;
 
   // Get rank indicator style based on position
-  const getRankIndicator = (rank) => {
+  const getRankIndicator = useCallback((rank) => {
     const baseStyle = {
       display: "inline-flex",
       alignItems: "center",
@@ -70,7 +152,16 @@ const PlayerPanel = ({
           border: "1px solid var(--color-border-subtle)",
         };
     }
-  };
+  }, []);
+
+  // Memoize card back pattern styles
+  const patternStyles = useMemo(
+    () => getPatternStyle(cardBackPattern, cardBackColor),
+    [cardBackPattern, cardBackColor],
+  );
+
+  // Memoize visible card count
+  const visibleCardCount = Math.min(player.hand.length, 5);
 
   return (
     <div
@@ -90,18 +181,7 @@ const PlayerPanel = ({
     >
       {/* Player Info Row */}
       <div className="flex items-center gap-1.5 mb-1.5">
-        <img
-          src={`https://robohash.org/${player.name}?set=set4&size=32x32`}
-          alt={player.name}
-          className="rounded-lg pixel-art shrink-0"
-          style={{
-            backgroundColor: "var(--color-panel-dark)",
-            padding: "2px",
-            width: "clamp(24px, 4vw, 30px)",
-            height: "clamp(24px, 4vw, 30px)",
-            boxShadow: "var(--shadow-sm)",
-          }}
-        />
+        <Avatar name={player.name} size="clamp(24px, 4vw, 30px)" />
         <div className="flex-1 min-w-0 overflow-hidden">
           {/* Name row with rank badge */}
           <div className="flex items-center gap-1.5">
@@ -248,7 +328,7 @@ const PlayerPanel = ({
       </div>
     </div>
   );
-};
+});
 
 PlayerPanel.propTypes = {
   player: PropTypes.shape({
