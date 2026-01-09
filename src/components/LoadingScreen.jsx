@@ -80,6 +80,84 @@ AceOfSpadesCard.propTypes = {
   theme: PropTypes.string,
 };
 
+const KingOfHeartsCard = ({ className, style, theme }) => (
+  <div
+    className={className}
+    style={{
+      ...style,
+      background:
+        theme === "light"
+          ? "linear-gradient(145deg, #ffffff 0%, #f5f5f0 100%)"
+          : "linear-gradient(145deg, #ffffff 0%, #f8f8f8 100%)",
+      border:
+        theme === "light"
+          ? "1px solid var(--color-card-border)"
+          : "1px solid var(--color-card-border)",
+      borderRadius: "6px",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: "2px",
+      padding: "8px 6px",
+      boxShadow:
+        theme === "light"
+          ? "0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9)"
+          : "0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)",
+      overflow: "hidden",
+      position: "relative",
+    }}
+  >
+    {/* Subtle card texture overlay */}
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        background:
+          "linear-gradient(180deg, rgba(255,255,255,0.4) 0%, transparent 40%, rgba(0,0,0,0.02) 100%)",
+        pointerEvents: "none",
+      }}
+    />
+
+    {/* Rank - K */}
+    <div
+      style={{
+        fontFamily: "var(--font-display)",
+        fontSize: "20px",
+        fontWeight: 700,
+        lineHeight: 1,
+        color: "var(--color-card-red)",
+        textShadow: "0 1px 1px rgba(0, 0, 0, 0.1)",
+        zIndex: 1,
+      }}
+    >
+      K
+    </div>
+
+    {/* Heart Icon */}
+    <div
+      style={{
+        fontSize: "32px",
+        lineHeight: 1,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        color: "var(--color-card-red)",
+        filter: "drop-shadow(0 1px 1px rgba(0, 0, 0, 0.15))",
+        zIndex: 1,
+      }}
+    >
+      <GiHearts />
+    </div>
+  </div>
+);
+
+KingOfHeartsCard.propTypes = {
+  className: PropTypes.string,
+  style: PropTypes.object,
+  theme: PropTypes.string,
+};
+
 const LoadingScreen = ({
   isLoading,
   onLoadingComplete,
@@ -223,7 +301,7 @@ const LoadingScreen = ({
           />
         </div>
 
-        {/* Ace of Spades card stack in center */}
+        {/* Ace and King card stack in center */}
         <div
           style={{
             position: "absolute",
@@ -233,18 +311,13 @@ const LoadingScreen = ({
           }}
         >
           <div className="card-stack">
-            <AceOfSpadesCard
+            <KingOfHeartsCard
               className="stacked-card stacked-card-1"
               style={{ position: "absolute", width: "64px", height: "90px" }}
               theme={theme}
             />
             <AceOfSpadesCard
               className="stacked-card stacked-card-2"
-              style={{ position: "absolute", width: "64px", height: "90px" }}
-              theme={theme}
-            />
-            <AceOfSpadesCard
-              className="stacked-card stacked-card-3"
               style={{ position: "absolute", width: "64px", height: "90px" }}
               theme={theme}
             />
@@ -450,38 +523,26 @@ const LoadingScreen = ({
         }
 
         .stacked-card-1 {
-          transform: rotate(-5deg) translateX(-4px);
+          transform: rotate(-8deg) translateX(-12px);
           animation: card-shuffle-1 3s ease-in-out infinite;
-          opacity: 0.9;
-        }
-
-        .stacked-card-2 {
-          transform: rotate(3deg) translateX(4px);
-          animation: card-shuffle-2 3s ease-in-out infinite;
           opacity: 0.95;
         }
 
-        .stacked-card-3 {
-          transform: rotate(0deg);
-          animation: card-shuffle-3 3s ease-in-out infinite;
+        .stacked-card-2 {
+          transform: rotate(8deg) translateX(12px);
+          animation: card-shuffle-2 3s ease-in-out infinite;
         }
 
         @keyframes card-shuffle-1 {
-          0%, 100% { transform: rotate(-5deg) translateX(-4px) translateY(0); }
-          33% { transform: rotate(-7deg) translateX(-6px) translateY(-2px); }
-          66% { transform: rotate(-3deg) translateX(-2px) translateY(2px); }
+          0%, 100% { transform: rotate(-8deg) translateX(-12px) translateY(0); }
+          33% { transform: rotate(-12deg) translateX(-14px) translateY(-3px); }
+          66% { transform: rotate(-5deg) translateX(-10px) translateY(3px); }
         }
 
         @keyframes card-shuffle-2 {
-          0%, 100% { transform: rotate(3deg) translateX(4px) translateY(0); }
-          33% { transform: rotate(5deg) translateX(6px) translateY(2px); }
-          66% { transform: rotate(1deg) translateX(2px) translateY(-2px); }
-        }
-
-        @keyframes card-shuffle-3 {
-          0%, 100% { transform: rotate(0deg) translateY(0); }
-          33% { transform: rotate(1deg) translateY(-1px); }
-          66% { transform: rotate(-1deg) translateY(1px); }
+          0%, 100% { transform: rotate(8deg) translateX(12px) translateY(0); }
+          33% { transform: rotate(5deg) translateX(10px) translateY(3px); }
+          66% { transform: rotate(12deg) translateX(14px) translateY(-3px); }
         }
 
         .center-glow {

@@ -489,7 +489,7 @@ describe("LoadingScreen", () => {
       const stackedCards = container.querySelectorAll(
         '[class*="stacked-card"]',
       );
-      expect(stackedCards.length).toBe(3);
+      expect(stackedCards.length).toBe(2);
     });
   });
 

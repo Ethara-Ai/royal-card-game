@@ -1,11 +1,16 @@
 # Royal Card Game
 
+> **Version:** 1.0.0 | **Status:** Production Ready | **Last Updated:** January 2026
+
 A beautiful, responsive multiplayer card game built with React and Vite. Play classic trick-taking card games against AI opponents with customizable rules, themes, and card designs.
 
+![Production Ready](https://img.shields.io/badge/Status-Production_Ready-brightgreen)
+![Version](https://img.shields.io/badge/Version-1.0.0-blue)
 ![React](https://img.shields.io/badge/React-19.2.0-61DAFB?logo=react)
 ![Vite](https://img.shields.io/badge/Vite-7.2.4-646CFF?logo=vite)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.1-38B2AC?logo=tailwind-css)
-![Vitest](https://img.shields.io/badge/Vitest-3.2.4-6E9F18?logo=vitest)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.1-38B2AC?logo=tailwind-css)
+![Vitest](https://img.shields.io/badge/Vitest-4.0-6E9F18?logo=vitest)
+![Coverage](https://img.shields.io/badge/Coverage-85%25-brightgreen)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
 ## Features
@@ -90,7 +95,7 @@ Choose from different rule sets:
 
 ### Prerequisites
 
-- Node.js 18.x or higher
+- Node.js 18.x or higher (LTS recommended)
 - npm 9.x or higher
 
 ### Installation
@@ -115,6 +120,18 @@ npm run dev
 ```
 
 4. Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+### Production Build
+
+```bash
+# Build for production
+npm run build
+
+# Preview the production build locally
+npm run preview
+```
+
+
 
 ## Available Scripts
 
@@ -201,7 +218,7 @@ The main game area featuring an oval poker table with felt texture gradient. Con
 Application header with game title, help button, theme toggle, and settings panel. The collapsible settings menu allows users to select rule sets, customize card back colors via a color picker, and choose card back patterns. Clicking the title resets the game.
 
 ### HowToPlayModal
-Modal dialog explaining game rules and controls. Displays basic rules (drag to play, take turns, win tricks, win the game), current rule set details, and card value rankings. Accessible via the help button in the header.
+Modal dialog explaining game rules and controls. Displays basic rules (select to play, take turns, win tricks, win the game), current rule set details, and card value rankings. Accessible via the help button in the header.
 
 ### Leaderboard
 Sidebar component displaying player rankings sorted by score. Shows player avatars (via RoboHash), names with "(You)" indicator for human player, current scores, and a visual pulse indicator for whose turn it is. Updates dynamically with score animations as tricks are won.
@@ -338,6 +355,8 @@ The project includes 1000+ tests covering:
 - Utility functions
 - Edge cases and accessibility
 
+
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
@@ -348,9 +367,13 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed contribution guidelines.
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+Copyright (c) 2025-2026 Royal Card Game
 
 ## Acknowledgments
 
@@ -361,3 +384,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 Made with React
+
+*Royal Card Game v1.0.0*

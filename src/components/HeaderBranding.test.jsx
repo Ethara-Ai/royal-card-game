@@ -144,10 +144,10 @@ describe("HeaderBranding", () => {
       expect(heading).toHaveClass("md:text-2xl");
     });
 
-    it("should have flex-shrink class for responsive behavior", () => {
+    it("should have shrink class for responsive behavior", () => {
       const { container } = render(<HeaderBranding {...defaultProps} />);
       const heading = container.querySelector("h1");
-      expect(heading).toHaveClass("flex-shrink");
+      expect(heading).toHaveClass("shrink");
     });
 
     it("should have min-w-0 for text truncation support", () => {

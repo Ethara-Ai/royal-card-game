@@ -33,7 +33,7 @@ function AppContent() {
   const { isAppLoading, showLoadingScreen, handleLoadingComplete } =
     useAppLoading();
 
-  const [selectedRuleSet, setSelectedRuleSet] = useState(0);
+  const [selectedRuleSet, setSelectedRuleSet] = useState(1);
   const [isLandscapeHelpOpen, setIsLandscapeHelpOpen] = useState(false);
 
   const {

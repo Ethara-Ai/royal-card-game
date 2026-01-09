@@ -116,7 +116,8 @@ const SettingsPanel = ({
               style={{
                 background:
                   "linear-gradient(135deg, var(--color-gold-base) 0%, var(--color-gold-dark) 100%)",
-                color: "var(--color-bg)",
+                color: "#ffffff",
+                textShadow: "0 1px 2px rgba(0, 0, 0, 0.2)",
               }}
             >
               <FaRedo className="text-xs" /> Reset Game

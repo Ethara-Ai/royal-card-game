@@ -73,7 +73,7 @@ const TurnTimer = ({ isActive, onTimeUp, isPaused }) => {
 
   return (
     <div className="turn-timer">
-      <div className="turn-timer-label">⏱ TIMER</div>
+      <div className="turn-timer-label">⏱ TIME LEFT</div>
       <div className="turn-timer-display">
         <svg className="turn-timer-ring" viewBox="0 0 60 60">
           <circle

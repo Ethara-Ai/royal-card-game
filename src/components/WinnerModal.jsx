@@ -29,61 +29,91 @@ const WinnerModal = ({ players, scores, winner, resetGame }) => {
         backdropFilter: "blur(8px)",
       }}
     >
+      {/* Parent container: clips content with border-radius + overflow:hidden */}
       <div
-        className="modal-content max-w-sm sm:max-w-md w-full p-4 sm:p-6 rounded-2xl bounce-in"
+        className="modal-wrapper max-w-sm sm:max-w-md w-full rounded-2xl overflow-hidden bounce-in"
         style={{
           background:
             "linear-gradient(180deg, var(--color-panel-light) 0%, var(--color-panel-base) 100%)",
           border: "1px solid var(--color-border-gold)",
           boxShadow: "var(--shadow-xl), var(--shadow-glow-gold)",
+          maxHeight: "90vh",
         }}
       >
-        <div className="text-center">
-          <FaCrown
-            className="text-4xl sm:text-5xl mx-auto mb-2 sm:mb-3"
-            style={{ color: "var(--color-gold-base)" }}
-          />
-          <h2
-            className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 game-title"
-            style={{ color: "var(--color-text-gold)" }}
-          >
-            Game Over!
-          </h2>
-
-          <div className="mb-4 sm:mb-6">
-            <div
-              className="text-xs sm:text-sm mb-2 sm:mb-3 font-medium uppercase tracking-wider"
-              style={{ color: "var(--color-text-secondary)" }}
+        {/* Child container: handles scrolling inside the clipped area */}
+        <div className="modal-content w-full h-full max-h-[90vh] overflow-y-auto overflow-x-hidden p-4 sm:p-6">
+          <div className="text-center">
+            <FaCrown
+              className="text-4xl sm:text-5xl mx-auto mb-2 sm:mb-3"
+              style={{ color: "var(--color-gold-base)" }}
+            />
+            <h2
+              className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 game-title"
+              style={{ color: "var(--color-text-gold)" }}
             >
-              Final Scores
-            </div>
-            <div className="space-y-1.5 sm:space-y-2">
-              {sortedPlayers.map((player) => {
-                const isWinner = winner.player.id === player.id;
-                return (
-                  <div
-                    key={player.id}
-                    className="flex justify-between items-center p-2 sm:p-3 rounded-lg transition-all duration-300"
-                    style={{
-                      background: isWinner
-                        ? "linear-gradient(135deg, var(--color-gold-base) 0%, var(--color-gold-dark) 100%)"
-                        : "var(--color-panel-dark)",
-                      boxShadow: isWinner ? "var(--shadow-glow-gold)" : "none",
-                    }}
-                  >
-                    <span className="flex items-center gap-1.5 sm:gap-2">
-                      <img
-                        src={`https://robohash.org/${player.name}?set=set4&size=24x24`}
-                        alt={player.name}
-                        className="w-5 h-5 sm:w-6 sm:h-6 rounded pixel-art"
-                        style={{
-                          background: isWinner
-                            ? "rgba(255,255,255,0.2)"
-                            : "var(--color-bg-elevated)",
-                        }}
-                      />
+              Game Over!
+            </h2>
+
+            <div className="mb-4 sm:mb-6">
+              <div
+                className="text-xs sm:text-sm mb-2 sm:mb-3 font-medium uppercase tracking-wider"
+                style={{ color: "var(--color-text-secondary)" }}
+              >
+                Final Scores
+              </div>
+              <div className="space-y-1.5 sm:space-y-2">
+                {sortedPlayers.map((player) => {
+                  const isWinner = winner.player.id === player.id;
+                  return (
+                    <div
+                      key={player.id}
+                      className="flex justify-between items-center p-2 sm:p-3 rounded-lg transition-all duration-300"
+                      style={{
+                        background: isWinner
+                          ? "linear-gradient(135deg, var(--color-gold-base) 0%, var(--color-gold-dark) 100%)"
+                          : "var(--color-panel-dark)",
+                        boxShadow: isWinner
+                          ? "var(--shadow-glow-gold)"
+                          : "none",
+                      }}
+                    >
+                      <span className="flex items-center gap-1.5 sm:gap-2">
+                        <img
+                          src={`https://robohash.org/${player.name}?set=set4&size=24x24`}
+                          alt={player.name}
+                          className="w-5 h-5 sm:w-6 sm:h-6 rounded pixel-art"
+                          style={{
+                            background: isWinner
+                              ? "rgba(255,255,255,0.2)"
+                              : "var(--color-bg-elevated)",
+                          }}
+                        />
+                        <span
+                          className="font-medium text-sm sm:text-base"
+                          style={{
+                            color: isWinner
+                              ? "#ffffff"
+                              : "var(--color-text-primary)",
+                            textShadow: isWinner
+                              ? "0 1px 2px rgba(0, 0, 0, 0.4)"
+                              : "none",
+                          }}
+                        >
+                          {getPlayerDisplayName(player)}
+                        </span>
+                        {isWinner && (
+                          <FaCrown
+                            className="text-sm sm:text-base"
+                            style={{
+                              color: "#ffffff",
+                              filter:
+                                "drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3))",
+                            }}
+                          />
+                        )}
+                      </span>
                       <span
-                        className="font-medium text-sm sm:text-base"
+                        className="font-bold text-sm sm:text-base"
                         style={{
                           color: isWinner
                             ? "#ffffff"
@@ -93,50 +123,28 @@ const WinnerModal = ({ players, scores, winner, resetGame }) => {
                             : "none",
                         }}
                       >
-                        {getPlayerDisplayName(player)}
+                        {player.score}
                       </span>
-                      {isWinner && (
-                        <FaCrown
-                          className="text-sm sm:text-base"
-                          style={{
-                            color: "#ffffff",
-                            filter: "drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3))",
-                          }}
-                        />
-                      )}
-                    </span>
-                    <span
-                      className="font-bold text-sm sm:text-base"
-                      style={{
-                        color: isWinner
-                          ? "#ffffff"
-                          : "var(--color-text-primary)",
-                        textShadow: isWinner
-                          ? "0 1px 2px rgba(0, 0, 0, 0.4)"
-                          : "none",
-                      }}
-                    >
-                      {player.score}
-                    </span>
-                  </div>
-                );
-              })}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
 
-          <button
-            onClick={resetGame}
-            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 text-sm sm:text-base"
-            style={{
-              background:
-                "linear-gradient(135deg, var(--color-gold-base) 0%, var(--color-gold-dark) 100%)",
-              color: "#ffffff",
-              textShadow: "0 1px 2px rgba(0, 0, 0, 0.4)",
-              boxShadow: "var(--shadow-md)",
-            }}
-          >
-            <FaRedo /> Play Again
-          </button>
+            <button
+              onClick={resetGame}
+              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 text-sm sm:text-base"
+              style={{
+                background:
+                  "linear-gradient(135deg, var(--color-gold-base) 0%, var(--color-gold-dark) 100%)",
+                color: "#ffffff",
+                textShadow: "0 1px 2px rgba(0, 0, 0, 0.4)",
+                boxShadow: "var(--shadow-md)",
+              }}
+            >
+              <FaRedo /> Play Again
+            </button>
+          </div>
         </div>
       </div>
     </div>

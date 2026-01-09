@@ -57,17 +57,20 @@ By participating in this project, you agree to maintain a respectful and inclusi
    npm run dev
    ```
 
-3. Open http://localhost:3000 in your browser
+3. Open http://localhost:5173 in your browser
 
 ### Available Scripts
 
-| Command            | Description                     |
-| ------------------ | ------------------------------- |
-| `npm run dev`      | Start development server        |
-| `npm run build`    | Build for production            |
-| `npm run preview`  | Preview production build        |
-| `npm run lint`     | Run ESLint                      |
-| `npm run lint:fix` | Fix ESLint issues automatically |
+| Command             | Description                      |
+| ------------------- | -------------------------------- |
+| `npm run dev`       | Start development server         |
+| `npm run build`     | Build for production             |
+| `npm run preview`   | Preview production build         |
+| `npm run lint`      | Run ESLint                       |
+| `npm run lint:fix`  | Fix ESLint issues automatically  |
+| `npm run format`    | Format code with Prettier        |
+| `npm test`          | Run tests with Vitest            |
+| `npm run coverage`  | Run tests with coverage report   |
 
 ## How to Contribute
 
@@ -80,8 +83,8 @@ We welcome many types of contributions:
 - **Documentation** - Improve README, add comments, write guides
 - **UI/UX improvements** - Enhance the visual design and user experience
 - **Performance** - Optimize code and improve load times
-- **Accessibility** - Make the game more accessible to all users
-- **Tests** - Add unit tests or integration tests
+- **Accessibility** - Make the game more accessible to all users (WCAG 2.1 AA compliance)
+- **Tests** - Add unit tests or integration tests (we have 1000+ tests!)
 
 ### Workflow
 
@@ -116,10 +119,11 @@ We welcome many types of contributions:
 ## Pull Request Process
 
 1. Update documentation if your changes require it
-2. Ensure all tests pass and there are no linting errors
-3. Fill out the PR template completely
-4. Request a review from maintainers
-5. Address feedback promptly and respectfully
+2. Ensure all tests pass (`npm test`) and there are no linting errors (`npm run lint`)
+3. Run the formatter (`npm run format`) to ensure consistent code style
+4. Fill out the PR template completely
+5. Request a review from maintainers
+6. Address feedback promptly and respectfully
 
 ### PR Title Convention
 
@@ -150,12 +154,14 @@ Use conventional commit format for PR titles:
 
 ```
 src/
-├── components/     # React components
-├── config/         # Configuration files
+├── components/     # React components (with sub-folders for complex components)
+├── config/         # Configuration files (e.g., ruleSets.js)
+├── constants/      # Game constants and configuration values
+├── context/        # React context providers and hooks
 ├── hooks/          # Custom React hooks
 ├── utils/          # Utility functions
-├── assets/         # Static assets
-└── styles/         # Global styles
+├── styles/         # Global styles and CSS animations
+└── test/           # Test setup and utilities
 ```
 
 ### Component Structure

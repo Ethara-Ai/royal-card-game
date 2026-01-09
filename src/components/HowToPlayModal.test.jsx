@@ -97,9 +97,9 @@ describe("HowToPlayModal", () => {
       expect(screen.getByText("Basic Rules")).toBeInTheDocument();
     });
 
-    it("should display Drag to Play rule", () => {
+    it("should display Select to Play rule", () => {
       render(<HowToPlayModal {...defaultProps} />);
-      expect(screen.getByText("Drag to Play")).toBeInTheDocument();
+      expect(screen.getByText("Select to Play")).toBeInTheDocument();
     });
 
     it("should display Take Turns rule", () => {

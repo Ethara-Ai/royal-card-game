@@ -1113,8 +1113,9 @@ button {
 }
 
 .turn-instruction-icon {
-  color: #1a1a1a;
+  color: #ffffff;
   font-size: 0.75rem;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
 }
 
 .turn-instruction-label {
@@ -1123,7 +1124,8 @@ button {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #1a1a1a;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .turn-instruction-rule {
@@ -1527,8 +1529,82 @@ button {
   }
 }
 
-/* Large Mobile / Small Tablet (640px - 767px) */
-@media (max-width: 767px) and (min-width: 640px) {
+/* Tablet around 720px - Prevent leaderboard overlap */
+@media (max-width: 767px) and (min-width: 700px) {
+  .leaderboard-container {
+    top: auto;
+    bottom: 12px;
+    left: 0;
+    z-index: 30;
+  }
+
+  .leaderboard-container.expanded {
+    top: auto;
+    bottom: 12px;
+  }
+
+  .leaderboard-panel {
+    width: 120px;
+    padding: 6px;
+    max-height: 180px;
+    overflow-y: auto;
+  }
+
+  .leaderboard-header {
+    margin-bottom: 6px;
+    padding-bottom: 4px;
+  }
+
+  .leaderboard-title {
+    font-size: 8px;
+  }
+
+  .leaderboard-players {
+    gap: 4px;
+  }
+
+  .leaderboard-player {
+    padding: 4px 6px;
+    gap: 4px;
+  }
+
+  .leaderboard-rank {
+    font-size: 8px;
+    width: 14px;
+  }
+
+  .leaderboard-avatar {
+    width: 16px;
+    height: 16px;
+  }
+
+  .leaderboard-player-name,
+  .leaderboard-player-score {
+    font-size: 9px;
+  }
+
+  .leaderboard-active-indicator {
+    width: 5px;
+    height: 5px;
+  }
+
+  .leaderboard-collapsed-btn {
+    padding: 6px 10px;
+    gap: 4px;
+  }
+
+  .leaderboard-collapsed-icon {
+    width: 12px;
+    height: 12px;
+  }
+
+  .leaderboard-collapsed-label {
+    font-size: 9px;
+  }
+}
+
+/* Large Mobile / Small Tablet (640px - 699px) */
+@media (max-width: 699px) and (min-width: 640px) {
   .game-table-area {
     min-height: 0 !important;
   }
@@ -1610,6 +1686,68 @@ button {
 
   .leaderboard-collapsed-label {
     font-size: 10px;
+  }
+}
+
+/* Additional styles for 700px-767px range */
+@media (max-width: 767px) and (min-width: 700px) {
+  .game-table-area {
+    min-height: 0 !important;
+  }
+
+  .opponent-panel {
+    min-width: 90px !important;
+    padding: 4px 6px !important;
+  }
+
+  .opponent-panel .card-backs {
+    display: none !important;
+  }
+
+  .hand-card .card-inner {
+    width: 38px !important;
+    height: 54px !important;
+    padding: 3px !important;
+    gap: 1px !important;
+  }
+
+  .hand-card .card-inner > div:first-child {
+    font-size: 13px !important;
+  }
+
+  .hand-card .card-inner > div:last-child {
+    font-size: 16px !important;
+  }
+
+  .hand-card {
+    margin-left: -8px !important;
+  }
+
+  .played-card .card-face {
+    width: 46px !important;
+    height: 64px !important;
+    padding: 3px !important;
+    gap: 2px !important;
+  }
+
+  .played-card .card-face > div:first-child {
+    font-size: 13px !important;
+  }
+
+  .played-card .card-face > div:last-child {
+    font-size: 16px !important;
+  }
+
+  .play-area-drop {
+    width: 200px !important;
+    height: 120px !important;
+  }
+
+  .game-banner {
+    top: 10px;
+    right: 10px;
+    padding: 8px 16px;
+    min-width: 160px;
   }
 }
 
@@ -1993,23 +2131,190 @@ button {
 }
 
 /* ===========================================
-   HIDDEN SCROLLBAR UTILITY
-   Clean scrollable elements without visible scrollbar
+   MODAL WRAPPER - ROUNDED CORNER SCROLLBAR FIX
+   Parent/child pattern for scrollbar inside rounded corners
+
+   WHY THIS WORKS:
+   - Parent (.modal-wrapper): Has border-radius + overflow:hidden
+     This clips ALL content including the scrollbar to the rounded shape
+   - Child (.modal-content): Has overflow-y:auto for scrolling
+     The scrollbar lives inside the already-clipped container
+
+   Without this pattern, scrollbars render OUTSIDE the border-radius
+   because overflow-y:auto creates a new stacking context that ignores
+   the parent's border-radius clipping.
    =========================================== */
 
+.modal-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  /* Parent clips everything including scrollbar */
+  overflow: hidden;
+  /* border-radius is set via Tailwind class rounded-2xl */
+}
+
+.modal-wrapper > .modal-content {
+  /* Child handles scrolling inside clipped area */
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Waiting Room wrapper - same pattern */
+.waiting-room-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  /* Parent clips everything including scrollbar */
+  overflow: hidden;
+  /* border-radius is set via Tailwind class rounded-2xl */
+}
+
+.waiting-room-wrapper > .waiting-room-panel {
+  /* Child handles scrolling inside clipped area */
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* ===========================================
+   CUSTOM THEMED SCROLLBAR
+   Scrollbar styling that matches the game UI
+   =========================================== */
+
+/* Firefox scrollbar */
 .modal-content,
 .waiting-room-panel,
 .settings-menu,
-.landscape-menu-panel {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+.landscape-menu-panel,
+.leaderboard-panel {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-gold-base) var(--color-panel-dark);
 }
 
+/* Webkit (Chrome, Safari, Edge) scrollbar */
 .modal-content::-webkit-scrollbar,
 .waiting-room-panel::-webkit-scrollbar,
 .settings-menu::-webkit-scrollbar,
-.landscape-menu-panel::-webkit-scrollbar {
-  display: none;
+.landscape-menu-panel::-webkit-scrollbar,
+.leaderboard-panel::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.modal-content::-webkit-scrollbar-track,
+.waiting-room-panel::-webkit-scrollbar-track,
+.settings-menu::-webkit-scrollbar-track,
+.landscape-menu-panel::-webkit-scrollbar-track,
+.leaderboard-panel::-webkit-scrollbar-track {
+  background: var(--color-panel-dark);
+  border-radius: 3px;
+}
+
+.modal-content::-webkit-scrollbar-thumb,
+.waiting-room-panel::-webkit-scrollbar-thumb,
+.settings-menu::-webkit-scrollbar-thumb,
+.landscape-menu-panel::-webkit-scrollbar-thumb,
+.leaderboard-panel::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    var(--color-gold-base) 0%,
+    var(--color-gold-dark) 100%
+  );
+  border-radius: 3px;
+  border: 1px solid var(--color-panel-dark);
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover,
+.waiting-room-panel::-webkit-scrollbar-thumb:hover,
+.settings-menu::-webkit-scrollbar-thumb:hover,
+.landscape-menu-panel::-webkit-scrollbar-thumb:hover,
+.leaderboard-panel::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    var(--color-gold-light) 0%,
+    var(--color-gold-base) 100%
+  );
+}
+
+.modal-content::-webkit-scrollbar-corner,
+.waiting-room-panel::-webkit-scrollbar-corner,
+.settings-menu::-webkit-scrollbar-corner,
+.landscape-menu-panel::-webkit-scrollbar-corner,
+.leaderboard-panel::-webkit-scrollbar-corner {
+  background: var(--color-panel-dark);
+}
+
+/* Light theme scrollbar adjustments */
+[data-theme="light"] .modal-content,
+[data-theme="light"] .waiting-room-panel,
+[data-theme="light"] .settings-menu,
+[data-theme="light"] .landscape-menu-panel,
+[data-theme="light"] .leaderboard-panel {
+  scrollbar-color: var(--color-gold-dark) var(--color-panel-light);
+}
+
+[data-theme="light"] .modal-content::-webkit-scrollbar-track,
+[data-theme="light"] .waiting-room-panel::-webkit-scrollbar-track,
+[data-theme="light"] .settings-menu::-webkit-scrollbar-track,
+[data-theme="light"] .landscape-menu-panel::-webkit-scrollbar-track,
+[data-theme="light"] .leaderboard-panel::-webkit-scrollbar-track {
+  background: var(--color-panel-light);
+}
+
+[data-theme="light"] .modal-content::-webkit-scrollbar-thumb,
+[data-theme="light"] .waiting-room-panel::-webkit-scrollbar-thumb,
+[data-theme="light"] .settings-menu::-webkit-scrollbar-thumb,
+[data-theme="light"] .landscape-menu-panel::-webkit-scrollbar-thumb,
+[data-theme="light"] .leaderboard-panel::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--color-gold-dark) 0%, #8b6914 100%);
+  border: 1px solid var(--color-panel-light);
+}
+
+[data-theme="light"] .modal-content::-webkit-scrollbar-thumb:hover,
+[data-theme="light"] .waiting-room-panel::-webkit-scrollbar-thumb:hover,
+[data-theme="light"] .settings-menu::-webkit-scrollbar-thumb:hover,
+[data-theme="light"] .landscape-menu-panel::-webkit-scrollbar-thumb:hover,
+[data-theme="light"] .leaderboard-panel::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    var(--color-gold-base) 0%,
+    var(--color-gold-dark) 100%
+  );
+}
+
+[data-theme="light"] .modal-content::-webkit-scrollbar-corner,
+[data-theme="light"] .waiting-room-panel::-webkit-scrollbar-corner,
+[data-theme="light"] .settings-menu::-webkit-scrollbar-corner,
+[data-theme="light"] .landscape-menu-panel::-webkit-scrollbar-corner,
+[data-theme="light"] .leaderboard-panel::-webkit-scrollbar-corner {
+  background: var(--color-panel-light);
+}
+
+/* Ensure modals contain their content */
+.modal-content {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.settings-menu {
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: calc(100vh - 100px);
+  max-height: calc(100dvh - 100px);
+}
+
+.landscape-menu-panel {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.leaderboard-panel {
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* ===========================================
@@ -2327,12 +2632,21 @@ button {
     max-height: calc(100dvh - 16px) !important;
     overflow-y: auto !important;
     max-width: calc(100vw - 16px) !important;
-    scrollbar-width: none !important;
-    -ms-overflow-style: none !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: var(--color-gold-base) var(--color-panel-dark) !important;
   }
 
   .modal-content::-webkit-scrollbar {
-    display: none !important;
+    width: 4px !important;
+  }
+
+  .modal-content::-webkit-scrollbar-track {
+    background: var(--color-panel-dark) !important;
+  }
+
+  .modal-content::-webkit-scrollbar-thumb {
+    background: var(--color-gold-base) !important;
+    border-radius: 2px !important;
   }
 
   .modal-content .p-4,
@@ -2383,12 +2697,21 @@ button {
   .settings-menu {
     max-height: calc(100vh - 60px) !important;
     max-height: calc(100dvh - 60px) !important;
-    scrollbar-width: none !important;
-    -ms-overflow-style: none !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: var(--color-gold-base) var(--color-panel-dark) !important;
   }
 
   .settings-menu::-webkit-scrollbar {
-    display: none !important;
+    width: 4px !important;
+  }
+
+  .settings-menu::-webkit-scrollbar-track {
+    background: var(--color-panel-dark) !important;
+  }
+
+  .settings-menu::-webkit-scrollbar-thumb {
+    background: var(--color-gold-base) !important;
+    border-radius: 2px !important;
   }
 
   .waiting-room-container {
@@ -2402,12 +2725,21 @@ button {
     max-height: calc(100dvh - 20px) !important;
     overflow-y: auto !important;
     padding: 12px !important;
-    scrollbar-width: none !important;
-    -ms-overflow-style: none !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: var(--color-gold-base) var(--color-panel-dark) !important;
   }
 
   .waiting-room-panel::-webkit-scrollbar {
-    display: none !important;
+    width: 4px !important;
+  }
+
+  .waiting-room-panel::-webkit-scrollbar-track {
+    background: var(--color-panel-dark) !important;
+  }
+
+  .waiting-room-panel::-webkit-scrollbar-thumb {
+    background: var(--color-gold-base) !important;
+    border-radius: 2px !important;
   }
 
   .waiting-room-panel h2 {
