@@ -28,6 +28,13 @@ describe("PlayerPanel", () => {
     index: 1,
     currentPlayer: 0,
     isDealing: false,
+    players: [
+      { id: "player1", name: "You", hand: [], score: 2, isActive: true },
+      { id: "player2", name: "Alex", hand: [], score: 1, isActive: false },
+      { id: "player3", name: "Bot1", hand: [], score: 3, isActive: false },
+      { id: "player4", name: "Bot2", hand: [], score: 0, isActive: false },
+    ],
+    scores: [2, 1, 3, 0],
   };
 
   afterEach(() => {
@@ -45,9 +52,26 @@ describe("PlayerPanel", () => {
       expect(screen.getByText("Alex")).toBeInTheDocument();
     });
 
-    it("should display the number of cards in hand", () => {
+    it("should display player score", () => {
       renderWithContext(<PlayerPanel {...defaultProps} />);
-      expect(screen.getByText("3")).toBeInTheDocument();
+      // Alex has score 1 from the scores array
+      expect(screen.getByTitle("1 points")).toBeInTheDocument();
+    });
+
+    it("should display score with pt suffix", () => {
+      renderWithContext(<PlayerPanel {...defaultProps} />);
+      expect(screen.getByText(/• 1pt/)).toBeInTheDocument();
+    });
+
+    it("should display player rank badge", () => {
+      renderWithContext(<PlayerPanel {...defaultProps} />);
+      // Alex has score 1, which is rank 3 (Bot1=3pts rank1, You=2pts rank2, Alex=1pt rank3)
+      expect(screen.getByText("#3")).toBeInTheDocument();
+    });
+
+    it("should display pt label with score", () => {
+      renderWithContext(<PlayerPanel {...defaultProps} />);
+      expect(screen.getByText(/• 1pt/)).toBeInTheDocument();
     });
 
     it("should render player avatar", () => {
@@ -79,9 +103,9 @@ describe("PlayerPanel", () => {
       expect(screen.getByText("Waiting")).toBeInTheDocument();
     });
 
-    it("should display 'Playing...' status when current player", () => {
+    it("should display 'Playing' status when current player", () => {
       renderWithContext(<PlayerPanel {...defaultProps} currentPlayer={1} />);
-      expect(screen.getByText("Playing...")).toBeInTheDocument();
+      expect(screen.getByText("Playing")).toBeInTheDocument();
     });
   });
 
@@ -279,7 +303,8 @@ describe("PlayerPanel", () => {
       };
       renderWithContext(<PlayerPanel {...player3Props} />);
       expect(screen.getByText("Sam")).toBeInTheDocument();
-      expect(screen.getByText("2")).toBeInTheDocument();
+      // Player at index 2 has score 3 from scores array, so rank #1
+      expect(screen.getByText("#1")).toBeInTheDocument();
     });
 
     it("should render player4 correctly", () => {
@@ -301,7 +326,8 @@ describe("PlayerPanel", () => {
       };
       renderWithContext(<PlayerPanel {...player4Props} />);
       expect(screen.getByText("Jordan")).toBeInTheDocument();
-      expect(screen.getByText("4")).toBeInTheDocument();
+      // Player at index 3 has score 0 from scores array, so rank #4
+      expect(screen.getByText("#4")).toBeInTheDocument();
     });
   });
 
@@ -358,7 +384,7 @@ describe("PlayerPanel", () => {
       expect(cardBacks.length).toBe(1);
     });
 
-    it("should display correct card count for many cards", () => {
+    it("should display correct card backs for many cards", () => {
       const manyCardsProps = {
         ...defaultProps,
         player: {
@@ -374,9 +400,14 @@ describe("PlayerPanel", () => {
           ],
         },
       };
-      renderWithContext(<PlayerPanel {...manyCardsProps} />);
-      // Should display 7 as the card count
-      expect(screen.getByText("7")).toBeInTheDocument();
+      const { container } = renderWithContext(
+        <PlayerPanel {...manyCardsProps} />,
+      );
+      // Should render the player panel correctly with many cards
+      expect(screen.getByText("Alex")).toBeInTheDocument();
+      // Card backs should still be limited to 5 max
+      const cardBacks = container.querySelectorAll(".card-backs > div");
+      expect(cardBacks.length).toBeLessThanOrEqual(5);
     });
   });
 

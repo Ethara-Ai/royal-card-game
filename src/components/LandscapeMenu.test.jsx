@@ -31,14 +31,14 @@ const renderWithContext = (ui, options) =>
 describe("LandscapeMenu", () => {
   const mockRuleSets = [
     {
-      id: "highest-card",
-      name: "Highest Card Wins",
-      description: "The highest card value wins the trick",
-    },
-    {
       id: "suit-follows",
       name: "Suit Follows",
       description: "Must follow lead suit",
+    },
+    {
+      id: "highest-card",
+      name: "Highest Card Wins",
+      description: "The highest card value wins the trick",
     },
     {
       id: "spades-trump",
@@ -342,10 +342,10 @@ describe("LandscapeMenu", () => {
       const toggleButton = screen.getByRole("button", { name: /open menu/i });
       fireEvent.click(toggleButton);
 
-      const suitFollowsButton = screen
-        .getByText("Suit Follows")
+      const highestCardButton = screen
+        .getByText("Highest Card Wins")
         .closest("button");
-      fireEvent.click(suitFollowsButton);
+      fireEvent.click(highestCardButton);
 
       expect(setSelectedRuleSet).toHaveBeenCalledWith(1);
     });
@@ -358,10 +358,10 @@ describe("LandscapeMenu", () => {
       const toggleButton = screen.getByRole("button", { name: /open menu/i });
       fireEvent.click(toggleButton);
 
-      const suitFollowsButton = screen
-        .getByText("Suit Follows")
+      const highestCardButton = screen
+        .getByText("Highest Card Wins")
         .closest("button");
-      expect(suitFollowsButton).toHaveClass("active");
+      expect(highestCardButton).toHaveClass("active");
     });
 
     it("should not highlight unselected rules", () => {
@@ -372,10 +372,10 @@ describe("LandscapeMenu", () => {
       const toggleButton = screen.getByRole("button", { name: /open menu/i });
       fireEvent.click(toggleButton);
 
-      const suitFollowsButton = screen
-        .getByText("Suit Follows")
+      const highestCardButton = screen
+        .getByText("Highest Card Wins")
         .closest("button");
-      expect(suitFollowsButton).not.toHaveClass("active");
+      expect(highestCardButton).not.toHaveClass("active");
     });
   });
 

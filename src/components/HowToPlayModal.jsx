@@ -306,7 +306,7 @@ const HowToPlayModal = ({
           >
             <button
               onClick={onClose}
-              className="w-full px-4 py-2.5 sm:py-3 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 text-sm sm:text-base"
+              className="w-full px-4 py-2.5 sm:py-3 rounded-xl font-bold transition-all duration-300 transform hover:scale-[1.02] text-sm sm:text-base"
               style={{
                 background:
                   "linear-gradient(135deg, var(--color-gold-base) 0%, var(--color-gold-dark) 100%)",

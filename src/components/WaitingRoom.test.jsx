@@ -10,14 +10,14 @@ import WaitingRoom from "./WaitingRoom";
 describe("WaitingRoom", () => {
   const mockRuleSets = [
     {
-      id: "highest-card",
-      name: "Highest Card Wins",
-      description: "The highest card value wins the trick",
-    },
-    {
       id: "suit-follows",
       name: "Suit Follows",
       description: "Must follow lead suit, highest of lead suit wins",
+    },
+    {
+      id: "highest-card",
+      name: "Highest Card Wins",
+      description: "The highest card value wins the trick",
     },
     {
       id: "spades-trump",
@@ -189,20 +189,20 @@ describe("WaitingRoom", () => {
     it("should render rule set dropdown button", () => {
       render(<WaitingRoom {...defaultProps} />);
       const dropdownButton = screen.getByRole("button", {
-        name: /highest card wins/i,
+        name: /suit follows/i,
       });
       expect(dropdownButton).toBeInTheDocument();
     });
 
     it("should display current rule set name in dropdown button", () => {
       render(<WaitingRoom {...defaultProps} selectedRuleSet={0} />);
-      expect(screen.getByText("Highest Card Wins")).toBeInTheDocument();
+      expect(screen.getByText("Suit Follows")).toBeInTheDocument();
     });
 
     it("should display all rule set options when dropdown is opened", () => {
       render(<WaitingRoom {...defaultProps} />);
       const dropdownButton = screen.getByRole("button", {
-        name: /highest card wins/i,
+        name: /suit follows/i,
       });
 
       fireEvent.click(dropdownButton);
@@ -221,15 +221,15 @@ describe("WaitingRoom", () => {
         />,
       );
       const dropdownButton = screen.getByRole("button", {
-        name: /highest card wins/i,
+        name: /suit follows/i,
       });
 
       fireEvent.click(dropdownButton);
 
-      const suitFollowsOption = screen.getByRole("option", {
-        name: /suit follows/i,
+      const highestCardOption = screen.getByRole("option", {
+        name: /highest card wins/i,
       });
-      fireEvent.click(suitFollowsOption);
+      fireEvent.click(highestCardOption);
 
       expect(setSelectedRuleSet).toHaveBeenCalledWith(1);
     });
@@ -237,7 +237,7 @@ describe("WaitingRoom", () => {
     it("should display rule set description below dropdown", () => {
       render(<WaitingRoom {...defaultProps} selectedRuleSet={0} />);
       expect(
-        screen.getByText("The highest card value wins the trick"),
+        screen.getByText("Must follow lead suit, highest of lead suit wins"),
       ).toBeInTheDocument();
     });
 
@@ -246,12 +246,12 @@ describe("WaitingRoom", () => {
         <WaitingRoom {...defaultProps} selectedRuleSet={0} />,
       );
       expect(
-        screen.getByText("The highest card value wins the trick"),
+        screen.getByText("Must follow lead suit, highest of lead suit wins"),
       ).toBeInTheDocument();
 
       rerender(<WaitingRoom {...defaultProps} selectedRuleSet={1} />);
       expect(
-        screen.getByText("Must follow lead suit, highest of lead suit wins"),
+        screen.getByText("The highest card value wins the trick"),
       ).toBeInTheDocument();
     });
 
@@ -264,13 +264,13 @@ describe("WaitingRoom", () => {
     it("should show checkmark on selected option", () => {
       render(<WaitingRoom {...defaultProps} selectedRuleSet={0} />);
       const dropdownButton = screen.getByRole("button", {
-        name: /highest card wins/i,
+        name: /suit follows/i,
       });
 
       fireEvent.click(dropdownButton);
 
       const selectedOption = screen.getByRole("option", {
-        name: /highest card wins/i,
+        name: /suit follows/i,
       });
       expect(selectedOption).toHaveAttribute("aria-selected", "true");
     });
@@ -278,7 +278,7 @@ describe("WaitingRoom", () => {
     it("should close dropdown when clicking outside", () => {
       render(<WaitingRoom {...defaultProps} />);
       const dropdownButton = screen.getByRole("button", {
-        name: /highest card wins/i,
+        name: /suit follows/i,
       });
 
       fireEvent.click(dropdownButton);
@@ -295,7 +295,7 @@ describe("WaitingRoom", () => {
     it("should toggle dropdown open/close state", () => {
       render(<WaitingRoom {...defaultProps} />);
       const dropdownButton = screen.getByRole("button", {
-        name: /highest card wins/i,
+        name: /suit follows/i,
       });
 
       // Initially closed

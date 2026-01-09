@@ -9,10 +9,10 @@ import { GAME_PHASES } from "../constants";
 
 const useTableBounds = () => {
   const [bounds, setBounds] = useState({
-    topOffset: "18%",
-    bottomOffset: "18%",
-    leftOffset: "8%",
-    rightOffset: "8%",
+    topOffset: "15%",
+    bottomOffset: "16%",
+    leftOffset: "5%",
+    rightOffset: "5%",
   });
 
   useEffect(() => {
@@ -243,22 +243,24 @@ const OpponentPosition = ({
   topOffset,
   leftOffset,
   rightOffset,
+  players,
+  scores,
 }) => {
   const positionStyles = {
     top: {
-      top: topOffset || "18%",
+      top: topOffset || "15%",
       left: "50%",
       transform: "translateX(-50%)",
     },
     left: {
-      left: leftOffset || "8%",
+      left: leftOffset || "5%",
       top: "50%",
-      transform: "translateX(-50%) translateY(-50%)",
+      transform: "translateY(-50%)",
     },
     right: {
-      right: rightOffset || "8%",
+      right: rightOffset || "5%",
       top: "50%",
-      transform: "translateX(50%) translateY(-50%)",
+      transform: "translateY(-50%)",
     },
   };
 
@@ -272,6 +274,8 @@ const OpponentPosition = ({
         index={index}
         currentPlayer={currentPlayer}
         isDealing={isDealing}
+        players={players}
+        scores={scores}
       />
     </div>
   );
@@ -286,6 +290,8 @@ OpponentPosition.propTypes = {
   topOffset: PropTypes.string,
   leftOffset: PropTypes.string,
   rightOffset: PropTypes.string,
+  players: PropTypes.array.isRequired,
+  scores: PropTypes.array.isRequired,
 };
 
 const GameTable = ({
@@ -300,6 +306,7 @@ const GameTable = ({
   handlePlaySelectedCard,
   ruleSetName = "Highest Card Wins",
   ruleSetDescription = "The highest card value wins the trick",
+  scores = [],
 }) => {
   const [instructionDismissed, setInstructionDismissed] = useState(false);
   const { topOffset, bottomOffset, leftOffset, rightOffset } = useTableBounds();
@@ -363,6 +370,8 @@ const GameTable = ({
         isDealing={dealingAnimation}
         position="top"
         topOffset={topOffset}
+        players={players}
+        scores={scores}
       />
 
       <OpponentPosition
@@ -372,6 +381,8 @@ const GameTable = ({
         isDealing={dealingAnimation}
         position="left"
         leftOffset={leftOffset}
+        players={players}
+        scores={scores}
       />
 
       <OpponentPosition
@@ -381,6 +392,8 @@ const GameTable = ({
         isDealing={dealingAnimation}
         position="right"
         rightOffset={rightOffset}
+        players={players}
+        scores={scores}
       />
 
       <div
@@ -400,6 +413,8 @@ const GameTable = ({
           selectedCard={selectedCard}
           dealingAnimation={dealingAnimation}
           onCardSelect={handleCardSelectWithDismiss}
+          players={players}
+          scores={scores}
         />
       </div>
     </div>
@@ -421,6 +436,7 @@ GameTable.propTypes = {
   handlePlaySelectedCard: PropTypes.func.isRequired,
   ruleSetName: PropTypes.string,
   ruleSetDescription: PropTypes.string,
+  scores: PropTypes.array,
 };
 
 export default GameTable;

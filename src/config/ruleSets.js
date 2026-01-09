@@ -98,27 +98,6 @@ const getDefaultWinner = (cards, leadPlayerId) => {
 
 const ruleSets = [
   {
-    id: "highest-card",
-    name: "Highest Card Wins",
-    description: "The highest card value wins the trick",
-    /**
-     * Evaluates trick winner based on highest card value
-     * @param {Object} cards - Object mapping playerId to card
-     * @param {string} leadPlayerId - The ID of the player who led the trick (unused for this rule)
-     * @returns {string} The winning player's ID
-     */
-    evaluateWinner: (cards, leadPlayerId) => {
-      const cardEntries = Object.entries(cards);
-
-      if (cardEntries.length === 0) {
-        return getDefaultWinner(cards, leadPlayerId);
-      }
-
-      return findHighestCard(cardEntries);
-    },
-  },
-
-  {
     id: "suit-follows",
     name: "Suit Follows",
     description: "Must follow lead suit, highest of lead suit wins",
@@ -148,6 +127,27 @@ const ruleSets = [
 
       // Return winner or default to lead player if no valid winner found
       return winner || getDefaultWinner(cards, leadPlayerId);
+    },
+  },
+
+  {
+    id: "highest-card",
+    name: "Highest Card Wins",
+    description: "The highest card value wins the trick",
+    /**
+     * Evaluates trick winner based on highest card value
+     * @param {Object} cards - Object mapping playerId to card
+     * @param {string} leadPlayerId - The ID of the player who led the trick (unused for this rule)
+     * @returns {string} The winning player's ID
+     */
+    evaluateWinner: (cards, leadPlayerId) => {
+      const cardEntries = Object.entries(cards);
+
+      if (cardEntries.length === 0) {
+        return getDefaultWinner(cards, leadPlayerId);
+      }
+
+      return findHighestCard(cardEntries);
     },
   },
 

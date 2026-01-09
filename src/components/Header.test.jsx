@@ -23,14 +23,14 @@ const BUTTON_INDEX = {
 describe("Header", () => {
   const mockRuleSets = [
     {
-      id: "highest-card",
-      name: "Highest Card Wins",
-      description: "The highest card value wins the trick",
-    },
-    {
       id: "suit-follows",
       name: "Suit Follows",
       description: "Must follow lead suit",
+    },
+    {
+      id: "highest-card",
+      name: "Highest Card Wins",
+      description: "The highest card value wins the trick",
     },
     {
       id: "spades-trump",
@@ -185,9 +185,9 @@ describe("Header", () => {
       fireEvent.click(helpButton);
 
       // The current rule set should be displayed in the modal
-      expect(
-        screen.getAllByText("Highest Card Wins").length,
-      ).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText("Suit Follows").length).toBeGreaterThanOrEqual(
+        1,
+      );
     });
   });
 
@@ -338,7 +338,7 @@ describe("Header", () => {
 
       fireEvent.click(buttons[BUTTON_INDEX.SETTINGS]);
 
-      expect(screen.getByText("Highest Card Wins")).toBeInTheDocument();
+      expect(screen.getByText("Suit Follows")).toBeInTheDocument();
     });
 
     it("should display different rule set when selectedRuleSet changes", () => {
@@ -349,7 +349,7 @@ describe("Header", () => {
 
       fireEvent.click(buttons[BUTTON_INDEX.SETTINGS]);
 
-      expect(screen.getByText("Suit Follows")).toBeInTheDocument();
+      expect(screen.getByText("Highest Card Wins")).toBeInTheDocument();
     });
 
     it("should have settings-fade-in class when opening", () => {
@@ -372,11 +372,11 @@ describe("Header", () => {
       fireEvent.click(buttons[BUTTON_INDEX.SETTINGS]);
 
       // Find and click the rule set selector
-      const ruleSelector = screen.getByText("Highest Card Wins").closest("div");
+      const ruleSelector = screen.getByText("Suit Follows").closest("div");
       fireEvent.click(ruleSelector);
 
       // Should show all rule options
-      expect(screen.getByText("Suit Follows")).toBeInTheDocument();
+      expect(screen.getByText("Highest Card Wins")).toBeInTheDocument();
       expect(screen.getByText("Spades Trump")).toBeInTheDocument();
     });
 
@@ -391,12 +391,12 @@ describe("Header", () => {
       fireEvent.click(buttons[BUTTON_INDEX.SETTINGS]);
 
       // Open rule dropdown
-      const ruleSelector = screen.getByText("Highest Card Wins").closest("div");
+      const ruleSelector = screen.getByText("Suit Follows").closest("div");
       fireEvent.click(ruleSelector);
 
       // Click on a different rule
-      const suitFollowsOption = screen.getAllByText("Suit Follows")[0];
-      fireEvent.click(suitFollowsOption.closest("button"));
+      const highestCardOption = screen.getAllByText("Highest Card Wins")[0];
+      fireEvent.click(highestCardOption.closest("button"));
 
       expect(setSelectedRuleSet).toHaveBeenCalledWith(1);
     });
@@ -409,7 +409,7 @@ describe("Header", () => {
       fireEvent.click(buttons[BUTTON_INDEX.SETTINGS]);
 
       // Open rule dropdown
-      const ruleSelector = screen.getByText("Highest Card Wins").closest("div");
+      const ruleSelector = screen.getByText("Suit Follows").closest("div");
       fireEvent.click(ruleSelector);
 
       expect(screen.getByText("Must follow lead suit")).toBeInTheDocument();
@@ -423,7 +423,7 @@ describe("Header", () => {
       fireEvent.click(buttons[BUTTON_INDEX.SETTINGS]);
 
       // Open rule dropdown
-      const ruleSelector = screen.getByText("Highest Card Wins").closest("div");
+      const ruleSelector = screen.getByText("Suit Follows").closest("div");
       fireEvent.click(ruleSelector);
 
       const arrow = container.querySelector(".rotate-180");

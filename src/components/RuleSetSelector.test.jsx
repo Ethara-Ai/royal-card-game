@@ -10,14 +10,14 @@ import RuleSetSelector from "./RuleSetSelector";
 describe("RuleSetSelector", () => {
   const mockRuleSets = [
     {
-      id: "highest-card",
-      name: "Highest Card Wins",
-      description: "The highest card value wins the trick",
-    },
-    {
       id: "suit-follows",
       name: "Suit Follows",
       description: "Must follow lead suit",
+    },
+    {
+      id: "highest-card",
+      name: "Highest Card Wins",
+      description: "The highest card value wins the trick",
     },
     {
       id: "spades-trump",
@@ -54,12 +54,12 @@ describe("RuleSetSelector", () => {
 
     it("should display current rule set name", () => {
       render(<RuleSetSelector {...defaultProps} />);
-      expect(screen.getByText("Highest Card Wins")).toBeInTheDocument();
+      expect(screen.getByText("Suit Follows")).toBeInTheDocument();
     });
 
     it("should display different rule set when selectedRuleSet changes", () => {
       render(<RuleSetSelector {...defaultProps} selectedRuleSet={1} />);
-      expect(screen.getByText("Suit Follows")).toBeInTheDocument();
+      expect(screen.getByText("Highest Card Wins")).toBeInTheDocument();
     });
 
     it("should show dropdown arrow icon", () => {
@@ -77,10 +77,8 @@ describe("RuleSetSelector", () => {
       fireEvent.click(selector);
 
       // Should show all rule options
-      expect(screen.getAllByText("Highest Card Wins").length).toBeGreaterThan(
-        0,
-      );
-      expect(screen.getByText("Suit Follows")).toBeInTheDocument();
+      expect(screen.getAllByText("Suit Follows").length).toBeGreaterThan(0);
+      expect(screen.getByText("Highest Card Wins")).toBeInTheDocument();
       expect(screen.getByText("Spades Trump")).toBeInTheDocument();
     });
 
@@ -129,10 +127,10 @@ describe("RuleSetSelector", () => {
       const selector = container.querySelector(".cursor-pointer");
       fireEvent.click(selector);
 
-      const suitFollowsOption = screen
-        .getByText("Suit Follows")
+      const highestCardOption = screen
+        .getByText("Highest Card Wins")
         .closest("button");
-      fireEvent.click(suitFollowsOption);
+      fireEvent.click(highestCardOption);
 
       vi.advanceTimersByTime(200);
       expect(setSelectedRuleSet).toHaveBeenCalledWith(1);
@@ -166,7 +164,7 @@ describe("RuleSetSelector", () => {
       fireEvent.click(selector);
 
       const suitFollowsOption = screen
-        .getByText("Suit Follows")
+        .getAllByText("Suit Follows")[1]
         .closest("button");
       fireEvent.click(suitFollowsOption);
 
@@ -383,7 +381,7 @@ describe("RuleSetSelector", () => {
 
     it("should display current selection", () => {
       render(<RuleSetSelector {...defaultProps} />);
-      expect(screen.getByText("Highest Card Wins")).toBeInTheDocument();
+      expect(screen.getByText("Suit Follows")).toBeInTheDocument();
     });
 
     it("should have accessible buttons for each rule option", () => {
@@ -408,7 +406,7 @@ describe("RuleSetSelector", () => {
         />,
       );
 
-      expect(screen.getByText("Highest Card Wins")).toBeInTheDocument();
+      expect(screen.getByText("Suit Follows")).toBeInTheDocument();
     });
 
     it("should handle many rule sets", () => {
@@ -461,7 +459,7 @@ describe("RuleSetSelector", () => {
       fireEvent.click(selector);
 
       const firstOption = screen
-        .getAllByText("Highest Card Wins")[0]
+        .getAllByText("Suit Follows")[0]
         .closest("button");
       if (firstOption) {
         fireEvent.click(firstOption);
@@ -516,12 +514,12 @@ describe("RuleSetSelector", () => {
   describe("different selected indices", () => {
     it("should correctly display first rule when index is 0", () => {
       render(<RuleSetSelector {...defaultProps} selectedRuleSet={0} />);
-      expect(screen.getByText("Highest Card Wins")).toBeInTheDocument();
+      expect(screen.getByText("Suit Follows")).toBeInTheDocument();
     });
 
     it("should correctly display second rule when index is 1", () => {
       render(<RuleSetSelector {...defaultProps} selectedRuleSet={1} />);
-      expect(screen.getByText("Suit Follows")).toBeInTheDocument();
+      expect(screen.getByText("Highest Card Wins")).toBeInTheDocument();
     });
 
     it("should correctly display third rule when index is 2", () => {

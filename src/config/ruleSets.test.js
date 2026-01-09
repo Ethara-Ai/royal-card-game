@@ -457,12 +457,12 @@ describe("ruleSets", () => {
   });
 
   describe("rule set indices", () => {
-    it("should have highest-card at index 0", () => {
-      expect(ruleSets[0].id).toBe("highest-card");
+    it("should have suit-follows at index 0", () => {
+      expect(ruleSets[0].id).toBe("suit-follows");
     });
 
-    it("should have suit-follows at index 1", () => {
-      expect(ruleSets[1].id).toBe("suit-follows");
+    it("should have highest-card at index 1", () => {
+      expect(ruleSets[1].id).toBe("highest-card");
     });
 
     it("should have spades-trump at index 2", () => {

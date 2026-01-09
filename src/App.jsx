@@ -33,7 +33,7 @@ function AppContent() {
   const { isAppLoading, showLoadingScreen, handleLoadingComplete } =
     useAppLoading();
 
-  const [selectedRuleSet, setSelectedRuleSet] = useState(1);
+  const [selectedRuleSet, setSelectedRuleSet] = useState(0);
   const [isLandscapeHelpOpen, setIsLandscapeHelpOpen] = useState(false);
 
   const {
@@ -221,6 +221,7 @@ function AppContent() {
                 handlePlaySelectedCard={handlePlaySelectedCard}
                 ruleSetName={ruleSets[selectedRuleSet].name}
                 ruleSetDescription={ruleSets[selectedRuleSet].description}
+                scores={gameState.scores}
               />
 
               <Leaderboard

@@ -15,14 +15,14 @@ const renderWithContext = (ui, options) =>
 describe("SettingsPanel", () => {
   const mockRuleSets = [
     {
-      id: "highest-card",
-      name: "Highest Card Wins",
-      description: "The highest card value wins the trick",
-    },
-    {
       id: "suit-follows",
       name: "Suit Follows",
       description: "Must follow lead suit",
+    },
+    {
+      id: "highest-card",
+      name: "Highest Card Wins",
+      description: "The highest card value wins the trick",
     },
     {
       id: "spades-trump",
@@ -181,7 +181,7 @@ describe("SettingsPanel", () => {
       const button = screen.getByRole("button");
       fireEvent.click(button);
 
-      expect(screen.getByText("Highest Card Wins")).toBeInTheDocument();
+      expect(screen.getByText("Suit Follows")).toBeInTheDocument();
     });
   });
 
@@ -481,7 +481,7 @@ describe("SettingsPanel", () => {
       const button = screen.getByRole("button");
       fireEvent.click(button);
 
-      expect(screen.getByText("Highest Card Wins")).toBeInTheDocument();
+      expect(screen.getByText("Suit Follows")).toBeInTheDocument();
     });
 
     it("should display second rule set when selectedRuleSet is 1", () => {
@@ -492,7 +492,7 @@ describe("SettingsPanel", () => {
       const button = screen.getByRole("button");
       fireEvent.click(button);
 
-      expect(screen.getByText("Suit Follows")).toBeInTheDocument();
+      expect(screen.getByText("Highest Card Wins")).toBeInTheDocument();
     });
 
     it("should display third rule set when selectedRuleSet is 2", () => {

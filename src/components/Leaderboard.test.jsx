@@ -36,7 +36,7 @@ describe("Leaderboard", () => {
       { id: "player3", name: "Sam", hand: [], score: 0, isActive: false },
       { id: "player4", name: "Jordan", hand: [], score: 0, isActive: false },
     ],
-    scores: [3, 5, 2, 4],
+    scores: [13, 25, 12, 17],
     currentPlayer: 0,
     trickWinner: null,
     ruleSetName: "Highest Card Wins",
@@ -53,13 +53,13 @@ describe("Leaderboard", () => {
   describe("collapsed state", () => {
     it("should render in collapsed state by default", () => {
       const { container } = render(<Leaderboard {...defaultProps} />);
-      const collapsed = container.querySelector(".collapsed");
-      expect(collapsed).toBeInTheDocument();
+      const toggleBtn = container.querySelector(".leaderboard-toggle-btn");
+      expect(toggleBtn).toBeInTheDocument();
     });
 
-    it("should show 'Leaderboard' label when collapsed", () => {
+    it("should show 'Scores' label when collapsed", () => {
       render(<Leaderboard {...defaultProps} />);
-      expect(screen.getByText("Leaderboard")).toBeInTheDocument();
+      expect(screen.getByText("Scores")).toBeInTheDocument();
     });
 
     it("should have expand button when collapsed", () => {
@@ -73,7 +73,7 @@ describe("Leaderboard", () => {
     it("should expand when clicking the expand button", () => {
       const { container } = render(<Leaderboard {...defaultProps} />);
       expandLeaderboard();
-      const expanded = container.querySelector(".expanded");
+      const expanded = container.querySelector(".leaderboard-expanded");
       expect(expanded).toBeInTheDocument();
     });
   });
@@ -82,7 +82,7 @@ describe("Leaderboard", () => {
     it("should render without crashing", () => {
       render(<Leaderboard {...defaultProps} />);
       expandLeaderboard();
-      expect(screen.getByText("Highest Card Wins")).toBeInTheDocument();
+      expect(screen.getByText("Leaderboard")).toBeInTheDocument();
     });
 
     it("should display the rule set name", () => {
@@ -101,38 +101,47 @@ describe("Leaderboard", () => {
     });
 
     it("should display all scores", () => {
-      render(<Leaderboard {...defaultProps} />);
+      const { container } = render(<Leaderboard {...defaultProps} />);
       expandLeaderboard();
-      expect(screen.getByText("3")).toBeInTheDocument();
-      expect(screen.getByText("5")).toBeInTheDocument();
-      expect(screen.getByText("2")).toBeInTheDocument();
-      expect(screen.getByText("4")).toBeInTheDocument();
+      const scoreElements = container.querySelectorAll(
+        ".leaderboard-player-score",
+      );
+      expect(scoreElements).toHaveLength(4);
+      const scores = Array.from(scoreElements).map((el) =>
+        parseInt(el.textContent),
+      );
+      expect(scores).toContain(13);
+      expect(scores).toContain(25);
+      expect(scores).toContain(12);
+      expect(scores).toContain(17);
     });
 
     it("should render player avatars", () => {
       const { container } = render(<Leaderboard {...defaultProps} />);
       expandLeaderboard();
-      const avatars = container.querySelectorAll("img");
+      const avatars = container.querySelectorAll(".leaderboard-avatar");
       expect(avatars).toHaveLength(4);
     });
 
     it("should have correct avatar URLs using robohash", () => {
       const { container } = render(<Leaderboard {...defaultProps} />);
       expandLeaderboard();
-      const avatars = container.querySelectorAll("img");
+      const avatars = container.querySelectorAll(".leaderboard-avatar");
 
       avatars.forEach((avatar) => {
         expect(avatar.src).toContain("robohash.org");
       });
     });
 
-    it("should display position numbers (#1, #2, etc.)", () => {
-      render(<Leaderboard {...defaultProps} />);
+    it("should display position numbers (1, 2, etc.)", () => {
+      const { container } = render(<Leaderboard {...defaultProps} />);
       expandLeaderboard();
-      expect(screen.getByText("#1")).toBeInTheDocument();
-      expect(screen.getByText("#2")).toBeInTheDocument();
-      expect(screen.getByText("#3")).toBeInTheDocument();
-      expect(screen.getByText("#4")).toBeInTheDocument();
+      const ranks = container.querySelectorAll(".leaderboard-rank");
+      expect(ranks).toHaveLength(4);
+      expect(ranks[0].textContent).toBe("1");
+      expect(ranks[1].textContent).toBe("2");
+      expect(ranks[2].textContent).toBe("3");
+      expect(ranks[3].textContent).toBe("4");
     });
   });
 
@@ -185,19 +194,10 @@ describe("Leaderboard", () => {
         <Leaderboard {...defaultProps} currentPlayer={0} />,
       );
       expandLeaderboard();
-      const turnIndicators = container.querySelectorAll(
-        ".player-turn-indicator",
+      const activePlayer = container.querySelector(
+        ".leaderboard-player-active",
       );
-      expect(turnIndicators.length).toBeGreaterThanOrEqual(1);
-    });
-
-    it("should show pulse indicator for current player", () => {
-      const { container } = render(
-        <Leaderboard {...defaultProps} currentPlayer={0} />,
-      );
-      expandLeaderboard();
-      const pulseIndicator = container.querySelector(".animate-pulse");
-      expect(pulseIndicator).toBeInTheDocument();
+      expect(activePlayer).toBeInTheDocument();
     });
 
     it("should highlight different current player", () => {
@@ -205,19 +205,21 @@ describe("Leaderboard", () => {
         <Leaderboard {...defaultProps} currentPlayer={2} />,
       );
       expandLeaderboard();
-      const turnIndicators = container.querySelectorAll(
-        ".player-turn-indicator",
+      const activePlayer = container.querySelector(
+        ".leaderboard-player-active",
       );
-      expect(turnIndicators.length).toBeGreaterThanOrEqual(1);
+      expect(activePlayer).toBeInTheDocument();
     });
 
-    it("should only show one pulse indicator", () => {
+    it("should only highlight one player as active", () => {
       const { container } = render(
         <Leaderboard {...defaultProps} currentPlayer={1} />,
       );
       expandLeaderboard();
-      const pulseIndicators = container.querySelectorAll(".animate-pulse");
-      expect(pulseIndicators).toHaveLength(1);
+      const activePlayers = container.querySelectorAll(
+        ".leaderboard-player-active",
+      );
+      expect(activePlayers).toHaveLength(1);
     });
   });
 
@@ -287,17 +289,19 @@ describe("Leaderboard", () => {
   });
 
   describe("styling", () => {
-    it("should have score-sidebar class", () => {
+    it("should have leaderboard-container class", () => {
       const { container } = render(<Leaderboard {...defaultProps} />);
-      const sidebar = container.querySelector(".score-sidebar");
+      const sidebar = container.querySelector(".leaderboard-container");
       expect(sidebar).toBeInTheDocument();
     });
 
-    it("should have pixel-art class on avatars", () => {
+    it("should have player name elements", () => {
       const { container } = render(<Leaderboard {...defaultProps} />);
       expandLeaderboard();
-      const pixelArtElements = container.querySelectorAll(".pixel-art");
-      expect(pixelArtElements).toHaveLength(4);
+      const nameElements = container.querySelectorAll(
+        ".leaderboard-player-name",
+      );
+      expect(nameElements).toHaveLength(4);
     });
 
     it("should have rounded container", () => {
@@ -310,8 +314,8 @@ describe("Leaderboard", () => {
     it("should have rounded player items", () => {
       const { container } = render(<Leaderboard {...defaultProps} />);
       expandLeaderboard();
-      const roundedElements = container.querySelectorAll(".rounded-lg");
-      expect(roundedElements.length).toBeGreaterThanOrEqual(4);
+      const playerElements = container.querySelectorAll(".leaderboard-player");
+      expect(playerElements.length).toBeGreaterThanOrEqual(4);
     });
   });
 
@@ -319,27 +323,39 @@ describe("Leaderboard", () => {
     it("should handle high scores", () => {
       const highScoreProps = {
         ...defaultProps,
-        scores: [10, 15, 8, 12],
+        scores: [100, 250, 999, 50],
       };
-      render(<Leaderboard {...highScoreProps} />);
+      const { container } = render(<Leaderboard {...highScoreProps} />);
       expandLeaderboard();
-      expect(screen.getByText("10")).toBeInTheDocument();
-      expect(screen.getByText("15")).toBeInTheDocument();
-      expect(screen.getByText("8")).toBeInTheDocument();
-      expect(screen.getByText("12")).toBeInTheDocument();
+      const scoreElements = container.querySelectorAll(
+        ".leaderboard-player-score",
+      );
+      const scores = Array.from(scoreElements).map((el) =>
+        parseInt(el.textContent),
+      );
+      expect(scores).toContain(100);
+      expect(scores).toContain(250);
+      expect(scores).toContain(999);
+      expect(scores).toContain(50);
     });
 
     it("should handle single digit scores", () => {
       const singleDigitProps = {
         ...defaultProps,
-        scores: [1, 2, 3, 4],
+        scores: [1, 9, 8, 6],
       };
-      render(<Leaderboard {...singleDigitProps} />);
+      const { container } = render(<Leaderboard {...singleDigitProps} />);
       expandLeaderboard();
-      expect(screen.getByText("1")).toBeInTheDocument();
-      expect(screen.getByText("2")).toBeInTheDocument();
-      expect(screen.getByText("3")).toBeInTheDocument();
-      expect(screen.getByText("4")).toBeInTheDocument();
+      const scoreElements = container.querySelectorAll(
+        ".leaderboard-player-score",
+      );
+      const scores = Array.from(scoreElements).map((el) =>
+        parseInt(el.textContent),
+      );
+      expect(scores).toContain(1);
+      expect(scores).toContain(9);
+      expect(scores).toContain(8);
+      expect(scores).toContain(6);
     });
   });
 
@@ -354,8 +370,8 @@ describe("Leaderboard", () => {
     it("should have flex layout for player items", () => {
       const { container } = render(<Leaderboard {...defaultProps} />);
       expandLeaderboard();
-      const flexItems = container.querySelectorAll(".flex.items-center");
-      expect(flexItems.length).toBeGreaterThanOrEqual(4);
+      const playerItems = container.querySelectorAll(".leaderboard-player");
+      expect(playerItems.length).toBeGreaterThanOrEqual(4);
     });
   });
 
@@ -473,9 +489,11 @@ describe("Leaderboard", () => {
       };
       const { container } = render(<Leaderboard {...longNameProps} />);
       expandLeaderboard();
-      // Check that truncate class is applied
-      const truncateElements = container.querySelectorAll(".truncate");
-      expect(truncateElements.length).toBeGreaterThanOrEqual(4);
+      // Check that player name elements exist and can handle long names
+      const nameElements = container.querySelectorAll(
+        ".leaderboard-player-name",
+      );
+      expect(nameElements.length).toBeGreaterThanOrEqual(4);
     });
 
     it("should handle empty rule set name", () => {
@@ -524,18 +542,20 @@ describe("Leaderboard", () => {
   });
 
   describe("transition animations", () => {
-    it("should have transition classes on player items", () => {
+    it("should have player items with styling", () => {
       const { container } = render(<Leaderboard {...defaultProps} />);
       expandLeaderboard();
-      const transitionElements = container.querySelectorAll(".transition-all");
-      expect(transitionElements.length).toBeGreaterThanOrEqual(4);
+      const playerElements = container.querySelectorAll(".leaderboard-player");
+      expect(playerElements.length).toBeGreaterThanOrEqual(4);
     });
 
-    it("should have duration classes for transitions", () => {
+    it("should have expanded animation class on container", () => {
       const { container } = render(<Leaderboard {...defaultProps} />);
       expandLeaderboard();
-      const durationElements = container.querySelectorAll(".duration-300");
-      expect(durationElements.length).toBeGreaterThanOrEqual(4);
+      const expandedContainer = container.querySelector(
+        ".leaderboard-expanded",
+      );
+      expect(expandedContainer).toBeInTheDocument();
     });
   });
 
@@ -549,85 +569,98 @@ describe("Leaderboard", () => {
       });
       fireEvent.click(collapseButton);
 
-      const collapsed = container.querySelector(".collapsed");
-      expect(collapsed).toBeInTheDocument();
+      const toggleBtn = container.querySelector(".leaderboard-toggle-btn");
+      expect(toggleBtn).toBeInTheDocument();
     });
 
     it("should toggle between collapsed and expanded states", () => {
       const { container } = render(<Leaderboard {...defaultProps} />);
 
-      // Initially collapsed
-      expect(container.querySelector(".collapsed")).toBeInTheDocument();
+      // Initially collapsed (toggle button visible)
+      expect(
+        container.querySelector(".leaderboard-toggle-btn"),
+      ).toBeInTheDocument();
 
       // Expand
       expandLeaderboard();
-      expect(container.querySelector(".expanded")).toBeInTheDocument();
+      expect(
+        container.querySelector(".leaderboard-expanded"),
+      ).toBeInTheDocument();
 
       // Collapse again
       const collapseButton = screen.getByRole("button", {
         name: /hide leaderboard/i,
       });
       fireEvent.click(collapseButton);
-      expect(container.querySelector(".collapsed")).toBeInTheDocument();
+      expect(
+        container.querySelector(".leaderboard-toggle-btn"),
+      ).toBeInTheDocument();
     });
   });
 
-  describe("desktop always-visible behavior", () => {
-    it("should show expanded leaderboard by default on desktop", () => {
-      // Set desktop width
+  describe("desktop behavior", () => {
+    it("should show toggle button by default on desktop", () => {
       Object.defineProperty(window, "innerWidth", {
         writable: true,
         configurable: true,
-        value: 1024,
+        value: 1200,
       });
 
       const { container } = render(<Leaderboard {...defaultProps} />);
-      const expanded = container.querySelector(".expanded");
+      const toggleBtn = container.querySelector(".leaderboard-toggle-btn");
+      expect(toggleBtn).toBeInTheDocument();
+    });
+
+    it("should expand when toggle button is clicked on desktop", () => {
+      Object.defineProperty(window, "innerWidth", {
+        writable: true,
+        configurable: true,
+        value: 1200,
+      });
+
+      const { container } = render(<Leaderboard {...defaultProps} />);
+      expandLeaderboard();
+      const expanded = container.querySelector(".leaderboard-expanded");
       expect(expanded).toBeInTheDocument();
     });
 
-    it("should have desktop-always-visible class on desktop", () => {
-      // Set desktop width
+    it("should show close button when expanded on desktop", () => {
       Object.defineProperty(window, "innerWidth", {
         writable: true,
         configurable: true,
-        value: 1280,
-      });
-
-      const { container } = render(<Leaderboard {...defaultProps} />);
-      const desktopVisible = container.querySelector(".desktop-always-visible");
-      expect(desktopVisible).toBeInTheDocument();
-    });
-
-    it("should not show close button on desktop", () => {
-      // Set desktop width
-      Object.defineProperty(window, "innerWidth", {
-        writable: true,
-        configurable: true,
-        value: 1024,
+        value: 1200,
       });
 
       render(<Leaderboard {...defaultProps} />);
+      expandLeaderboard();
       const closeButton = screen.queryByRole("button", {
         name: /hide leaderboard/i,
       });
-      expect(closeButton).not.toBeInTheDocument();
+      expect(closeButton).toBeInTheDocument();
     });
 
-    it("should show all player scores on desktop without interaction", () => {
-      // Set desktop width
+    it("should show all player scores when expanded on desktop", () => {
       Object.defineProperty(window, "innerWidth", {
         writable: true,
         configurable: true,
-        value: 1024,
+        value: 1200,
       });
 
-      render(<Leaderboard {...defaultProps} />);
-      // Should see all scores without needing to expand
-      expect(screen.getByText("5")).toBeInTheDocument();
-      expect(screen.getByText("4")).toBeInTheDocument();
-      expect(screen.getByText("3")).toBeInTheDocument();
-      expect(screen.getByText("2")).toBeInTheDocument();
+      const { container } = render(<Leaderboard {...defaultProps} />);
+      expandLeaderboard();
+
+      // All scores should be visible after expanding
+      const scoreElements = container.querySelectorAll(
+        ".leaderboard-player-score",
+      );
+      expect(scoreElements).toHaveLength(4);
+      const scores = Array.from(scoreElements).map((el) =>
+        parseInt(el.textContent),
+      );
+      expect(scores).toContain(13);
+      expect(scores).toContain(25);
+      expect(scores).toContain(12);
+      expect(scores).toContain(17);
     });
   });
 });

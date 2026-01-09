@@ -61,16 +61,16 @@ By participating in this project, you agree to maintain a respectful and inclusi
 
 ### Available Scripts
 
-| Command             | Description                      |
-| ------------------- | -------------------------------- |
-| `npm run dev`       | Start development server         |
-| `npm run build`     | Build for production             |
-| `npm run preview`   | Preview production build         |
-| `npm run lint`      | Run ESLint                       |
-| `npm run lint:fix`  | Fix ESLint issues automatically  |
-| `npm run format`    | Format code with Prettier        |
-| `npm test`          | Run tests with Vitest            |
-| `npm run coverage`  | Run tests with coverage report   |
+| Command                 | Description                      |
+| ----------------------- | -------------------------------- |
+| `npm run dev`           | Start development server         |
+| `npm run build`         | Build for production             |
+| `npm run preview`       | Preview production build         |
+| `npm run lint`          | Run ESLint                       |
+| `npm run lint:fix`      | Fix ESLint issues automatically  |
+| `npm run format`        | Format code with Prettier        |
+| `npm test`              | Run tests with Vitest            |
+| `npm run test:coverage` | Run tests with coverage report   |
 
 ## How to Contribute
 
@@ -84,7 +84,7 @@ We welcome many types of contributions:
 - **UI/UX improvements** - Enhance the visual design and user experience
 - **Performance** - Optimize code and improve load times
 - **Accessibility** - Make the game more accessible to all users (WCAG 2.1 AA compliance)
-- **Tests** - Add unit tests or integration tests (we have 1000+ tests!)
+- **Tests** - Add unit tests or integration tests (we have 1374 tests!)
 
 ### Workflow
 

@@ -359,27 +359,27 @@ describe("gameConstants", () => {
 
     it("should have correct position values", () => {
       expect(CARD_POSITIONS[0]).toEqual({
-        x: -55,
-        y: 12,
-        rotation: -10,
+        x: -40,
+        y: 10,
+        rotation: -8,
         zIndex: 1,
       });
       expect(CARD_POSITIONS[1]).toEqual({
-        x: -18,
-        y: -8,
-        rotation: -3,
+        x: -13,
+        y: -6,
+        rotation: -2,
         zIndex: 2,
       });
       expect(CARD_POSITIONS[2]).toEqual({
-        x: 18,
-        y: -8,
-        rotation: 3,
+        x: 13,
+        y: -6,
+        rotation: 2,
         zIndex: 3,
       });
       expect(CARD_POSITIONS[3]).toEqual({
-        x: 55,
-        y: 12,
-        rotation: 10,
+        x: 40,
+        y: 10,
+        rotation: 8,
         zIndex: 4,
       });
     });
