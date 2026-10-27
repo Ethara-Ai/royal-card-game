@@ -402,3 +402,9 @@ Copyright (c) 2025-2026 Royal Card Game
 Made with React
 
 *Royal Card Game v1.0.0*
+
+---
+
+## Copyright
+
+Copyright (c) 2026 Green Rider Technology LLP (Ethara AI). All rights reserved.
