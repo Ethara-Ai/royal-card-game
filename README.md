@@ -4,13 +4,11 @@
 
 A beautiful, responsive multiplayer card game built with React and Vite. Play classic trick-taking card games against AI opponents with customizable rules, themes, and card designs.
 
-
 ![React](https://img.shields.io/badge/React-19.2.3-61DAFB?logo=react)
 ![Vite](https://img.shields.io/badge/Vite-7.3.1-646CFF?logo=vite)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.1.18-38B2AC?logo=tailwind-css)
 ![Vitest](https://img.shields.io/badge/Vitest-4.0.16-6E9F18?logo=vitest)
 ![Coverage](https://img.shields.io/badge/Coverage-49%25-yellow)
-![License](https://img.shields.io/badge/License-MIT-green)
 
 ## Features
 
@@ -384,12 +382,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 5. Open a Pull Request
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed contribution guidelines.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-Copyright (c) 2025-2026 Royal Card Game
 
 ## Acknowledgments
 
